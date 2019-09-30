@@ -53,14 +53,27 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     spotLight.shadow.camera.far = 1000;
     scene.add(spotLight);
 
-    const lightHelper = new THREE.SpotLightHelper(spotLight);
-    scene.add(lightHelper);
+    /*const lightHelper = new THREE.SpotLightHelper(spotLight);
+    scene.add(lightHelper);*/
 
-    const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
-    scene.add(shadowCameraHelper);
+    /*const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
+    scene.add(shadowCameraHelper);*/
 
     // This is where we start creating the actual space frame
     const { nodes, struts } = this.props.spaceFrameData;
+
+    nodes.forEach(node => {
+      const { x, y, z, id } = node;
+      const strutsConnectedToNode = struts
+        .filter(({ sourceId, targetId }) => [sourceId, targetId].includes(id))
+        .map(({ radius }) => radius);
+      const radius = Math.max(...strutsConnectedToNode, 0);
+      const nodeGeometry = new THREE.SphereGeometry(radius, 32, 32);
+      const nodeMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+      const nodeMesh = new THREE.Mesh(nodeGeometry, nodeMaterial);
+      nodeMesh.position.set(x, y, z);
+      scene.add(nodeMesh);
+    });
     struts.forEach(strut => {
       const { x: sourceX, y: sourceY, z: sourceZ } = nodes.find(
         ({ id }) => id === strut.sourceId
@@ -98,7 +111,10 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     var planeGeometry = new THREE.PlaneBufferGeometry(2000, 2000);
 
     var planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
-    planeMesh.position.set(0, -1, 0);
+    // Lower the floor plane enough to avoid the radius of the struts causing
+    // intersection with the ground.
+    const maxRadius = Math.max(...struts.map(({ radius }) => radius), 0);
+    planeMesh.position.set(0, -maxRadius, 0);
     planeMesh.rotation.x = -Math.PI * 0.5;
     planeMesh.receiveShadow = true;
     scene.add(planeMesh);
