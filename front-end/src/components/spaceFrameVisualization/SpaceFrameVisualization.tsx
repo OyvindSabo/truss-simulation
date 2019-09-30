@@ -59,9 +59,36 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
     scene.add(shadowCameraHelper);
 
-    //scene.add(new THREE.AxesHelper(10));
+    // This is where we start creating the actual space frame
+    const { nodes, struts } = this.props.spaceFrameData;
+    struts.forEach(strut => {
+      const sourceCoordinates = nodes.find(node => node.id === strut.sourceId);
+      const targetCoordinates = nodes.find(node => node.id === strut.targetId);
+      const strutVector = new THREE.Curve<Vector3>();
+      strutVector.getPoint = (t: number) =>
+        new THREE.Vector3(
+          sourceCoordinates!.x +
+            t * (targetCoordinates!.x - sourceCoordinates!.x),
+          sourceCoordinates!.y +
+            t * (targetCoordinates!.y - sourceCoordinates!.y),
+          sourceCoordinates!.z +
+            t * (targetCoordinates!.z - sourceCoordinates!.z)
+        );
 
-    const helix = new THREE.Curve<Vector3>();
+      const strutGeometry = new THREE.TubeGeometry(
+        strutVector, // path
+        128, // tubularSegments
+        strut.radius, // radius
+        32 // radiusSegments
+      );
+      const strutMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+      const strutMesh = new THREE.Mesh(strutGeometry, strutMaterial);
+      strutMesh.castShadow = true; //default is false
+      strutMesh.receiveShadow = false; //default
+      scene.add(strutMesh);
+    });
+
+    /*const helix = new THREE.Curve<Vector3>();
     helix.getPoint = function(t) {
       var s = (t - 0.5) * 12 * Math.PI;
       // As t ranges from 0 to 1, s ranges from -6*PI to 6*PI
@@ -77,7 +104,8 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     cube.castShadow = true; //default is false
     cube.receiveShadow = false; //default
 
-    scene.add(cube);
+    scene.add(cube);*/
+    // This is where we stop creating the actual space frame
 
     //Create a plane that receives shadows (but does not cast them)
     const planeMaterial = new THREE.MeshPhongMaterial({
@@ -95,8 +123,8 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
 
     const animate = () => {
       requestAnimationFrame(animate);
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
+      //cube.rotation.x += 0.01;
+      //cube.rotation.y += 0.01;
       renderer.render(scene, camera);
     };
     animate();
