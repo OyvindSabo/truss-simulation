@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
 import * as THREE from 'three';
-class TrussVisualization extends Component {
+import { SpaceFrameData } from '../../types';
+
+interface TrussVisualizationProps {
+  spaceFrameData: SpaceFrameData;
+}
+
+class TrussVisualization extends Component<TrussVisualizationProps> {
   private myRef: any;
   componentDidMount() {
     var scene = new THREE.Scene();
