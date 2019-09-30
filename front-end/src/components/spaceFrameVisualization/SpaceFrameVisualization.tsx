@@ -77,12 +77,11 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
       scene.add(nodeMesh);
     });
     struts.forEach(strut => {
-      const { x: sourceX, y: sourceY, z: sourceZ } = nodes.find(
-        ({ id }) => id === strut.sourceId
-      )!;
-      const { x: targetX, y: targetY, z: targetZ } = nodes.find(
-        ({ id }) => id === strut.targetId
-      )!;
+      const sourceNode = nodes.find(({ id }) => id === strut.sourceId);
+      const targetNode = nodes.find(({ id }) => id === strut.targetId);
+      if (!sourceNode || !targetNode) return;
+      const { x: sourceX, y: sourceY, z: sourceZ } = sourceNode;
+      const { x: targetX, y: targetY, z: targetZ } = targetNode;
       const strutVector = new THREE.Curve<Vector3>();
       strutVector.getPoint = (t: number) =>
         new THREE.Vector3(
@@ -97,7 +96,9 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
         strut.radius, // radius
         32 // radiusSegments
       );
-      const strutMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+      const strutMaterial = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+      });
       const strutMesh = new THREE.Mesh(strutGeometry, strutMaterial);
       strutMesh.castShadow = true; //default is false
       strutMesh.receiveShadow = false; //default
