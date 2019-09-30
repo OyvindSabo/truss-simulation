@@ -1,10 +1,12 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import TrussVisualization from './components/trussVisualization/TrussVisualization';
 
 const App: React.FC = () => {
   return (
     <div className="App">
+      <TrussVisualization />
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
@@ -21,6 +23,6 @@ const App: React.FC = () => {
       </header>
     </div>
   );
-}
+};
 
 export default App;
