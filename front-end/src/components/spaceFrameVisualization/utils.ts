@@ -16,3 +16,13 @@ export const getAverageNodePosition = ({ nodes }: SpaceFrameData) => {
     { x: 0, y: 0, z: 0 }
   );
 };
+
+export const getAnimatedPosition = (
+  position: number,
+  deformedPosition: number,
+  animationFrame: number
+) =>
+  position +
+  ((deformedPosition - position) *
+    (1 + Math.sin((animationFrame / 180) * Math.PI))) /
+    2;

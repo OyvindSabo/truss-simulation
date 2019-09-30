@@ -3,16 +3,19 @@ import * as THREE from 'three';
 import { SpaceFrameData } from '../../types';
 import { Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { getAverageNodePosition } from './utils';
+import { getAverageNodePosition, getAnimatedPosition } from './utils';
 
 interface TrussVisualizationProps {
   spaceFrameData: SpaceFrameData;
+  deformedSpaceFrameData?: SpaceFrameData;
 }
 
 class TrussVisualization extends Component<TrussVisualizationProps> {
   private myRef: any;
   componentDidMount() {
-    var renderer = new THREE.WebGLRenderer();
+    var renderer = new THREE.WebGLRenderer({
+      antialias: true,
+    });
     renderer.setSize(window.innerWidth, window.innerHeight);
     this.myRef.appendChild(renderer.domElement);
     renderer.shadowMap.enabled = true;
@@ -50,8 +53,9 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     spotLight.decay = 2;
     spotLight.distance = 200;
     spotLight.castShadow = true;
-    spotLight.shadow.mapSize.width = 1024;
-    spotLight.shadow.mapSize.height = 1024;
+    // The mapSize has to be this big for the shadows to not look pixelated
+    spotLight.shadow.mapSize.width = 10000;
+    spotLight.shadow.mapSize.height = 10000;
     spotLight.shadow.camera.near = 1;
     spotLight.shadow.camera.far = 1000;
     scene.add(spotLight);
@@ -63,6 +67,7 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     scene.add(shadowCameraHelper);*/
 
     // This is where we start creating the actual space frame
+    const nodeMeshes: { [key: string]: THREE.Mesh } = {};
     const { nodes, struts } = this.props.spaceFrameData;
     nodes.forEach(node => {
       const { x, y, z, id } = node;
@@ -74,16 +79,19 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
       const nodeMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
       const nodeMesh = new THREE.Mesh(nodeGeometry, nodeMaterial);
       nodeMesh.position.set(x, y, z);
+      nodeMeshes[id] = nodeMesh;
       scene.add(nodeMesh);
     });
-    struts.forEach(strut => {
-      const sourceNode = nodes.find(({ id }) => id === strut.sourceId);
-      const targetNode = nodes.find(({ id }) => id === strut.targetId);
+
+    const strutMeshes: { [key: string]: THREE.Mesh } = {};
+    struts.forEach(({ id, radius, sourceId, targetId }) => {
+      const sourceNode = nodes.find(({ id }) => id === sourceId);
+      const targetNode = nodes.find(({ id }) => id === targetId);
       if (!sourceNode || !targetNode) return;
       const { x: sourceX, y: sourceY, z: sourceZ } = sourceNode;
       const { x: targetX, y: targetY, z: targetZ } = targetNode;
-      const strutVector = new THREE.Curve<Vector3>();
-      strutVector.getPoint = (t: number) =>
+      const structVector = new THREE.Curve<Vector3>();
+      structVector.getPoint = (t: number) =>
         new THREE.Vector3(
           sourceX + t * (targetX - sourceX),
           sourceY + t * (targetY - sourceY),
@@ -91,9 +99,9 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
         );
 
       const strutGeometry = new THREE.TubeGeometry(
-        strutVector, // path
-        128, // tubularSegments
-        strut.radius, // radius
+        structVector, // path
+        1, // tubularSegments
+        radius, // radius
         32 // radiusSegments
       );
       const strutMaterial = new THREE.MeshStandardMaterial({
@@ -102,6 +110,7 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
       const strutMesh = new THREE.Mesh(strutGeometry, strutMaterial);
       strutMesh.castShadow = true; //default is false
       strutMesh.receiveShadow = false; //default
+      strutMeshes[id] = strutMesh;
       scene.add(strutMesh);
     });
 
@@ -122,13 +131,96 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     planeMesh.receiveShadow = true;
     scene.add(planeMesh);
 
-    const animate = () => {
-      requestAnimationFrame(animate);
-      //cube.rotation.x += 0.01;
-      //cube.rotation.y += 0.01;
-      renderer.render(scene, camera);
-    };
-    animate();
+    if (this.props.deformedSpaceFrameData) {
+      const { nodes: deformedNodes } = this.props.deformedSpaceFrameData;
+      const animate = () => {
+        const animationFrame = requestAnimationFrame(animate);
+        nodes.forEach(({ id, x, y, z }) => {
+          const deformedNode = deformedNodes.find(
+            ({ id: deformedId }) => deformedId === id
+          );
+          if (!deformedNode) return;
+          const { x: deformedX, y: deformedY, z: deformedZ } = deformedNode;
+          nodeMeshes[id].position.x = getAnimatedPosition(
+            x,
+            deformedX,
+            animationFrame
+          );
+          nodeMeshes[id].position.y = getAnimatedPosition(
+            y,
+            deformedY,
+            animationFrame
+          );
+          nodeMeshes[id].position.z = getAnimatedPosition(
+            z,
+            deformedZ,
+            animationFrame
+          );
+        });
+        struts.forEach(({ id, radius, sourceId, targetId }) => {
+          const sourceNode = nodes.find(({ id }) => id === sourceId);
+          const targetNode = nodes.find(({ id }) => id === targetId);
+          const deformedSourceNode = deformedNodes.find(
+            ({ id }) => id === sourceId
+          );
+          const deformedTargetNode = deformedNodes.find(
+            ({ id }) => id === targetId
+          );
+          if (
+            !sourceNode ||
+            !targetNode ||
+            !deformedSourceNode ||
+            !deformedTargetNode
+          )
+            return;
+          const newSourceX = getAnimatedPosition(
+            sourceNode.x,
+            deformedSourceNode.x,
+            animationFrame
+          );
+          const newSourceY = getAnimatedPosition(
+            sourceNode.y,
+            deformedSourceNode.y,
+            animationFrame
+          );
+          const newSourceZ = getAnimatedPosition(
+            sourceNode.z,
+            deformedSourceNode.z,
+            animationFrame
+          );
+          const newTargetX = getAnimatedPosition(
+            targetNode.x,
+            deformedTargetNode.x,
+            animationFrame
+          );
+          const newTargetY = getAnimatedPosition(
+            targetNode.y,
+            deformedTargetNode.y,
+            animationFrame
+          );
+          const newTargetZ = getAnimatedPosition(
+            targetNode.z,
+            deformedTargetNode.z,
+            animationFrame
+          );
+          const structVector = new THREE.Curve<Vector3>();
+          structVector.getPoint = (t: number) =>
+            new THREE.Vector3(
+              newSourceX + t * (newTargetX - newSourceX),
+              newSourceY + t * (newTargetY - newSourceY),
+              newSourceZ + t * (newTargetZ - newSourceZ)
+            );
+          strutMeshes[id].geometry = new THREE.TubeGeometry(
+            structVector, // path
+            1, // tubularSegments
+            radius, // radius
+            32 // radiusSegments
+          );
+        });
+        renderer.render(scene, camera);
+      };
+      animate();
+    }
   }
   render() {
     return <div ref={ref => (this.myRef = ref)} />;
