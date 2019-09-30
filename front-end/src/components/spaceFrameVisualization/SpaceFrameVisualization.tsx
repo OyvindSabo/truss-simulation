@@ -11,45 +11,55 @@ interface TrussVisualizationProps {
 class TrussVisualization extends Component<TrussVisualizationProps> {
   private myRef: any;
   componentDidMount() {
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    camera.position.set(0, 0, 50);
-
     //Create a WebGLRenderer and turn on shadows in the renderer
     var renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    this.myRef.appendChild(renderer.domElement);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
 
     renderer.gammaInput = true;
     renderer.gammaOutput = true;
 
+    const scene = new THREE.Scene();
+
+    var camera = new THREE.PerspectiveCamera(
+      35,
+      window.innerWidth / window.innerHeight,
+      1, // near
+      1000 // far
+    );
+    camera.position.set(65, 8, -10);
+
     var controls = new OrbitControls(camera, renderer.domElement);
     controls.addEventListener('change', this.render);
-    controls.minDistance = 50;
+    controls.minDistance = 20;
     controls.maxDistance = 500;
     controls.enablePan = false;
 
-    var ambient = new THREE.AmbientLight(0xffffff, 0.1);
+    var ambient = new THREE.AmbientLight(0xffffff, 0.01);
     scene.add(ambient);
 
-    //Create a SpotLight and turn on shadows for the light
-    var light = new THREE.SpotLight(0xffffff);
-    light.castShadow = true; // default false
-    scene.add(light);
+    const spotLight = new THREE.SpotLight(0xffffff, 1);
+    spotLight.position.set(15, 40, 35);
+    spotLight.angle = Math.PI / 4;
+    spotLight.penumbra = 0.05;
+    spotLight.decay = 2;
+    spotLight.distance = 200;
+    spotLight.castShadow = true;
+    spotLight.shadow.mapSize.width = 1024;
+    spotLight.shadow.mapSize.height = 1024;
+    spotLight.shadow.camera.near = 10;
+    spotLight.shadow.camera.far = 200;
+    scene.add(spotLight);
 
-    //Set up shadow properties for the light
-    light.shadow.mapSize.width = 512; // default
-    light.shadow.mapSize.height = 512; // default
-    light.shadow.camera.near = 0.5; // default
-    light.shadow.camera.far = 500; // default
+    const lightHelper = new THREE.SpotLightHelper(spotLight);
+    scene.add(lightHelper);
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    this.myRef.appendChild(renderer.domElement);
+    const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
+    scene.add(shadowCameraHelper);
+
+    //scene.add(new THREE.AxesHelper(10));
 
     const helix = new THREE.Curve<Vector3>();
     helix.getPoint = function(t) {
@@ -70,15 +80,18 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     scene.add(cube);
 
     //Create a plane that receives shadows (but does not cast them)
-    var planeGeometry = new THREE.PlaneBufferGeometry(100, 100, 32, 32);
-    var planeMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-    var plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    plane.receiveShadow = true;
-    scene.add(plane);
+    const planeMaterial = new THREE.MeshPhongMaterial({
+      color: 0x808080,
+      dithering: true,
+    });
 
-    //Create a helper for the shadow camera (optional)
-    var helper = new THREE.CameraHelper(light.shadow.camera);
-    scene.add(helper);
+    var planeGeometry = new THREE.PlaneBufferGeometry(2000, 2000);
+
+    var planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+    planeMesh.position.set(0, -1, 0);
+    planeMesh.rotation.x = -Math.PI * 0.5;
+    planeMesh.receiveShadow = true;
+    scene.add(planeMesh);
 
     const animate = () => {
       requestAnimationFrame(animate);
