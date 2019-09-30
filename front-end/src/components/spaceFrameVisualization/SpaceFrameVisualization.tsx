@@ -11,7 +11,6 @@ interface TrussVisualizationProps {
 class TrussVisualization extends Component<TrussVisualizationProps> {
   private myRef: any;
   componentDidMount() {
-    //Create a WebGLRenderer and turn on shadows in the renderer
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     this.myRef.appendChild(renderer.domElement);
