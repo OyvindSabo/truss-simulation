@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { SpaceFrameData } from '../../types';
 import { Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { getAverageNodePosition } from './utils';
 
 interface TrussVisualizationProps {
   spaceFrameData: SpaceFrameData;
@@ -35,6 +36,9 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     controls.minDistance = 1;
     controls.maxDistance = 500;
     controls.enablePan = false;
+    const center = getAverageNodePosition(this.props.spaceFrameData);
+    controls.target.set(center.x, center.y, center.z);
+    console.log('center: ', center);
 
     var ambient = new THREE.AmbientLight(0xffffff, 0.01);
     scene.add(ambient);
@@ -60,7 +64,6 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
 
     // This is where we start creating the actual space frame
     const { nodes, struts } = this.props.spaceFrameData;
-
     nodes.forEach(node => {
       const { x, y, z, id } = node;
       const strutsConnectedToNode = struts
