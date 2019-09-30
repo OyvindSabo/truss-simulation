@@ -33,7 +33,7 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
 
     var controls = new OrbitControls(camera, renderer.domElement);
     controls.addEventListener('change', this.render);
-    controls.minDistance = 20;
+    controls.minDistance = 1;
     controls.maxDistance = 500;
     controls.enablePan = false;
 
@@ -49,8 +49,8 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     spotLight.castShadow = true;
     spotLight.shadow.mapSize.width = 1024;
     spotLight.shadow.mapSize.height = 1024;
-    spotLight.shadow.camera.near = 10;
-    spotLight.shadow.camera.far = 200;
+    spotLight.shadow.camera.near = 1;
+    spotLight.shadow.camera.far = 1000;
     scene.add(spotLight);
 
     const lightHelper = new THREE.SpotLightHelper(spotLight);
@@ -62,17 +62,18 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     // This is where we start creating the actual space frame
     const { nodes, struts } = this.props.spaceFrameData;
     struts.forEach(strut => {
-      const sourceCoordinates = nodes.find(node => node.id === strut.sourceId);
-      const targetCoordinates = nodes.find(node => node.id === strut.targetId);
+      const { x: sourceX, y: sourceY, z: sourceZ } = nodes.find(
+        ({ id }) => id === strut.sourceId
+      )!;
+      const { x: targetX, y: targetY, z: targetZ } = nodes.find(
+        ({ id }) => id === strut.targetId
+      )!;
       const strutVector = new THREE.Curve<Vector3>();
       strutVector.getPoint = (t: number) =>
         new THREE.Vector3(
-          sourceCoordinates!.x +
-            t * (targetCoordinates!.x - sourceCoordinates!.x),
-          sourceCoordinates!.y +
-            t * (targetCoordinates!.y - sourceCoordinates!.y),
-          sourceCoordinates!.z +
-            t * (targetCoordinates!.z - sourceCoordinates!.z)
+          sourceX + t * (targetX - sourceX),
+          sourceY + t * (targetY - sourceY),
+          sourceZ + t * (targetZ - sourceZ)
         );
 
       const strutGeometry = new THREE.TubeGeometry(
@@ -81,31 +82,12 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
         strut.radius, // radius
         32 // radiusSegments
       );
-      const strutMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+      const strutMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
       const strutMesh = new THREE.Mesh(strutGeometry, strutMaterial);
       strutMesh.castShadow = true; //default is false
       strutMesh.receiveShadow = false; //default
       scene.add(strutMesh);
     });
-
-    /*const helix = new THREE.Curve<Vector3>();
-    helix.getPoint = function(t) {
-      var s = (t - 0.5) * 12 * Math.PI;
-      // As t ranges from 0 to 1, s ranges from -6*PI to 6*PI
-      return new THREE.Vector3(5 * Math.cos(s), s, 5 * Math.sin(s));
-    };
-
-    const geometry = new THREE.TubeGeometry(helix, 128, 2.5, 32);
-
-    //const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-
-    cube.castShadow = true; //default is false
-    cube.receiveShadow = false; //default
-
-    scene.add(cube);*/
-    // This is where we stop creating the actual space frame
 
     //Create a plane that receives shadows (but does not cast them)
     const planeMaterial = new THREE.MeshPhongMaterial({
