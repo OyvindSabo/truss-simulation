@@ -114,13 +114,12 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
       scene.add(strutMesh);
     });
 
+    const planeGeometry = new THREE.PlaneBufferGeometry(2000, 2000);
     //Create a plane that receives shadows (but does not cast them)
     const planeMaterial = new THREE.MeshPhongMaterial({
       color: 0x808080,
       dithering: true,
     });
-
-    const planeGeometry = new THREE.PlaneBufferGeometry(2000, 2000);
 
     const planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
     // Lower the floor plane enough to avoid the radius of the struts causing
