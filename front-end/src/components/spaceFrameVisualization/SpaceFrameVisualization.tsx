@@ -13,7 +13,7 @@ interface TrussVisualizationProps {
 class TrussVisualization extends Component<TrussVisualizationProps> {
   private myRef: any;
   componentDidMount() {
-    var renderer = new THREE.WebGLRenderer({
+    const renderer = new THREE.WebGLRenderer({
       antialias: true,
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -26,7 +26,7 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
 
     const scene = new THREE.Scene();
 
-    var camera = new THREE.PerspectiveCamera(
+    const camera = new THREE.PerspectiveCamera(
       35,
       window.innerWidth / window.innerHeight,
       1, // near
@@ -34,7 +34,7 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     );
     camera.position.set(65, 8, -10);
 
-    var controls = new OrbitControls(camera, renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
     controls.addEventListener('change', this.render);
     controls.minDistance = 1;
     controls.maxDistance = 500;
@@ -43,7 +43,7 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     controls.target.set(center.x, center.y, center.z);
     console.log('center: ', center);
 
-    var ambient = new THREE.AmbientLight(0xffffff, 0.01);
+    const ambient = new THREE.AmbientLight(0xffffff, 0.01);
     scene.add(ambient);
 
     const spotLight = new THREE.SpotLight(0xffffff, 1);
@@ -120,9 +120,9 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
       dithering: true,
     });
 
-    var planeGeometry = new THREE.PlaneBufferGeometry(2000, 2000);
+    const planeGeometry = new THREE.PlaneBufferGeometry(2000, 2000);
 
-    var planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+    const planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
     // Lower the floor plane enough to avoid the radius of the struts causing
     // intersection with the ground.
     const maxRadius = Math.max(...struts.map(({ radius }) => radius), 0);
