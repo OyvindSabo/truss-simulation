@@ -19,12 +19,7 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({
       <Button
         key={key}
         selected={history.location.pathname === path}
-        onClick={() => {
-          console.log('history.location.pathname: ', history.location.pathname);
-          console.log('path: ', path);
-          console.log(history.location.pathname === path);
-          history.push(path);
-        }}
+        onClick={() => history.push(path)}
       >
         {label}
       </Button>

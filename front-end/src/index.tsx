@@ -17,27 +17,27 @@ const history = createBrowserHistory();
 const views = [
   {
     path: '/',
-    label: 'Home',
+    label: 'HOME',
     component: Home,
   },
   {
     path: '/structures/',
-    label: 'Structures',
+    label: 'STRUCTURES',
     component: Structures,
   },
   {
     path: '/structures/:structureId/',
-    label: 'Active structure',
+    label: 'ACTIVE STRUCTURE',
     component: Structure,
   },
   {
     path: '/experiments/',
-    label: 'experiments',
+    label: 'EXPERIMENTS',
     component: Experiments,
   },
   {
     path: '/experiments/:experimentId/',
-    label: 'Active experiment',
+    label: 'ACTIVE EXPERIMENT',
     component: Experiment,
   },
 ];

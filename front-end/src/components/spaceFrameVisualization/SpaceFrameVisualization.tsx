@@ -41,7 +41,6 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     controls.enablePan = false;
     const center = getAverageNodePosition(this.props.spaceFrameData);
     controls.target.set(center.x, center.y, center.z);
-    console.log('center: ', center);
 
     const ambient = new THREE.AmbientLight(0xffffff, 0.01);
     scene.add(ambient);

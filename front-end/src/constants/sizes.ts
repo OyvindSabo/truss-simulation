@@ -1,1 +1,1 @@
-export const NAVIGATOR_WIDTH = 180;
+export const NAVIGATOR_WIDTH = 200;
