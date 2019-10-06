@@ -4,7 +4,7 @@ import './App.css';
 import SpaceFrameVisualization from './components/spaceFrameVisualization/SpaceFrameVisualization';
 import { SpaceFrameData } from './types';
 
-const App: React.FC = () => {
+const Experiment: React.FC = () => {
   const spaceFrameData: SpaceFrameData = {
     nodes: [
       {
@@ -881,4 +881,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default Experiment;

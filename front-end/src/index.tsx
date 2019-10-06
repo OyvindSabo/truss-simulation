@@ -1,10 +1,54 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import * as serviceWorker from './serviceWorker';
+import Home from './views/home/Home';
+import Structures from './views/structures/Structures';
+import Structure from './views/structure/Structure';
+import Experiments from './views/experiments/Experiments';
+import Experiment from './Experiment';
+import Navigator from './components/navigator/Navigator';
+import { createBrowserHistory } from 'history';
+import MainContainer from './components/mainContainer/MainContainer';
+import View from './components/view/View';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const history = createBrowserHistory();
+const views = [
+  {
+    path: '/',
+    label: 'Home',
+    component: Home,
+  },
+  {
+    path: '/structures/',
+    label: 'Structures',
+    component: Structures,
+  },
+  {
+    path: '/structures/:structureId/',
+    label: 'Active structure',
+    component: Structure,
+  },
+  {
+    path: '/experiments/',
+    label: 'experiments',
+    component: Experiments,
+  },
+  {
+    path: '/experiments/:experimentId/',
+    label: 'Active experiment',
+    component: Experiment,
+  },
+];
+const Index = () => {
+  return (
+    <MainContainer>
+      <Navigator views={views} history={history} />;
+      <View views={views} history={history} />
+    </MainContainer>
+  );
+};
+ReactDOM.render(<Index />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
