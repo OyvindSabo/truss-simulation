@@ -11,6 +11,7 @@ import Navigator from './components/navigator/Navigator';
 import { createBrowserHistory } from 'history';
 import MainContainer from './components/mainContainer/MainContainer';
 import View from './components/view/View';
+import { Router } from 'react-router-dom';
 
 const history = createBrowserHistory();
 const views = [
@@ -43,8 +44,10 @@ const views = [
 const Index = () => {
   return (
     <MainContainer>
-      <Navigator views={views} history={history} />;
-      <View views={views} history={history} />
+      <Router history={history}>
+        <Navigator views={views} />;
+        <View views={views} history={history} />
+      </Router>
     </MainContainer>
   );
 };

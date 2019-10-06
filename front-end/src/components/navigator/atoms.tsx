@@ -1,6 +1,7 @@
 import styled from 'styled-components';
-import { BLUE_NIGHTS } from '../../constants/colors';
+import { BLUE_NIGHTS, ELECTROMAGNETIC } from '../../constants/colors';
 import { NAVIGATOR_WIDTH } from '../../constants/sizes';
+import { PADDING } from '../../constants/styles';
 
 export const NavigatorContainer = styled.div`
   background: ${BLUE_NIGHTS};
@@ -10,4 +11,10 @@ export const NavigatorContainer = styled.div`
   left: 0;
   top: 0;
   z-index: 1;
+`;
+
+export const Button = styled.div`
+  background: ${({ selected }: { selected?: boolean }) =>
+    selected ? ELECTROMAGNETIC : BLUE_NIGHTS};
+  padding: ${PADDING}px;
 `;

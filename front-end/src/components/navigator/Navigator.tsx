@@ -1,9 +1,9 @@
 import React from 'react';
-import { NavigatorContainer } from './atoms';
-import { Router, Link } from 'react-router-dom';
-import { RouterProps } from 'react-router';
+import { NavigatorContainer, Button } from './atoms';
+import { RouteComponentProps } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
-interface NavigatorProps extends RouterProps {
+interface NavigatorProps extends RouteComponentProps {
   views: {
     path: string;
     component: React.FunctionComponent;
@@ -15,16 +15,27 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({
   views,
 }) => (
   <NavigatorContainer>
-    <Router history={history}>
-      <ul>
-        {views.map(({ path, label }) => (
-          <li>
-            <Link to={path}>{label}</Link>
-          </li>
-        ))}
-      </ul>
-    </Router>
+    <ul>
+      {views.map(({ path, label }) => (
+        <li>
+          <Button
+            selected={history.location.pathname === path}
+            onClick={() => {
+              console.log(
+                'history.location.pathname: ',
+                history.location.pathname
+              );
+              console.log('path: ', path);
+              console.log(history.location.pathname === path);
+              history.push(path);
+            }}
+          >
+            {label}
+          </Button>
+        </li>
+      ))}
+    </ul>
   </NavigatorContainer>
 );
 
-export default Navigator;
+export default withRouter(Navigator);
