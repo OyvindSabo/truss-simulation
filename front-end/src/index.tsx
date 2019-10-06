@@ -12,6 +12,7 @@ import { createBrowserHistory } from 'history';
 import MainContainer from './components/mainContainer/MainContainer';
 import View from './components/view/View';
 import { Router } from 'react-router-dom';
+import Monitoring from './views/monitoring/Monitoring';
 
 const history = createBrowserHistory();
 const views = [
@@ -39,6 +40,11 @@ const views = [
     path: '/experiments/:experimentId/',
     label: 'ACTIVE EXPERIMENT',
     component: Experiment,
+  },
+  {
+    path: '/monitoring/:monitoringId/',
+    label: 'MONITORING',
+    component: Monitoring,
   },
 ];
 const Index = () => {
