@@ -1,3 +1,19 @@
+export type OnClick = (
+  event: React.MouseEvent<HTMLDivElement, MouseEvent>
+) => void;
+
+export type OnMouseDown = (
+  event: React.MouseEvent<HTMLDivElement, MouseEvent>
+) => void;
+
+export type OnMouseUp = (
+  event: React.MouseEvent<HTMLDivElement, MouseEvent>
+) => void;
+
+export type OnMouseMove = (
+  event: React.MouseEvent<HTMLDivElement, MouseEvent>
+) => void;
+
 export type Node = {
   id: string;
   name: string;

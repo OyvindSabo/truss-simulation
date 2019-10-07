@@ -12,11 +12,15 @@ interface TrussVisualizationProps {
 
 class TrussVisualization extends Component<TrussVisualizationProps> {
   private myRef: any;
+  width?: number;
+  height?: number;
   componentDidMount() {
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
     });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    const width = this.width || window.innerWidth;
+    const height = this.height || window.innerHeight;
+    renderer.setSize(width, height);
     this.myRef.appendChild(renderer.domElement);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
@@ -28,7 +32,7 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
 
     const camera = new THREE.PerspectiveCamera(
       35,
-      window.innerWidth / window.innerHeight,
+      width / height,
       1, // near
       1000 // far
     );
@@ -227,7 +231,19 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     }
   }
   render() {
-    return <div ref={ref => (this.myRef = ref)} />;
+    return (
+      <div
+        ref={ref => {
+          this.myRef = ref;
+          if (ref) {
+            const { width, height } = ref.getBoundingClientRect();
+            this.width = width;
+            this.height = height;
+          }
+        }}
+        style={{ width: '100%', height: '100%' }}
+      />
+    );
   }
 }
 
