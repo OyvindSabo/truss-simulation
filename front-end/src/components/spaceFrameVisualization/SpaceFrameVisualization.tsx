@@ -4,6 +4,7 @@ import { SpaceFrameData } from '../../types';
 import { Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { getAverageNodePosition, getAnimatedPosition } from './utils';
+import ResourceTracker from './ResourceTracker';
 
 interface TrussVisualizationProps {
   spaceFrameData: SpaceFrameData;
@@ -14,10 +15,18 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
   private myRef: any;
   width?: number;
   height?: number;
+  renderer?: THREE.WebGLRenderer;
+  scene?: THREE.Scene;
+  controls?: OrbitControls;
+  animationFrame?: number;
+  resourceTracker?: any;
   componentDidMount() {
+    this.resourceTracker = new ResourceTracker();
+    const track = this.resourceTracker.track.bind(this.resourceTracker);
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
     });
+    this.renderer = renderer;
     const width = this.width || window.innerWidth;
     const height = this.height || window.innerHeight;
     renderer.setSize(width, height);
@@ -29,6 +38,7 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     renderer.gammaOutput = true;
 
     const scene = new THREE.Scene();
+    this.scene = scene;
 
     const camera = new THREE.PerspectiveCamera(
       35,
@@ -39,6 +49,7 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     camera.position.set(65, 8, -10);
 
     const controls = new OrbitControls(camera, renderer.domElement);
+    this.controls = controls;
     controls.addEventListener('change', this.render);
     controls.minDistance = 1;
     controls.maxDistance = 500;
@@ -78,8 +89,10 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
         .filter(({ sourceId, targetId }) => [sourceId, targetId].includes(id))
         .map(({ radius }) => radius);
       const radius = Math.max(...strutsConnectedToNode, 0);
-      const nodeGeometry = new THREE.SphereGeometry(radius, 32, 32);
-      const nodeMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+      const nodeGeometry = track(new THREE.SphereGeometry(radius, 32, 32));
+      const nodeMaterial = track(
+        new THREE.MeshStandardMaterial({ color: 0xffffff })
+      );
       const nodeMesh = new THREE.Mesh(nodeGeometry, nodeMaterial);
       nodeMesh.position.set(x, y, z);
       nodeMeshes[id] = nodeMesh;
@@ -101,15 +114,19 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
           sourceZ + t * (targetZ - sourceZ)
         );
 
-      const strutGeometry = new THREE.TubeGeometry(
-        structVector, // path
-        1, // tubularSegments
-        radius, // radius
-        32 // radiusSegments
+      const strutGeometry = track(
+        new THREE.TubeGeometry(
+          structVector, // path
+          1, // tubularSegments
+          radius, // radius
+          32 // radiusSegments
+        )
       );
-      const strutMaterial = new THREE.MeshStandardMaterial({
-        color: 0xffffff,
-      });
+      const strutMaterial = track(
+        new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+        })
+      );
       const strutMesh = new THREE.Mesh(strutGeometry, strutMaterial);
       strutMesh.castShadow = true; //default is false
       strutMesh.receiveShadow = false; //default
@@ -117,12 +134,14 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
       scene.add(strutMesh);
     });
 
-    const planeGeometry = new THREE.PlaneBufferGeometry(2000, 2000);
+    const planeGeometry = track(new THREE.PlaneBufferGeometry(2000, 2000));
     //Create a plane that receives shadows (but does not cast them)
-    const planeMaterial = new THREE.MeshPhongMaterial({
-      color: 0x808080,
-      dithering: true,
-    });
+    const planeMaterial = track(
+      new THREE.MeshPhongMaterial({
+        color: 0x808080,
+        dithering: true,
+      })
+    );
 
     const planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
     // Lower the floor plane enough to avoid the radius of the struts causing
@@ -137,6 +156,7 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
       const { nodes: deformedNodes } = this.props.deformedSpaceFrameData;
       const animate = () => {
         const animationFrame = requestAnimationFrame(animate);
+        this.animationFrame = animationFrame;
         nodes.forEach(({ id, x, y, z }) => {
           const deformedNode = deformedNodes.find(
             ({ id: deformedId }) => deformedId === id
@@ -212,11 +232,13 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
               newSourceY + t * (newTargetY - newSourceY),
               newSourceZ + t * (newTargetZ - newSourceZ)
             );
-          strutMeshes[id].geometry = new THREE.TubeGeometry(
-            structVector, // path
-            1, // tubularSegments
-            radius, // radius
-            32 // radiusSegments
+          strutMeshes[id].geometry = track(
+            new THREE.TubeGeometry(
+              structVector, // path
+              1, // tubularSegments
+              radius, // radius
+              32 // radiusSegments
+            )
           );
         });
         renderer.render(scene, camera);
@@ -224,11 +246,26 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
       animate();
     } else {
       const animate = () => {
-        requestAnimationFrame(animate);
+        this.animationFrame = requestAnimationFrame(animate);
         renderer.render(scene, camera);
       };
       animate();
     }
+  }
+  componentWillUnmount() {
+    if (this.myRef && this.renderer) {
+      this.myRef.removeChild(this.renderer.domElement);
+    }
+    if (this.animationFrame) {
+      window.cancelAnimationFrame(this.animationFrame);
+    }
+    if (this.scene) {
+      this.scene.remove();
+    }
+    if (this.controls) {
+      this.controls.dispose();
+    }
+    this.resourceTracker.dispose();
   }
   render() {
     return (
