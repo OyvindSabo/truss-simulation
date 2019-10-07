@@ -1,12 +1,12 @@
 import React from 'react';
-import { Router, Route } from 'react-router-dom';
-import { RouterProps } from 'react-router';
+import { Router, Route, RouteComponentProps } from 'react-router-dom';
+import { withRouter } from 'react-router';
 import { ViewContainer } from './atoms';
 
-interface ViewProps extends RouterProps {
+interface ViewProps extends RouteComponentProps {
   views: {
     path: string;
-    component: React.FunctionComponent;
+    component: React.FunctionComponent | any;
     label: string;
   }[];
 }
@@ -20,4 +20,4 @@ const View: React.FunctionComponent<ViewProps> = ({ history, views }) => (
   </ViewContainer>
 );
 
-export default View;
+export default withRouter(View);

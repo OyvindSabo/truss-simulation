@@ -1,5 +1,14 @@
 import React from 'react';
+import SpaceFrameVisualization from '../../components/spaceFrameVisualization/SpaceFrameVisualization';
+import { SpaceFrameData } from '../../types';
+import { structureDataSource } from '../../services/structure/structure';
+import { withPropsFromDataSource } from '../../libs/sorcerer/sorcerer';
 
-const Structure = () => <h1>Structure</h1>;
+interface StructureProps {
+  structure: SpaceFrameData;
+}
+const Structure: React.FC<StructureProps> = ({ structure }) => {
+  return <SpaceFrameVisualization spaceFrameData={structure} />;
+};
 
-export default Structure;
+export default withPropsFromDataSource(Structure, structureDataSource);

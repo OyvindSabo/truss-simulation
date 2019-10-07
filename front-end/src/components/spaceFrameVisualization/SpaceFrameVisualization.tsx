@@ -218,6 +218,12 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
         renderer.render(scene, camera);
       };
       animate();
+    } else {
+      const animate = () => {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+      };
+      animate();
     }
   }
   render() {

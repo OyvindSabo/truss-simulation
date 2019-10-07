@@ -1,11 +1,11 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import SpaceFrameVisualization from './components/spaceFrameVisualization/SpaceFrameVisualization';
-import { SpaceFrameData } from './types';
+import SpaceFrameVisualization from '../../components/spaceFrameVisualization/SpaceFrameVisualization';
+import { SpaceFrameData } from '../../types';
 
 const Experiment: React.FC = () => {
   const spaceFrameData: SpaceFrameData = {
+    id: '1',
+    name: 'My first experiment',
     nodes: [
       {
         id: '1',
@@ -432,6 +432,8 @@ const Experiment: React.FC = () => {
     ],
   };
   const deformedSpaceFrameData: SpaceFrameData = {
+    id: 'string',
+    name: 'My first experiment',
     nodes: [
       {
         id: '1',
@@ -858,26 +860,10 @@ const Experiment: React.FC = () => {
     ],
   };
   return (
-    <div className="App">
-      <SpaceFrameVisualization
-        spaceFrameData={spaceFrameData}
-        deformedSpaceFrameData={deformedSpaceFrameData}
-      />
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <SpaceFrameVisualization
+      spaceFrameData={spaceFrameData}
+      deformedSpaceFrameData={deformedSpaceFrameData}
+    />
   );
 };
 

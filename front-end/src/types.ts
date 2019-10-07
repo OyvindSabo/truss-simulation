@@ -15,6 +15,8 @@ export type Strut = {
 };
 
 export type SpaceFrameData = {
+  id: string;
+  name: string;
   nodes: Node[];
   struts: Strut[];
 };

@@ -6,7 +6,7 @@ import { withRouter } from 'react-router';
 interface NavigatorProps extends RouteComponentProps {
   views: {
     path: string;
-    component: React.FunctionComponent;
+    component: React.FunctionComponent | any;
     label: string;
   }[];
 }

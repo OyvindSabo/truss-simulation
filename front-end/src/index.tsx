@@ -6,7 +6,7 @@ import Home from './views/home/Home';
 import Structures from './views/structures/Structures';
 import Structure from './views/structure/Structure';
 import Experiments from './views/experiments/Experiments';
-import Experiment from './Experiment';
+import Experiment from './views/experiment/Experiment';
 import Navigator from './components/navigator/Navigator';
 import { createBrowserHistory } from 'history';
 import MainContainer from './components/mainContainer/MainContainer';
@@ -47,17 +47,17 @@ const views = [
     component: Monitoring,
   },
 ];
-const Index = () => {
+const App = () => {
   return (
     <MainContainer>
       <Router history={history}>
         <Navigator views={views} />;
-        <View views={views} history={history} />
+        <View views={views} />
       </Router>
     </MainContainer>
   );
 };
-ReactDOM.render(<Index />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
