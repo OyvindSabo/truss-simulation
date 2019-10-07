@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import LightBoxShadow from '../boxShadow/LightBoxShadow';
 import { PADDING, MARGIN } from '../../constants/styles';
-import { OnClick, OnMouseDown, OnMouseUp } from '../../types';
+import { OnClick } from '../../types';
 
 interface PreviewBox {
   label: string;
