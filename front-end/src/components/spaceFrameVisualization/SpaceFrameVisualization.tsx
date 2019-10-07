@@ -23,9 +23,11 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
   componentDidMount() {
     this.resourceTracker = new ResourceTracker();
     const track = this.resourceTracker.track.bind(this.resourceTracker);
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-    });
+    const renderer = track(
+      new THREE.WebGLRenderer({
+        antialias: true,
+      })
+    );
     this.renderer = renderer;
     const width = this.width || window.innerWidth;
     const height = this.height || window.innerHeight;
@@ -37,18 +39,20 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     renderer.gammaInput = true;
     renderer.gammaOutput = true;
 
-    const scene = new THREE.Scene();
+    const scene = track(new THREE.Scene());
     this.scene = scene;
 
-    const camera = new THREE.PerspectiveCamera(
-      35,
-      width / height,
-      1, // near
-      1000 // far
+    const camera = track(
+      new THREE.PerspectiveCamera(
+        35,
+        width / height,
+        1, // near
+        1000 // far
+      )
     );
     camera.position.set(65, 8, -10);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
+    const controls = track(new OrbitControls(camera, renderer.domElement));
     this.controls = controls;
     controls.addEventListener('change', this.render);
     controls.minDistance = 1;
@@ -57,10 +61,10 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     const center = getAverageNodePosition(this.props.spaceFrameData);
     controls.target.set(center.x, center.y, center.z);
 
-    const ambient = new THREE.AmbientLight(0xffffff, 0.01);
+    const ambient = track(new THREE.AmbientLight(0xffffff, 0.01));
     scene.add(ambient);
 
-    const spotLight = new THREE.SpotLight(0xffffff, 1);
+    const spotLight = track(new THREE.SpotLight(0xffffff, 1));
     spotLight.position.set(15, 40, 35);
     spotLight.angle = Math.PI / 4;
     spotLight.penumbra = 0.05;
@@ -93,7 +97,7 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
       const nodeMaterial = track(
         new THREE.MeshStandardMaterial({ color: 0xffffff })
       );
-      const nodeMesh = new THREE.Mesh(nodeGeometry, nodeMaterial);
+      const nodeMesh = track(new THREE.Mesh(nodeGeometry, nodeMaterial));
       nodeMesh.position.set(x, y, z);
       nodeMeshes[id] = nodeMesh;
       scene.add(nodeMesh);
@@ -106,12 +110,14 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
       if (!sourceNode || !targetNode) return;
       const { x: sourceX, y: sourceY, z: sourceZ } = sourceNode;
       const { x: targetX, y: targetY, z: targetZ } = targetNode;
-      const structVector = new THREE.Curve<Vector3>();
+      const structVector = track(new THREE.Curve<Vector3>());
       structVector.getPoint = (t: number) =>
-        new THREE.Vector3(
-          sourceX + t * (targetX - sourceX),
-          sourceY + t * (targetY - sourceY),
-          sourceZ + t * (targetZ - sourceZ)
+        track(
+          new THREE.Vector3(
+            sourceX + t * (targetX - sourceX),
+            sourceY + t * (targetY - sourceY),
+            sourceZ + t * (targetZ - sourceZ)
+          )
         );
 
       const strutGeometry = track(
@@ -127,7 +133,7 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
           color: 0xffffff,
         })
       );
-      const strutMesh = new THREE.Mesh(strutGeometry, strutMaterial);
+      const strutMesh = track(new THREE.Mesh(strutGeometry, strutMaterial));
       strutMesh.castShadow = true; //default is false
       strutMesh.receiveShadow = false; //default
       strutMeshes[id] = strutMesh;
@@ -143,7 +149,7 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
       })
     );
 
-    const planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+    const planeMesh = track(new THREE.Mesh(planeGeometry, planeMaterial));
     // Lower the floor plane enough to avoid the radius of the struts causing
     // intersection with the ground.
     const maxRadius = Math.max(...struts.map(({ radius }) => radius), 0);
@@ -225,19 +231,23 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
             deformedTargetNode.z,
             animationFrame
           );
-          const structVector = new THREE.Curve<Vector3>();
+          const structVector = track(new THREE.Curve<Vector3>());
           structVector.getPoint = (t: number) =>
-            new THREE.Vector3(
-              newSourceX + t * (newTargetX - newSourceX),
-              newSourceY + t * (newTargetY - newSourceY),
-              newSourceZ + t * (newTargetZ - newSourceZ)
+            track(
+              new THREE.Vector3(
+                newSourceX + t * (newTargetX - newSourceX),
+                newSourceY + t * (newTargetY - newSourceY),
+                newSourceZ + t * (newTargetZ - newSourceZ)
+              )
             );
           strutMeshes[id].geometry = track(
-            new THREE.TubeGeometry(
-              structVector, // path
-              1, // tubularSegments
-              radius, // radius
-              32 // radiusSegments
+            track(
+              new THREE.TubeGeometry(
+                structVector, // path
+                1, // tubularSegments
+                radius, // radius
+                32 // radiusSegments
+              )
             )
           );
         });
@@ -258,12 +268,6 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
     }
     if (this.animationFrame) {
       window.cancelAnimationFrame(this.animationFrame);
-    }
-    if (this.scene) {
-      this.scene.remove();
-    }
-    if (this.controls) {
-      this.controls.dispose();
     }
     this.resourceTracker.dispose();
   }

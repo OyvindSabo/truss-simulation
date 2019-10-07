@@ -46,3 +46,4 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 ## Credits
 
 Color palette: https://flatuicolors.com/palette/gb
+Three.js resource tracker: https://threejsfundamentals.org/threejs/lessons/threejs-cleanup.html
