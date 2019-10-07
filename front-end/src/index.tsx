@@ -13,6 +13,9 @@ import MainContainer from './components/mainContainer/MainContainer';
 import View from './components/view/View';
 import { Router } from 'react-router-dom';
 import Monitoring from './views/monitoring/Monitoring';
+import { state } from './state';
+import { loadStructures } from './services/structures/structures';
+import { loadSelectedStructureId } from './services/structure/structure';
 
 const history = createBrowserHistory();
 const views = [
@@ -47,6 +50,8 @@ const views = [
     component: Monitoring,
   },
 ];
+state.setStructures(loadStructures());
+state.setSelectedStructureId(loadSelectedStructureId());
 const App = () => {
   return (
     <MainContainer>
