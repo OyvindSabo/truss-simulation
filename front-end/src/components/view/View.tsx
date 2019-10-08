@@ -6,6 +6,7 @@ import { ViewContainer } from './atoms';
 interface ViewProps extends RouteComponentProps {
   views: {
     path: string;
+    getPath: () => string;
     component: React.FunctionComponent | any;
     label: string;
     exact: boolean;

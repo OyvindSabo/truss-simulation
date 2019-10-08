@@ -6,6 +6,7 @@ import { withRouter, matchPath } from 'react-router';
 interface NavigatorProps extends RouteComponentProps {
   views: {
     path: string;
+    getPath: () => string;
     component: React.FunctionComponent | any;
     label: string;
     exact: boolean;
@@ -17,7 +18,7 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({
   views,
 }) => (
   <NavigatorContainer>
-    {views.map(({ path, label, exact, strict }, key) => {
+    {views.map(({ path, getPath, label, exact, strict }, key) => {
       const match = matchPath(history.location.pathname, {
         path,
         exact,
@@ -27,7 +28,7 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({
         <Button
           key={key}
           selected={!!match && match.path === path}
-          onClick={() => history.push(path)}
+          onClick={() => history.push(getPath())}
         >
           {label}
         </Button>

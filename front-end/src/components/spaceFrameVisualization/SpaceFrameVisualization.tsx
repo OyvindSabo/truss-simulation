@@ -11,7 +11,7 @@ interface TrussVisualizationProps {
   deformedSpaceFrameData?: SpaceFrameData;
 }
 
-class TrussVisualization extends Component<TrussVisualizationProps> {
+class SpaceFrameVisualization extends Component<TrussVisualizationProps> {
   private myRef: any;
   width?: number;
   height?: number;
@@ -262,6 +262,11 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
       animate();
     }
   }
+
+  shouldComponentUpdate({ spaceFrameData }: TrussVisualizationProps) {
+    return spaceFrameData.id !== this.props.spaceFrameData.id;
+  }
+
   componentWillUnmount() {
     if (this.myRef && this.renderer) {
       this.myRef.removeChild(this.renderer.domElement);
@@ -288,4 +293,4 @@ class TrussVisualization extends Component<TrussVisualizationProps> {
   }
 }
 
-export default TrussVisualization;
+export default SpaceFrameVisualization;

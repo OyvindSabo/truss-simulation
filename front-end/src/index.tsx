@@ -21,6 +21,7 @@ const history = createBrowserHistory();
 const views = [
   {
     path: '/',
+    getPath: () => '/',
     label: 'HOME',
     component: Home,
     exact: true,
@@ -28,6 +29,7 @@ const views = [
   },
   {
     path: '/structures/',
+    getPath: () => '/structures/',
     label: 'STRUCTURES',
     component: Structures,
     exact: true,
@@ -35,6 +37,7 @@ const views = [
   },
   {
     path: '/structures/:structureId/',
+    getPath: () => `/structures/${state.getSelectedStructureId()}/`,
     label: 'ACTIVE STRUCTURE',
     component: Structure,
     exact: true,
@@ -42,6 +45,7 @@ const views = [
   },
   {
     path: '/experiments/',
+    getPath: () => '/experiments/',
     label: 'EXPERIMENTS',
     component: Experiments,
     exact: true,
@@ -49,6 +53,7 @@ const views = [
   },
   {
     path: '/experiments/:experimentId/',
+    getPath: () => `/experiments/${state.getSelectedExperimentId()}/`,
     label: 'ACTIVE EXPERIMENT',
     component: Experiment,
     exact: true,
@@ -56,6 +61,7 @@ const views = [
   },
   {
     path: '/monitoring/:monitoringId/',
+    getPath: () => `/monitoring/${state.getSelectedMonitoringId()}/`,
     label: 'MONITORING',
     component: Monitoring,
     exact: true,
