@@ -1,13 +1,15 @@
 import React from 'react';
 import { NavigatorContainer, Button } from './atoms';
 import { RouteComponentProps } from 'react-router-dom';
-import { withRouter } from 'react-router';
+import { withRouter, matchPath } from 'react-router';
 
 interface NavigatorProps extends RouteComponentProps {
   views: {
     path: string;
     component: React.FunctionComponent | any;
     label: string;
+    exact: boolean;
+    strict: boolean;
   }[];
 }
 const Navigator: React.FunctionComponent<NavigatorProps> = ({
@@ -15,15 +17,22 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({
   views,
 }) => (
   <NavigatorContainer>
-    {views.map(({ path, label }, key) => (
-      <Button
-        key={key}
-        selected={history.location.pathname === path}
-        onClick={() => history.push(path)}
-      >
-        {label}
-      </Button>
-    ))}
+    {views.map(({ path, label, exact, strict }, key) => {
+      const match = matchPath(history.location.pathname, {
+        path,
+        exact,
+        strict,
+      });
+      return (
+        <Button
+          key={key}
+          selected={!!match && match.path === path}
+          onClick={() => history.push(path)}
+        >
+          {label}
+        </Button>
+      );
+    })}
   </NavigatorContainer>
 );
 

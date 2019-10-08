@@ -8,13 +8,21 @@ interface ViewProps extends RouteComponentProps {
     path: string;
     component: React.FunctionComponent | any;
     label: string;
+    exact: boolean;
+    strict: boolean;
   }[];
 }
 const View: React.FunctionComponent<ViewProps> = ({ history, views }) => (
   <ViewContainer>
     <Router history={history}>
-      {views.map(({ path, component }, key) => (
-        <Route key={key} exact path={path} component={component} />
+      {views.map(({ path, component, exact, strict }, key) => (
+        <Route
+          key={key}
+          exact={exact}
+          strict={strict}
+          path={path}
+          component={component}
+        />
       ))}
     </Router>
   </ViewContainer>

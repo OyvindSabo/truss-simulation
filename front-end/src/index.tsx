@@ -23,31 +23,43 @@ const views = [
     path: '/',
     label: 'HOME',
     component: Home,
+    exact: true,
+    strict: false,
   },
   {
     path: '/structures/',
     label: 'STRUCTURES',
     component: Structures,
+    exact: true,
+    strict: false,
   },
   {
     path: '/structures/:structureId/',
     label: 'ACTIVE STRUCTURE',
     component: Structure,
+    exact: true,
+    strict: false,
   },
   {
     path: '/experiments/',
     label: 'EXPERIMENTS',
     component: Experiments,
+    exact: true,
+    strict: false,
   },
   {
     path: '/experiments/:experimentId/',
     label: 'ACTIVE EXPERIMENT',
     component: Experiment,
+    exact: true,
+    strict: false,
   },
   {
     path: '/monitoring/:monitoringId/',
     label: 'MONITORING',
     component: Monitoring,
+    exact: true,
+    strict: false,
   },
 ];
 state.setStructures(loadStructures());
