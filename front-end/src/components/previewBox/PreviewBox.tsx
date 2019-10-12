@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import LightBoxShadow from '../boxShadow/LightBoxShadow';
 import { PADDING, MARGIN } from '../../constants/styles';
 import { OnClick } from '../../types';
+import { HINT_OF_PENSIVE } from '../../constants/colors';
+import { PREVIEW_HEIGHT, PREVIEW_WIDTH } from '../../constants/sizes';
 
 interface PreviewBox {
   label: string;
@@ -11,8 +12,8 @@ interface PreviewBox {
 const PreviewBox = ({ label, onClick, children }: PreviewBox) => {
   const [shouldAbortClick, setShouldAbortClick] = useState<boolean>(false);
   return (
-    <LightBoxShadow
-      style={{ margin: `${MARGIN}px` }}
+    <div
+      style={{ margin: `${MARGIN}px`, display: 'inline-block' }}
       onMouseDown={() => setShouldAbortClick(false)}
       onClick={shouldAbortClick ? undefined : onClick}
       onMouseMove={() => setShouldAbortClick(true)}
@@ -20,18 +21,25 @@ const PreviewBox = ({ label, onClick, children }: PreviewBox) => {
       <div
         style={{
           display: 'inline-block',
+          outline: `1px solid ${HINT_OF_PENSIVE}`,
           background: 'white',
           cursor: 'pointer',
         }}
       >
-        <div style={{ height: '360px', width: '640px', background: 'white' }}>
+        <div
+          style={{
+            height: PREVIEW_HEIGHT,
+            width: PREVIEW_WIDTH,
+            background: 'white',
+          }}
+        >
           {children}
         </div>
         <div style={{ padding: `${PADDING}px`, textAlign: 'center' }}>
           {label}
         </div>
       </div>
-    </LightBoxShadow>
+    </div>
   );
 };
 

@@ -25,6 +25,6 @@ export const Button = styled.div`
   cursor: pointer;
   &:hover {
     background: ${ELECTROMAGNETIC};
-    color: ${'white'};
+    color: white;
   }
 `;
