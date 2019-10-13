@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { TRANSITION } from '../../constants/styles';
+import { TRANSITION } from '../../constants/theme/styles';
 
 const RotateOnHover = styled.div`
   height: 100%;

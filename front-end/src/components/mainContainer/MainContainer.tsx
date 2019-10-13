@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { LYNX_WHITE } from '../../constants/colors';
+import { LYNX_WHITE } from '../../constants/theme/colors';
 
 const MainContainer = styled.div`
   position: fixed;

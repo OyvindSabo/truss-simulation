@@ -3,9 +3,9 @@ import {
   BLUE_NIGHTS,
   ELECTROMAGNETIC,
   LYNX_WHITE,
-} from '../../constants/colors';
-import { NAVIGATOR_WIDTH } from '../../constants/sizes';
-import { PADDING } from '../../constants/styles';
+} from '../../constants/theme/colors';
+import { NAVIGATOR_WIDTH } from '../../constants/config/sizes';
+import { PADDING } from '../../constants/theme/styles';
 
 export const NavigatorContainer = styled.div`
   background: ${BLUE_NIGHTS};

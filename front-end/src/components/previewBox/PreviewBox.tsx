@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { PADDING, MARGIN } from '../../constants/styles';
 import { OnClick } from '../../types';
-import { HINT_OF_PENSIVE } from '../../constants/colors';
-import { PREVIEW_HEIGHT, PREVIEW_WIDTH } from '../../constants/sizes';
+import { MARGIN, PADDING } from '../../constants/theme/styles';
+import { HINT_OF_PENSIVE } from '../../constants/theme/colors';
+import { PREVIEW_HEIGHT, PREVIEW_WIDTH } from '../../constants/config/sizes';
 
 interface PreviewBox {
   label: string;

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { HINT_OF_PENSIVE } from '../../constants/colors';
-import { TRANSITION } from '../../constants/styles';
+import { HINT_OF_PENSIVE } from '../../constants/theme/colors';
+import { TRANSITION } from '../../constants/theme/styles';
 
 const LightBoxShadow = styled.div`
   display: inline-block;

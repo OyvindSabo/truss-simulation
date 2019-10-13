@@ -6,10 +6,10 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import PreviewBox from '../../components/previewBox/PreviewBox';
 import SpaceFrameVisualization from '../../components/spaceFrameVisualization/SpaceFrameVisualization';
 import plusIcon from '../../assets/icons/plus-icon-white.png';
-import { HINT_OF_PENSIVE } from '../../constants/colors';
-import { IMAGE_SPACING } from '../../constants/sizes';
 import CreateNewStructureModal from '../../components/createNewStructureModal/CreateNewStructureModal';
 import Structure from '../../models/structure/Structure';
+import { HINT_OF_PENSIVE } from '../../constants/theme/colors';
+import { IMAGE_SPACING } from '../../constants/config/sizes';
 
 const Structures: React.FunctionComponent<RouteComponentProps> = ({
   history,

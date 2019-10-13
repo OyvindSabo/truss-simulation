@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { PADDING, FONT_SIZE } from '../../constants/styles';
-import { HINT_OF_PENSIVE } from '../../constants/colors';
+import { PADDING, FONT_SIZE } from '../../constants/theme/styles';
+import { HINT_OF_PENSIVE } from '../../constants/theme/colors';
 
 const Input = styled.input`
   width: 100%;

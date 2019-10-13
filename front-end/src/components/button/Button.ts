@@ -1,14 +1,14 @@
 import styled from 'styled-components';
-import { PADDING, TRANSITION } from '../../constants/styles';
+import { ButtonType } from './types';
 import {
   PROTOSS_PYLON,
   NASTURCIAN_FLOWER,
-  HINT_OF_PENSIVE,
   VANADYL_BLUE,
   HARLEY_DAVIDSON_ORANGE,
+  HINT_OF_PENSIVE,
   LYNX_WHITE,
-} from '../../constants/colors';
-import { ButtonType } from './types';
+} from '../../constants/theme/colors';
+import { PADDING, TRANSITION } from '../../constants/theme/styles';
 
 const buttonColor = new Map([
   [ButtonType.Primary, PROTOSS_PYLON],

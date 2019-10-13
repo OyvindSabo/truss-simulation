@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import { HINT_OF_PENSIVE } from '../../constants/colors';
-import { PADDING } from '../../constants/styles';
-import { MODAL_WIDTH } from '../../constants/sizes';
+import { PADDING } from '../../constants/theme/styles';
+import { HINT_OF_PENSIVE } from '../../constants/theme/colors';
+import { MODAL_WIDTH } from '../../constants/config/sizes';
 
 export const ModalBackground = styled.div`
   position: fixed;

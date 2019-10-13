@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { ELECTROMAGNETIC } from '../../constants/colors';
-import { TRANSITION } from '../../constants/styles';
+import { ELECTROMAGNETIC } from '../../constants/theme/colors';
+import { TRANSITION } from '../../constants/theme/styles';
 
 const DarkBoxShadow = styled.div`
   display: inline-block;

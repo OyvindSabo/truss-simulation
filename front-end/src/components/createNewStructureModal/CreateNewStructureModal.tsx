@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { OnClick } from '../../types';
 import Modal from '../modal/Modal';
-import { PADDING } from '../../constants/styles';
 import Input from '../input/Input';
 import Button from '../button/Button';
 import { ButtonType } from '../button/types';
+import { PADDING } from '../../constants/theme/styles';
 
 interface CreateNewStructureModal {
   active: boolean;

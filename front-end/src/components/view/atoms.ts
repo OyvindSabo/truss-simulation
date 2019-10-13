@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { NAVIGATOR_WIDTH } from '../../constants/sizes';
+import { NAVIGATOR_WIDTH } from '../../constants/config/sizes';
 
 export const ViewContainer = styled.div`
   position: absolute;
