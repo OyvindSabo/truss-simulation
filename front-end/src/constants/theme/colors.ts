@@ -18,3 +18,5 @@ export const MAZARINE_BLUE = '#273c75';
 export const PICO_VOID = '#192a56';
 export const BLUE_NIGHTS = '#353b48';
 export const ELECTROMAGNETIC = '#2f3640';
+
+export const WHITE = 'white';

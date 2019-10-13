@@ -47,3 +47,7 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 Color palette: https://flatuicolors.com/palette/gb
 Three.js resource tracker: https://threejsfundamentals.org/threejs/lessons/threejs-cleanup.html
+Icons:
+https://www.flaticon.com/packs/font-awesome
+
+<div>Icons made by <a href="https://www.flaticon.com/authors/dave-gandy" title="Dave Gandy">Dave Gandy</a> from <a href="https://www.flaticon.com/"             title="Flaticon">www.flaticon.com</a></div>

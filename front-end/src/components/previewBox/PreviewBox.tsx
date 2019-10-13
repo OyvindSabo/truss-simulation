@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { OnClick } from '../../types';
 import { MARGIN, PADDING } from '../../constants/theme/styles';
-import { HINT_OF_PENSIVE } from '../../constants/theme/colors';
+import { HINT_OF_PENSIVE, WHITE } from '../../constants/theme/colors';
 import { PREVIEW_HEIGHT, PREVIEW_WIDTH } from '../../constants/config/sizes';
 
 interface PreviewBox {
@@ -22,7 +22,7 @@ const PreviewBox = ({ label, onClick, children }: PreviewBox) => {
         style={{
           display: 'inline-block',
           outline: `1px solid ${HINT_OF_PENSIVE}`,
-          background: 'white',
+          background: WHITE,
           cursor: 'pointer',
         }}
       >
@@ -30,7 +30,7 @@ const PreviewBox = ({ label, onClick, children }: PreviewBox) => {
           style={{
             height: PREVIEW_HEIGHT,
             width: PREVIEW_WIDTH,
-            background: 'white',
+            background: WHITE,
           }}
         >
           {children}

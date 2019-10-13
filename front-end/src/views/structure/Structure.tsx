@@ -5,6 +5,7 @@ import { SpaceFrameData } from '../../types';
 import { EMPTY_SPACE_FRAME } from '../../constants/fallbacks';
 import { state } from '../../state';
 import { UPDATE_STRUCTURES } from '../../customEvents';
+import RightPane from '../../components/rightPane/RightPane';
 
 interface StructureProps extends RouteComponentProps<{ structureId: string }> {
   structure: SpaceFrameData;
@@ -16,6 +17,7 @@ const Structure: React.FC<StructureProps> = ({ structure, match }) => {
   const [structures, setStructures] = useState<SpaceFrameData[]>(
     state.structures.get()
   );
+  const [rightPaneIsOpen, setRightPaneIsOpen] = useState<boolean>(true);
   useEffect(() => {
     window.addEventListener(UPDATE_STRUCTURES.type, () => {
       setStructures(state.structures.get());
@@ -30,7 +32,15 @@ const Structure: React.FC<StructureProps> = ({ structure, match }) => {
     structures.find(structure => structure.id === selectedStructureId) ||
     EMPTY_SPACE_FRAME;
 
-  return <SpaceFrameVisualization spaceFrameData={selectedStructure} />;
+  return (
+    <>
+      <SpaceFrameVisualization spaceFrameData={selectedStructure} />
+      <RightPane
+        isOpen={rightPaneIsOpen}
+        onOpenClose={() => setRightPaneIsOpen(!rightPaneIsOpen)}
+      ></RightPane>
+    </>
+  );
 };
 
 export default withRouter(Structure);
