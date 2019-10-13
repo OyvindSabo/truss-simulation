@@ -1,11 +1,11 @@
-import { SpaceFrameData } from '../../types';
+import Structure from '../../models/structure/Structure';
 
 /**
  * Returns the average of all node positions in the space frame
  *
  * @param param0
  */
-export const getAverageNodePosition = ({ nodes }: SpaceFrameData) => {
+export const getAverageNodePosition = ({ nodes }: Structure) => {
   const { length } = nodes;
   return nodes.reduce(
     (average, node) => ({

@@ -4,7 +4,7 @@ import {
   UPDATE_SELECTED_MONITOR_ID,
 } from './customEvents';
 import Structures from './models/structures/Structures';
-import { loadStructures } from './services/services';
+import { loadStructures, loadExperiments } from './services/services';
 import Experiments from './models/experiments/Experiments';
 import Monitors from './models/monitors/Monitors';
 
@@ -29,6 +29,7 @@ export class State {
   }
   load() {
     this.structures.set(loadStructures());
+    this.experiments.set(loadExperiments());
     // TODO: this.experiments.set(loadExperiments());
     // TODO: this.monitors.set(loadMonitors());
   }

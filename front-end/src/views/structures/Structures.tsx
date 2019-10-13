@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { SpaceFrameData } from '../../types';
 import { state } from '../../state';
 import { UPDATE_STRUCTURES } from '../../customEvents';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
@@ -15,7 +14,7 @@ const Structures: React.FunctionComponent<RouteComponentProps> = ({
   history,
 }) => {
   const [shouldDisplayModal, setShouldDisplayModal] = useState<boolean>(false);
-  const [structures, setStructures] = useState<SpaceFrameData[]>(
+  const [structures, setStructures] = useState<Structure[]>(
     state.structures.get()
   );
   useEffect(() => {
@@ -64,7 +63,7 @@ const Structures: React.FunctionComponent<RouteComponentProps> = ({
       {structures.map((structure, key) => (
         <PreviewBox
           key={key}
-          label={structure.name}
+          label={structure.name.get()}
           onClick={() => {
             state.setSelectedStructureId(structure.id);
             history.push(`/structures/${structure.id}`);

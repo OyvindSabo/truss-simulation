@@ -1,4 +1,4 @@
-import Experiment from '../structure/Structure';
+import Experiment from '../experiment/Experiment';
 import { UPDATE_EXPERIMENTS } from '../../customEvents';
 
 class Experiments {

@@ -1,4 +1,6 @@
 import { Node, Strut } from '../../types';
+import Name from '../name/Name';
+import Description from '../description/Description';
 
 interface StructureProps {
   id?: string;
@@ -9,14 +11,14 @@ interface StructureProps {
 }
 class Structure {
   id: string;
-  name: string;
-  description: string;
+  name: Name;
+  description: Description;
   nodes: Node[];
   struts: Strut[];
   constructor({ id, name, description, nodes, struts }: StructureProps) {
     this.id = id || `${new Date().getTime()}`;
-    this.name = name || '';
-    this.description = description || '';
+    this.name = new Name(name);
+    this.description = new Description(description);
     this.nodes = nodes || [];
     this.struts = struts || [];
   }

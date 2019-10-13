@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import * as THREE from 'three';
-import { SpaceFrameData } from '../../types';
 import { Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { getAverageNodePosition, getAnimatedPosition } from './utils';
 import ResourceTracker from './ResourceTracker';
+import Structure from '../../models/structure/Structure';
 
 interface TrussVisualizationProps {
-  spaceFrameData: SpaceFrameData;
-  deformedSpaceFrameData?: SpaceFrameData;
+  spaceFrameData: Structure;
+  deformedSpaceFrameData?: Structure;
 }
 
 class SpaceFrameVisualization extends Component<TrussVisualizationProps> {

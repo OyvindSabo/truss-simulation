@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import SpaceFrameVisualization from '../../components/spaceFrameVisualization/SpaceFrameVisualization';
-import { SpaceFrameData } from '../../types';
-import { EMPTY_SPACE_FRAME } from '../../constants/fallbacks';
 import { state } from '../../state';
 import { UPDATE_STRUCTURES } from '../../customEvents';
 import RightPane from '../../components/rightPane/RightPane';
+import Structure from '../../models/structure/Structure';
+import ErrorScreen from '../../components/errorScreen/ErrorScreen';
 
-interface StructureProps extends RouteComponentProps<{ structureId: string }> {
-  structure: SpaceFrameData;
-}
-const Structure: React.FC<StructureProps> = ({ structure, match }) => {
+const StructureView: React.FC<RouteComponentProps<{ structureId: string }>> = ({
+  match,
+}) => {
   const selectedStructureId = match.params.structureId;
   state.setSelectedStructureId(selectedStructureId);
 
-  const [structures, setStructures] = useState<SpaceFrameData[]>(
+  const [structures, setStructures] = useState<Structure[]>(
     state.structures.get()
   );
   const [rightPaneIsOpen, setRightPaneIsOpen] = useState<boolean>(true);
@@ -28,11 +27,12 @@ const Structure: React.FC<StructureProps> = ({ structure, match }) => {
       });
     };
   }, []);
-  const selectedStructure =
-    structures.find(structure => structure.id === selectedStructureId) ||
-    EMPTY_SPACE_FRAME;
 
-  return (
+  const selectedStructure = structures.find(
+    structure => structure.id === selectedStructureId
+  );
+
+  return selectedStructure ? (
     <>
       <SpaceFrameVisualization spaceFrameData={selectedStructure} />
       <RightPane
@@ -40,7 +40,9 @@ const Structure: React.FC<StructureProps> = ({ structure, match }) => {
         onOpenClose={() => setRightPaneIsOpen(!rightPaneIsOpen)}
       ></RightPane>
     </>
+  ) : (
+    <ErrorScreen>THIS STRUCTURE DOES NOT EXIST</ErrorScreen>
   );
 };
 
-export default withRouter(Structure);
+export default withRouter(StructureView);

@@ -1,4 +1,8 @@
-import { WHITE, BLUEBERRY_SODA } from '../theme/colors';
+import { WHITE, BLUEBERRY_SODA, LYNX_WHITE } from '../theme/colors';
 
 export const RIGHT_PANE_BACKGROUND = WHITE;
 export const ICON_COLOR = BLUEBERRY_SODA;
+export const MAIN_CONTAINER_BACKGROUND = LYNX_WHITE;
+export const ERROR_SCREEN_BACKGROUND = LYNX_WHITE;
+export const ERROR_SCREEN_ICON_COLOR = BLUEBERRY_SODA;
+export const Error_SCREEN_TEXT_COLOR = BLUEBERRY_SODA;

@@ -4,9 +4,9 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 import Home from './views/home/Home';
 import Structures from './views/structures/Structures';
-import Structure from './views/structure/Structure';
+import StructureView from './views/structureView/StructureView';
 import Experiments from './views/experiments/Experiments';
-import Experiment from './views/experiment/Experiment';
+import ExperimentView from './views/experimentView/ExperimentView';
 import Navigator from './components/navigator/Navigator';
 import { createBrowserHistory } from 'history';
 import MainContainer from './components/mainContainer/MainContainer';
@@ -37,7 +37,7 @@ const views = [
     path: '/structures/:structureId/',
     getPath: () => `/structures/${state.getSelectedStructureId()}/`,
     label: 'ACTIVE STRUCTURE',
-    component: Structure,
+    component: StructureView,
     exact: true,
     strict: false,
   },
@@ -53,7 +53,7 @@ const views = [
     path: '/experiments/:experimentId/',
     getPath: () => `/experiments/${state.getSelectedExperimentId()}/`,
     label: 'ACTIVE EXPERIMENT',
-    component: Experiment,
+    component: ExperimentView,
     exact: true,
     strict: false,
   },
