@@ -2,26 +2,28 @@ import Structure from '../structure/Structure';
 import { UPDATE_STRUCTURES } from '../../customEvents';
 
 class Structures {
-  structures: Structure[];
+  _structures: Structure[];
   constructor() {
-    this.structures = [];
+    this._structures = [];
   }
   add(structure: Structure) {
-    this.structures.push(structure);
+    this._structures.push(structure);
     window.dispatchEvent(UPDATE_STRUCTURES);
   }
   getById(id: string) {
-    return this.structures.find(structure => structure.id === id);
+    return this._structures.find(structure => structure.id === id);
   }
   get() {
-    return this.structures;
+    return this._structures;
   }
   removeById(id: string) {
-    this.structures = this.structures.filter(structure => structure.id !== id);
+    this._structures = this._structures.filter(
+      structure => structure.id !== id
+    );
     window.dispatchEvent(UPDATE_STRUCTURES);
   }
   set(structures: Structure[]) {
-    this.structures = structures;
+    this._structures = structures;
     window.dispatchEvent(UPDATE_STRUCTURES);
   }
 }

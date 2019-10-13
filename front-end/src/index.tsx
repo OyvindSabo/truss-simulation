@@ -14,7 +14,6 @@ import View from './components/view/View';
 import { Router } from 'react-router-dom';
 import Monitoring from './views/monitoring/Monitoring';
 import { state } from './state';
-import { loadSelectedStructureId } from './services/services';
 
 const history = createBrowserHistory();
 const views = [
@@ -60,7 +59,7 @@ const views = [
   },
   {
     path: '/monitoring/:monitoringId/',
-    getPath: () => `/monitoring/${state.getSelectedMonitoringId()}/`,
+    getPath: () => `/monitoring/${state.getSelectedMonitorId()}/`,
     label: 'MONITORING',
     component: Monitoring,
     exact: true,
@@ -68,7 +67,6 @@ const views = [
   },
 ];
 state.load();
-state.setSelectedStructureId(loadSelectedStructureId());
 const App = () => {
   return (
     <MainContainer>

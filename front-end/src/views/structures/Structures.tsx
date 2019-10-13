@@ -37,12 +37,6 @@ const Structures: React.FunctionComponent<RouteComponentProps> = ({
         onSubmit={({ name, description }) => {
           const newStructure = new Structure({ name, description });
           state.structures.add(newStructure);
-          console.log(
-            'Create new structure with name:',
-            name,
-            'and description',
-            description
-          );
           history.push(`/structures/${newStructure.id}`);
         }}
       />

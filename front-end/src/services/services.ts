@@ -1,7 +1,5 @@
 import Structure from '../models/structure/Structure';
 
-export const loadSelectedStructureId = () => '1';
-
 export const loadStructures = () =>
   [
     {
