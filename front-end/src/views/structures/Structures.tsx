@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SpaceFrameData } from '../../types';
 import { state } from '../../state';
-import { SET_STRUCTURES } from '../../customEvents';
+import { UPDATE_STRUCTURES } from '../../customEvents';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import PreviewBox from '../../components/previewBox/PreviewBox';
 import SpaceFrameVisualization from '../../components/spaceFrameVisualization/SpaceFrameVisualization';
@@ -9,21 +9,22 @@ import plusIcon from '../../assets/icons/plus-icon-white.png';
 import { HINT_OF_PENSIVE } from '../../constants/colors';
 import { IMAGE_SPACING } from '../../constants/sizes';
 import CreateNewStructureModal from '../../components/createNewStructureModal/CreateNewStructureModal';
+import Structure from '../../models/structure/Structure';
 
 const Structures: React.FunctionComponent<RouteComponentProps> = ({
   history,
 }) => {
   const [shouldDisplayModal, setShouldDisplayModal] = useState<boolean>(false);
   const [structures, setStructures] = useState<SpaceFrameData[]>(
-    state.getStructures()
+    state.structures.get()
   );
   useEffect(() => {
-    window.addEventListener(SET_STRUCTURES.type, () => {
-      setStructures(state.getStructures());
+    window.addEventListener(UPDATE_STRUCTURES.type, () => {
+      setStructures(state.structures.get());
     });
     return () => {
-      window.removeEventListener(SET_STRUCTURES.type, () => {
-        setStructures(state.getStructures());
+      window.removeEventListener(UPDATE_STRUCTURES.type, () => {
+        setStructures(state.structures.get());
       });
     };
   }, []);
@@ -34,13 +35,15 @@ const Structures: React.FunctionComponent<RouteComponentProps> = ({
         onOutsideClick={() => setShouldDisplayModal(false)}
         onCancel={() => setShouldDisplayModal(false)}
         onSubmit={({ name, description }) => {
+          const newStructure = new Structure({ name, description });
+          state.structures.add(newStructure);
           console.log(
             'Create new structure with name:',
             name,
             'and description',
             description
           );
-          history.push('/structures/3');
+          history.push(`/structures/${newStructure.id}`);
         }}
       />
       <PreviewBox

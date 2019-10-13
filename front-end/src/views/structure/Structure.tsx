@@ -4,7 +4,7 @@ import SpaceFrameVisualization from '../../components/spaceFrameVisualization/Sp
 import { SpaceFrameData } from '../../types';
 import { EMPTY_SPACE_FRAME } from '../../constants/fallbacks';
 import { state } from '../../state';
-import { SET_STRUCTURES } from '../../customEvents';
+import { UPDATE_STRUCTURES } from '../../customEvents';
 
 interface StructureProps extends RouteComponentProps<{ structureId: string }> {
   structure: SpaceFrameData;
@@ -14,15 +14,15 @@ const Structure: React.FC<StructureProps> = ({ structure, match }) => {
   state.setSelectedStructureId(selectedStructureId);
 
   const [structures, setStructures] = useState<SpaceFrameData[]>(
-    state.getStructures()
+    state.structures.get()
   );
   useEffect(() => {
-    window.addEventListener(SET_STRUCTURES.type, () => {
-      setStructures(state.getStructures());
+    window.addEventListener(UPDATE_STRUCTURES.type, () => {
+      setStructures(state.structures.get());
     });
     return () => {
-      window.removeEventListener(SET_STRUCTURES.type, () => {
-        setStructures(state.getStructures());
+      window.removeEventListener(UPDATE_STRUCTURES.type, () => {
+        setStructures(state.structures.get());
       });
     };
   }, []);

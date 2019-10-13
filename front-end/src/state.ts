@@ -1,16 +1,16 @@
-import { SpaceFrameData } from './types';
 import {
-  SET_STRUCTURES,
-  SET_SELECTED_STRUCTURE_ID,
-  SET_EXPERIMENTS,
-  SET_SELECTED_EXPERIMENT_ID,
-  SET_MONITORINGS,
-  SET_SELECTED_MONITORING_ID,
+  UPDATE_SELECTED_STRUCTURE_ID,
+  UPDATE_EXPERIMENTS,
+  UPDATE_SELECTED_EXPERIMENT_ID,
+  UPDATE_MONITORINGS,
+  UPDATE_SELECTED_MONITORING_ID,
 } from './customEvents';
+import Structures from './models/structures/Structures';
+import { loadStructures } from './services/services';
 
 export class State {
+  structures: Structures;
   _state: {
-    structures: SpaceFrameData[];
     selectedStructureId: string | null;
     experiments: any[]; // TODO
     selectedExperimentId: string | null;
@@ -18,8 +18,8 @@ export class State {
     selectedMonitoringId: string | null;
   };
   constructor() {
+    this.structures = new Structures();
     this._state = {
-      structures: [],
       selectedStructureId: null,
 
       experiments: [],
@@ -29,16 +29,8 @@ export class State {
       selectedMonitoringId: null,
     };
   }
-  getState() {
-    return this._state;
-  }
-
-  getStructures() {
-    return this._state.structures;
-  }
-  setStructures(structures: SpaceFrameData[]) {
-    this._state.structures = structures;
-    window.dispatchEvent(SET_STRUCTURES);
+  load() {
+    this.structures.set(loadStructures());
   }
 
   getSelectedStructureId() {
@@ -46,7 +38,7 @@ export class State {
   }
   setSelectedStructureId(selectedStructureId: string | null) {
     this._state.selectedStructureId = selectedStructureId;
-    window.dispatchEvent(SET_SELECTED_STRUCTURE_ID);
+    window.dispatchEvent(UPDATE_SELECTED_STRUCTURE_ID);
   }
 
   getExperiments() {
@@ -54,7 +46,7 @@ export class State {
   }
   setExperiments(experiments: any[]) {
     this._state.experiments = experiments;
-    window.dispatchEvent(SET_EXPERIMENTS);
+    window.dispatchEvent(UPDATE_EXPERIMENTS);
   }
 
   getSelectedExperimentId() {
@@ -62,7 +54,7 @@ export class State {
   }
   setSelectedExperimentId(selectedExperimentId: string | null) {
     this._state.selectedExperimentId = selectedExperimentId;
-    window.dispatchEvent(SET_SELECTED_EXPERIMENT_ID);
+    window.dispatchEvent(UPDATE_SELECTED_EXPERIMENT_ID);
   }
 
   getMonitorings() {
@@ -70,7 +62,7 @@ export class State {
   }
   setMonitorings(monitorings: any[]) {
     this._state.monitorings = monitorings;
-    window.dispatchEvent(SET_MONITORINGS);
+    window.dispatchEvent(UPDATE_MONITORINGS);
   }
 
   getSelectedMonitoringId() {
@@ -78,7 +70,7 @@ export class State {
   }
   setSelectedMonitoringId(selectedMonitoringId: string | null) {
     this._state.selectedMonitoringId = selectedMonitoringId;
-    window.dispatchEvent(SET_SELECTED_MONITORING_ID);
+    window.dispatchEvent(UPDATE_SELECTED_MONITORING_ID);
   }
 }
 
