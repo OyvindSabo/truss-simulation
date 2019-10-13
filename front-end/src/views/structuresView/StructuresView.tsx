@@ -10,7 +10,7 @@ import Structure from '../../models/structure/Structure';
 import { HINT_OF_PENSIVE } from '../../constants/theme/colors';
 import { IMAGE_SPACING } from '../../constants/config/sizes';
 
-const Structures: React.FunctionComponent<RouteComponentProps> = ({
+const StructuresView: React.FunctionComponent<RouteComponentProps> = ({
   history,
 }) => {
   const [shouldDisplayModal, setShouldDisplayModal] = useState<boolean>(false);
@@ -76,4 +76,4 @@ const Structures: React.FunctionComponent<RouteComponentProps> = ({
   );
 };
 
-export default withRouter(Structures);
+export default withRouter(StructuresView);

@@ -2,17 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import Home from './views/home/Home';
-import Structures from './views/structures/Structures';
+import HomeView from './views/homeView/HomeView';
+import StructuresView from './views/structuresView/StructuresView';
 import StructureView from './views/structureView/StructureView';
-import Experiments from './views/experiments/Experiments';
+import ExperimentsView from './views/experimentsView/ExperimentsView';
 import ExperimentView from './views/experimentView/ExperimentView';
+import MonitorsView from './views/monitorsView/MonitorsView';
+import MonitorView from './views/monitorView/MonitorView';
 import Navigator from './components/navigator/Navigator';
 import { createBrowserHistory } from 'history';
 import MainContainer from './components/mainContainer/MainContainer';
 import View from './components/view/View';
 import { Router } from 'react-router-dom';
-import Monitoring from './views/monitoring/Monitoring';
 import { state } from './state';
 
 const history = createBrowserHistory();
@@ -21,7 +22,7 @@ const views = [
     path: '/',
     getPath: () => '/',
     label: 'HOME',
-    component: Home,
+    component: HomeView,
     exact: true,
     strict: false,
   },
@@ -29,7 +30,7 @@ const views = [
     path: '/structures/',
     getPath: () => '/structures/',
     label: 'STRUCTURES',
-    component: Structures,
+    component: StructuresView,
     exact: true,
     strict: false,
   },
@@ -45,7 +46,7 @@ const views = [
     path: '/experiments/',
     getPath: () => '/experiments/',
     label: 'EXPERIMENTS',
-    component: Experiments,
+    component: ExperimentsView,
     exact: true,
     strict: false,
   },
@@ -58,10 +59,18 @@ const views = [
     strict: false,
   },
   {
-    path: '/monitoring/:monitoringId/',
-    getPath: () => `/monitoring/${state.getSelectedMonitorId()}/`,
-    label: 'MONITORING',
-    component: Monitoring,
+    path: '/monitors/',
+    getPath: () => `/monitors/`,
+    label: 'MONITORS',
+    component: MonitorsView,
+    exact: true,
+    strict: false,
+  },
+  {
+    path: '/monitors/:monitorId/',
+    getPath: () => `/monitors/${state.getSelectedMonitorId()}/`,
+    label: 'ACTIVE MONITOR',
+    component: MonitorView,
     exact: true,
     strict: false,
   },
