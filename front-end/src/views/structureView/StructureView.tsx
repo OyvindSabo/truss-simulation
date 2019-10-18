@@ -6,6 +6,7 @@ import { UPDATE_STRUCTURES } from '../../customEvents';
 import RightPane from '../../components/rightPane/RightPane';
 import Structure from '../../models/structure/Structure';
 import ErrorScreen from '../../components/errorScreen/ErrorScreen';
+import TopBar from '../../components/topBar/TopBar';
 
 const StructureView: React.FC<RouteComponentProps<{ structureId: string }>> = ({
   match,
@@ -34,6 +35,7 @@ const StructureView: React.FC<RouteComponentProps<{ structureId: string }>> = ({
 
   return selectedStructure ? (
     <>
+      <TopBar title={selectedStructure.name.get()}></TopBar>
       <SpaceFrameVisualization spaceFrameData={selectedStructure} />
       <RightPane
         isOpen={rightPaneIsOpen}

@@ -6,12 +6,14 @@ import { getAverageNodePosition, getAnimatedPosition } from './utils';
 import ResourceTracker from './ResourceTracker';
 import Structure from '../../models/structure/Structure';
 
-interface TrussVisualizationProps {
+interface SpaceFrameVisualizationProps {
   spaceFrameData: Structure;
   deformedSpaceFrameData?: Structure;
+  editMode?: boolean;
+  baseUnit?: number;
 }
 
-class SpaceFrameVisualization extends Component<TrussVisualizationProps> {
+class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   private myRef: any;
   width?: number;
   height?: number;
@@ -263,8 +265,14 @@ class SpaceFrameVisualization extends Component<TrussVisualizationProps> {
     }
   }
 
-  shouldComponentUpdate({ spaceFrameData }: TrussVisualizationProps) {
-    return spaceFrameData.id !== this.props.spaceFrameData.id;
+  shouldComponentUpdate({
+    spaceFrameData,
+    editMode,
+  }: SpaceFrameVisualizationProps) {
+    return (
+      spaceFrameData.id !== this.props.spaceFrameData.id ||
+      editMode !== this.props.editMode
+    );
   }
 
   componentWillUnmount() {
