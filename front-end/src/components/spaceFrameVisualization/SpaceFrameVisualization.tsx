@@ -125,6 +125,11 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     planeMesh.rotation.x = -Math.PI * 0.5;
     planeMesh.receiveShadow = true;
     this.scene!.add(planeMesh);
+
+    if (this.props.editMode && this.resourceTracker) {
+      this.showHelperSpheres();
+    }
+
     this.animate();
   }
 
@@ -202,6 +207,37 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.controls!.enablePan = false;
     const center = getAverageNodePosition(this.props.spaceFrameData);
     this.controls!.target.set(center.x, center.y, center.z);
+  };
+
+  showHelperSpheres = () => {
+    const baseUnit = this.props.baseUnit || 1;
+    const radius = baseUnit / 20;
+    const nodeGeometry = this.resourceTracker.track(
+      new THREE.SphereGeometry(radius, 32, 32)
+    );
+    const nodeMaterial = this.resourceTracker.track(
+      new THREE.MeshStandardMaterial({ color: 0xffffff })
+    );
+    for (let x = -50; x <= 50; x += baseUnit) {
+      for (let y = 0; y <= 50; y += baseUnit) {
+        for (let z = -50; z <= 50; z += baseUnit) {
+          const nodeMesh = this.resourceTracker.track(
+            new THREE.Mesh(nodeGeometry, nodeMaterial)
+          );
+          nodeMesh.position.set(x, y, z);
+          const helperId = JSON.stringify({ x, y, z });
+          this.helperMeshes[helperId] = nodeMesh;
+          this.scene!.add(nodeMesh);
+        }
+      }
+    }
+  };
+
+  hideHelperSpheres = () => {
+    Object.entries(this.helperMeshes).forEach(([helperId, helperMesh]) => {
+      this.scene!.remove(helperMesh);
+      delete this.helperMeshes[helperId];
+    });
   };
 
   animate = () => {
@@ -306,45 +342,12 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.renderer!.render(this.scene!, this.camera!);
   };
 
-  /*shouldComponentUpdate = ({
-    spaceFrameData,
-    editMode,
-  }: SpaceFrameVisualizationProps) => {
-    return (
-      spaceFrameData.id !== this.props.spaceFrameData.id ||
-      editMode !== this.props.editMode
-    );
-  };*/
-
   componentDidUpdate = (prevProps: SpaceFrameVisualizationProps) => {
     if (this.props !== prevProps) {
       if (this.props.editMode && this.resourceTracker) {
-        const baseUnit = this.props.baseUnit || 1;
-        const radius = baseUnit / 20;
-        const nodeGeometry = this.resourceTracker.track(
-          new THREE.SphereGeometry(radius, 32, 32)
-        );
-        const nodeMaterial = this.resourceTracker.track(
-          new THREE.MeshStandardMaterial({ color: 0xffffff })
-        );
-        for (let x = -50; x <= 50; x += baseUnit) {
-          for (let y = 0; y <= 50; y += baseUnit) {
-            for (let z = -50; z <= 50; z += baseUnit) {
-              const nodeMesh = this.resourceTracker.track(
-                new THREE.Mesh(nodeGeometry, nodeMaterial)
-              );
-              nodeMesh.position.set(x, y, z);
-              const helperId = JSON.stringify({ x, y, z });
-              this.helperMeshes[helperId] = nodeMesh;
-              this.scene!.add(nodeMesh);
-            }
-          }
-        }
+        this.showHelperSpheres();
       } else {
-        Object.entries(this.helperMeshes).forEach(([helperId, helperMesh]) => {
-          this.scene!.remove(helperMesh);
-          delete this.helperMeshes[helperId];
-        });
+        this.hideHelperSpheres();
       }
     }
   };
