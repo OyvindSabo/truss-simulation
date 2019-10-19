@@ -34,33 +34,11 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   componentDidMount() {
     this.initializeResourceTracker();
     this.initializeRenderer();
-
-    this.scene = this.resourceTracker.track(new THREE.Scene());
-
+    this.initializeScene();
+    this.initializeAmbientLight();
+    this.initializeSpotlight();
     this.initializeCamera();
-
     this.initializeControls();
-
-    const ambient = this.resourceTracker.track(
-      new THREE.AmbientLight(0xffffff, 0.01)
-    );
-    this.scene!.add(ambient);
-
-    const spotLight = this.resourceTracker.track(
-      new THREE.SpotLight(0xffffff, 1)
-    );
-    spotLight.position.set(15, 40, 35);
-    spotLight.angle = Math.PI / 4;
-    spotLight.penumbra = 0.05;
-    spotLight.decay = 2;
-    spotLight.distance = 200;
-    spotLight.castShadow = true;
-    // The mapSize has to be this big for the shadows to not look pixelated
-    spotLight.shadow.mapSize.width = 10000;
-    spotLight.shadow.mapSize.height = 10000;
-    spotLight.shadow.camera.near = 1;
-    spotLight.shadow.camera.far = 1000;
-    this.scene!.add(spotLight);
 
     // This is where we start creating the actual space frame
     const { nodes, struts } = this.props.spaceFrameData;
@@ -189,6 +167,35 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
 
     this.renderer!.gammaInput = true;
     this.renderer!.gammaOutput = true;
+  };
+
+  initializeScene = () => {
+    this.scene = this.resourceTracker.track(new THREE.Scene());
+  };
+
+  initializeAmbientLight = () => {
+    const ambient = this.resourceTracker.track(
+      new THREE.AmbientLight(0xffffff, 0.01)
+    );
+    this.scene!.add(ambient);
+  };
+
+  initializeSpotlight = () => {
+    const spotLight = this.resourceTracker.track(
+      new THREE.SpotLight(0xffffff, 1)
+    );
+    spotLight.position.set(15, 40, 35);
+    spotLight.angle = Math.PI / 4;
+    spotLight.penumbra = 0.05;
+    spotLight.decay = 2;
+    spotLight.distance = 200;
+    spotLight.castShadow = true;
+    // The mapSize has to be this big for the shadows to not look pixelated
+    spotLight.shadow.mapSize.width = 10000;
+    spotLight.shadow.mapSize.height = 10000;
+    spotLight.shadow.camera.near = 1;
+    spotLight.shadow.camera.far = 1000;
+    this.scene!.add(spotLight);
   };
 
   initializeCamera = () => {
