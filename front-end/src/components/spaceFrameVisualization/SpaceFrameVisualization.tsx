@@ -25,10 +25,12 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   resourceTracker?: any;
   nodeMeshes: { [key: string]: THREE.Mesh };
   strutMeshes: { [key: string]: THREE.Mesh };
+  helperMeshes: { [key: string]: THREE.Mesh };
   constructor(props: any) {
     super(props);
     this.nodeMeshes = {};
     this.strutMeshes = {};
+    this.helperMeshes = {};
   }
 
   componentDidMount() {
@@ -123,28 +125,6 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     planeMesh.rotation.x = -Math.PI * 0.5;
     planeMesh.receiveShadow = true;
     this.scene!.add(planeMesh);
-
-    if (this.props.editMode) {
-      const baseUnit = this.props.baseUnit || 1;
-      const radius = baseUnit / 20;
-      const nodeGeometry = this.resourceTracker.track(
-        new THREE.SphereGeometry(radius, 32, 32)
-      );
-      const nodeMaterial = this.resourceTracker.track(
-        new THREE.MeshStandardMaterial({ color: 0xffffff })
-      );
-      for (let x = -50; x <= 50; x += baseUnit) {
-        for (let y = 0; y <= 50; y += baseUnit) {
-          for (let z = -50; z <= 50; z += baseUnit) {
-            const nodeMesh = this.resourceTracker.track(
-              new THREE.Mesh(nodeGeometry, nodeMaterial)
-            );
-            nodeMesh.position.set(x, y, z);
-            this.scene!.add(nodeMesh);
-          }
-        }
-      }
-    }
     this.animate();
   }
 
@@ -326,20 +306,48 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.renderer!.render(this.scene!, this.camera!);
   };
 
-  shouldComponentUpdate({
+  /*shouldComponentUpdate = ({
     spaceFrameData,
     editMode,
-  }: SpaceFrameVisualizationProps) {
-    console.log(
-      'shouldComponentUpdate: ',
-      spaceFrameData.id !== this.props.spaceFrameData.id ||
-        editMode !== this.props.editMode
-    );
+  }: SpaceFrameVisualizationProps) => {
     return (
       spaceFrameData.id !== this.props.spaceFrameData.id ||
       editMode !== this.props.editMode
     );
-  }
+  };*/
+
+  componentDidUpdate = (prevProps: SpaceFrameVisualizationProps) => {
+    if (this.props !== prevProps) {
+      if (this.props.editMode && this.resourceTracker) {
+        const baseUnit = this.props.baseUnit || 1;
+        const radius = baseUnit / 20;
+        const nodeGeometry = this.resourceTracker.track(
+          new THREE.SphereGeometry(radius, 32, 32)
+        );
+        const nodeMaterial = this.resourceTracker.track(
+          new THREE.MeshStandardMaterial({ color: 0xffffff })
+        );
+        for (let x = -50; x <= 50; x += baseUnit) {
+          for (let y = 0; y <= 50; y += baseUnit) {
+            for (let z = -50; z <= 50; z += baseUnit) {
+              const nodeMesh = this.resourceTracker.track(
+                new THREE.Mesh(nodeGeometry, nodeMaterial)
+              );
+              nodeMesh.position.set(x, y, z);
+              const helperId = JSON.stringify({ x, y, z });
+              this.helperMeshes[helperId] = nodeMesh;
+              this.scene!.add(nodeMesh);
+            }
+          }
+        }
+      } else {
+        Object.entries(this.helperMeshes).forEach(([helperId, helperMesh]) => {
+          this.scene!.remove(helperMesh);
+          delete this.helperMeshes[helperId];
+        });
+      }
+    }
+  };
 
   componentWillUnmount() {
     if (this.myRef && this.renderer) {
@@ -351,7 +359,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.resourceTracker.dispose();
   }
 
-  render() {
+  render = () => {
     return (
       <div
         ref={ref => {
@@ -365,7 +373,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         style={{ width: '100%', height: '100%' }}
       />
     );
-  }
+  };
 }
 
 export default SpaceFrameVisualization;
