@@ -19,9 +19,18 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   height?: number;
   renderer?: THREE.WebGLRenderer;
   scene?: THREE.Scene;
+  camera?: THREE.PerspectiveCamera;
   controls?: OrbitControls;
   animationFrame?: number;
   resourceTracker?: any;
+  nodeMeshes: { [key: string]: THREE.Mesh };
+  strutMeshes: { [key: string]: THREE.Mesh };
+  constructor(props: any) {
+    super(props);
+    this.nodeMeshes = {};
+    this.strutMeshes = {};
+  }
+
   componentDidMount() {
     this.resourceTracker = new ResourceTracker();
     const track = this.resourceTracker.track.bind(this.resourceTracker);
@@ -44,7 +53,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     const scene = track(new THREE.Scene());
     this.scene = scene;
 
-    const camera = track(
+    this.camera = track(
       new THREE.PerspectiveCamera(
         35,
         width / height,
@@ -52,9 +61,11 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         1000 // far
       )
     );
-    camera.position.set(65, 8, -10);
+    this.camera!.position.set(65, 8, -10);
 
-    const controls = track(new OrbitControls(camera, renderer.domElement));
+    const controls = track(
+      new OrbitControls(this.camera!, renderer.domElement)
+    );
     this.controls = controls;
     controls.addEventListener('change', this.render);
     controls.minDistance = 1;
@@ -87,7 +98,6 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     scene.add(shadowCameraHelper);*/
 
     // This is where we start creating the actual space frame
-    const nodeMeshes: { [key: string]: THREE.Mesh } = {};
     const { nodes, struts } = this.props.spaceFrameData;
     nodes.forEach(node => {
       const { x, y, z, id } = node;
@@ -101,11 +111,10 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       );
       const nodeMesh = track(new THREE.Mesh(nodeGeometry, nodeMaterial));
       nodeMesh.position.set(x, y, z);
-      nodeMeshes[id] = nodeMesh;
+      this.nodeMeshes[id] = nodeMesh;
       scene.add(nodeMesh);
     });
 
-    const strutMeshes: { [key: string]: THREE.Mesh } = {};
     struts.forEach(({ id, radius, sourceId, targetId }) => {
       const sourceNode = nodes.find(({ id }) => id === sourceId);
       const targetNode = nodes.find(({ id }) => id === targetId);
@@ -138,7 +147,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       const strutMesh = track(new THREE.Mesh(strutGeometry, strutMaterial));
       strutMesh.castShadow = true; //default is false
       strutMesh.receiveShadow = false; //default
-      strutMeshes[id] = strutMesh;
+      this.strutMeshes[id] = strutMesh;
       scene.add(strutMesh);
     });
 
@@ -177,111 +186,110 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         }
       }
     }
-
-    if (this.props.deformedSpaceFrameData) {
-      const { nodes: deformedNodes } = this.props.deformedSpaceFrameData;
-      const animate = () => {
-        const animationFrame = requestAnimationFrame(animate);
-        this.animationFrame = animationFrame;
-        nodes.forEach(({ id, x, y, z }) => {
-          const deformedNode = deformedNodes.find(
-            ({ id: deformedId }) => deformedId === id
-          );
-          if (!deformedNode) return;
-          const { x: deformedX, y: deformedY, z: deformedZ } = deformedNode;
-          nodeMeshes[id].position.x = getAnimatedPosition(
-            x,
-            deformedX,
-            animationFrame
-          );
-          nodeMeshes[id].position.y = getAnimatedPosition(
-            y,
-            deformedY,
-            animationFrame
-          );
-          nodeMeshes[id].position.z = getAnimatedPosition(
-            z,
-            deformedZ,
-            animationFrame
-          );
-        });
-        struts.forEach(({ id, radius, sourceId, targetId }) => {
-          const sourceNode = nodes.find(({ id }) => id === sourceId);
-          const targetNode = nodes.find(({ id }) => id === targetId);
-          const deformedSourceNode = deformedNodes.find(
-            ({ id }) => id === sourceId
-          );
-          const deformedTargetNode = deformedNodes.find(
-            ({ id }) => id === targetId
-          );
-          if (
-            !sourceNode ||
-            !targetNode ||
-            !deformedSourceNode ||
-            !deformedTargetNode
-          )
-            return;
-          const newSourceX = getAnimatedPosition(
-            sourceNode.x,
-            deformedSourceNode.x,
-            animationFrame
-          );
-          const newSourceY = getAnimatedPosition(
-            sourceNode.y,
-            deformedSourceNode.y,
-            animationFrame
-          );
-          const newSourceZ = getAnimatedPosition(
-            sourceNode.z,
-            deformedSourceNode.z,
-            animationFrame
-          );
-          const newTargetX = getAnimatedPosition(
-            targetNode.x,
-            deformedTargetNode.x,
-            animationFrame
-          );
-          const newTargetY = getAnimatedPosition(
-            targetNode.y,
-            deformedTargetNode.y,
-            animationFrame
-          );
-          const newTargetZ = getAnimatedPosition(
-            targetNode.z,
-            deformedTargetNode.z,
-            animationFrame
-          );
-          const structVector = track(new THREE.Curve<Vector3>());
-          structVector.getPoint = (t: number) =>
-            track(
-              new THREE.Vector3(
-                newSourceX + t * (newTargetX - newSourceX),
-                newSourceY + t * (newTargetY - newSourceY),
-                newSourceZ + t * (newTargetZ - newSourceZ)
-              )
-            );
-          strutMeshes[id].geometry = track(
-            track(
-              new THREE.TubeGeometry(
-                structVector, // path
-                1, // tubularSegments
-                radius, // radius
-                32 // radiusSegments
-              )
-            )
-          );
-        });
-        renderer.render(scene, camera);
-      };
-      animate();
-    } else {
-      const animate = () => {
-        this.animationFrame = requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-      };
-      animate();
-    }
+    this.animate();
   }
+
+  animate = () => {
+    if (!this.props.deformedSpaceFrameData) {
+      this.animationFrame = requestAnimationFrame(this.animate);
+      this.renderer!.render(this.scene!, this.camera!);
+      return;
+    }
+    // If this.props.deformedSpaceFrameData
+    const { nodes, struts } = this.props.spaceFrameData;
+    const { nodes: deformedNodes } = this.props.deformedSpaceFrameData;
+    const animationFrame = requestAnimationFrame(this.animate);
+    this.animationFrame = animationFrame;
+    nodes.forEach(({ id, x, y, z }) => {
+      const deformedNode = deformedNodes.find(
+        ({ id: deformedId }) => deformedId === id
+      );
+      if (!deformedNode) return;
+      const { x: deformedX, y: deformedY, z: deformedZ } = deformedNode;
+      this.nodeMeshes[id].position.x = getAnimatedPosition(
+        x,
+        deformedX,
+        animationFrame
+      );
+      this.nodeMeshes[id].position.y = getAnimatedPosition(
+        y,
+        deformedY,
+        animationFrame
+      );
+      this.nodeMeshes[id].position.z = getAnimatedPosition(
+        z,
+        deformedZ,
+        animationFrame
+      );
+    });
+    struts.forEach(({ id, radius, sourceId, targetId }) => {
+      const sourceNode = nodes.find(({ id }) => id === sourceId);
+      const targetNode = nodes.find(({ id }) => id === targetId);
+      const deformedSourceNode = deformedNodes.find(
+        ({ id }) => id === sourceId
+      );
+      const deformedTargetNode = deformedNodes.find(
+        ({ id }) => id === targetId
+      );
+      if (
+        !sourceNode ||
+        !targetNode ||
+        !deformedSourceNode ||
+        !deformedTargetNode
+      )
+        return;
+      const newSourceX = getAnimatedPosition(
+        sourceNode.x,
+        deformedSourceNode.x,
+        animationFrame
+      );
+      const newSourceY = getAnimatedPosition(
+        sourceNode.y,
+        deformedSourceNode.y,
+        animationFrame
+      );
+      const newSourceZ = getAnimatedPosition(
+        sourceNode.z,
+        deformedSourceNode.z,
+        animationFrame
+      );
+      const newTargetX = getAnimatedPosition(
+        targetNode.x,
+        deformedTargetNode.x,
+        animationFrame
+      );
+      const newTargetY = getAnimatedPosition(
+        targetNode.y,
+        deformedTargetNode.y,
+        animationFrame
+      );
+      const newTargetZ = getAnimatedPosition(
+        targetNode.z,
+        deformedTargetNode.z,
+        animationFrame
+      );
+      const structVector = this.resourceTracker.track(
+        new THREE.Curve<Vector3>()
+      );
+      structVector.getPoint = (t: number) =>
+        this.resourceTracker.track(
+          new THREE.Vector3(
+            newSourceX + t * (newTargetX - newSourceX),
+            newSourceY + t * (newTargetY - newSourceY),
+            newSourceZ + t * (newTargetZ - newSourceZ)
+          )
+        );
+      this.strutMeshes[id].geometry = this.resourceTracker.track(
+        new THREE.TubeGeometry(
+          structVector, // path
+          1, // tubularSegments
+          radius, // radius
+          32 // radiusSegments
+        )
+      );
+    });
+    this.renderer!.render(this.scene!, this.camera!);
+  };
 
   shouldComponentUpdate({
     spaceFrameData,
@@ -307,6 +315,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     }
     this.resourceTracker.dispose();
   }
+
   render() {
     return (
       <div
