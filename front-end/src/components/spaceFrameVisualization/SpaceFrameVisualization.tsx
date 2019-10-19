@@ -33,8 +33,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
 
   componentDidMount() {
     this.resourceTracker = new ResourceTracker();
-    const track = this.resourceTracker.track.bind(this.resourceTracker);
-    const renderer = track(
+    const renderer = this.resourceTracker.track(
       new THREE.WebGLRenderer({
         antialias: true,
       })
@@ -50,10 +49,9 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     renderer.gammaInput = true;
     renderer.gammaOutput = true;
 
-    const scene = track(new THREE.Scene());
-    this.scene = scene;
+    this.scene = this.resourceTracker.track(new THREE.Scene());
 
-    this.camera = track(
+    this.camera = this.resourceTracker.track(
       new THREE.PerspectiveCamera(
         35,
         width / height,
@@ -63,7 +61,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     );
     this.initializeCamera();
 
-    const controls = track(
+    const controls = this.resourceTracker.track(
       new OrbitControls(this.camera!, renderer.domElement)
     );
     this.controls = controls;
@@ -74,10 +72,14 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     const center = getAverageNodePosition(this.props.spaceFrameData);
     controls.target.set(center.x, center.y, center.z);
 
-    const ambient = track(new THREE.AmbientLight(0xffffff, 0.01));
-    scene.add(ambient);
+    const ambient = this.resourceTracker.track(
+      new THREE.AmbientLight(0xffffff, 0.01)
+    );
+    this.scene!.add(ambient);
 
-    const spotLight = track(new THREE.SpotLight(0xffffff, 1));
+    const spotLight = this.resourceTracker.track(
+      new THREE.SpotLight(0xffffff, 1)
+    );
     spotLight.position.set(15, 40, 35);
     spotLight.angle = Math.PI / 4;
     spotLight.penumbra = 0.05;
@@ -89,13 +91,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     spotLight.shadow.mapSize.height = 10000;
     spotLight.shadow.camera.near = 1;
     spotLight.shadow.camera.far = 1000;
-    scene.add(spotLight);
-
-    /*const lightHelper = new THREE.SpotLightHelper(spotLight);
-    scene.add(lightHelper);*/
-
-    /*const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
-    scene.add(shadowCameraHelper);*/
+    this.scene!.add(spotLight);
 
     // This is where we start creating the actual space frame
     const { nodes, struts } = this.props.spaceFrameData;
@@ -105,14 +101,18 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         .filter(({ sourceId, targetId }) => [sourceId, targetId].includes(id))
         .map(({ radius }) => radius);
       const radius = Math.max(...strutsConnectedToNode, 0);
-      const nodeGeometry = track(new THREE.SphereGeometry(radius, 32, 32));
-      const nodeMaterial = track(
+      const nodeGeometry = this.resourceTracker.track(
+        new THREE.SphereGeometry(radius, 32, 32)
+      );
+      const nodeMaterial = this.resourceTracker.track(
         new THREE.MeshStandardMaterial({ color: 0xffffff })
       );
-      const nodeMesh = track(new THREE.Mesh(nodeGeometry, nodeMaterial));
+      const nodeMesh = this.resourceTracker.track(
+        new THREE.Mesh(nodeGeometry, nodeMaterial)
+      );
       nodeMesh.position.set(x, y, z);
       this.nodeMeshes[id] = nodeMesh;
-      scene.add(nodeMesh);
+      this.scene!.add(nodeMesh);
     });
 
     struts.forEach(({ id, radius, sourceId, targetId }) => {
@@ -121,9 +121,11 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       if (!sourceNode || !targetNode) return;
       const { x: sourceX, y: sourceY, z: sourceZ } = sourceNode;
       const { x: targetX, y: targetY, z: targetZ } = targetNode;
-      const structVector = track(new THREE.Curve<Vector3>());
+      const structVector = this.resourceTracker.track(
+        new THREE.Curve<Vector3>()
+      );
       structVector.getPoint = (t: number) =>
-        track(
+        this.resourceTracker.track(
           new THREE.Vector3(
             sourceX + t * (targetX - sourceX),
             sourceY + t * (targetY - sourceY),
@@ -131,7 +133,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
           )
         );
 
-      const strutGeometry = track(
+      const strutGeometry = this.resourceTracker.track(
         new THREE.TubeGeometry(
           structVector, // path
           1, // tubularSegments
@@ -139,49 +141,59 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
           32 // radiusSegments
         )
       );
-      const strutMaterial = track(
+      const strutMaterial = this.resourceTracker.track(
         new THREE.MeshStandardMaterial({
           color: 0xffffff,
         })
       );
-      const strutMesh = track(new THREE.Mesh(strutGeometry, strutMaterial));
+      const strutMesh = this.resourceTracker.track(
+        new THREE.Mesh(strutGeometry, strutMaterial)
+      );
       strutMesh.castShadow = true; //default is false
       strutMesh.receiveShadow = false; //default
       this.strutMeshes[id] = strutMesh;
-      scene.add(strutMesh);
+      this.scene!.add(strutMesh);
     });
 
-    const planeGeometry = track(new THREE.PlaneBufferGeometry(2000, 2000));
+    const planeGeometry = this.resourceTracker.track(
+      new THREE.PlaneBufferGeometry(2000, 2000)
+    );
     //Create a plane that receives shadows (but does not cast them)
-    const planeMaterial = track(
+    const planeMaterial = this.resourceTracker.track(
       new THREE.MeshPhongMaterial({
         color: 0x808080,
         dithering: true,
       })
     );
 
-    const planeMesh = track(new THREE.Mesh(planeGeometry, planeMaterial));
+    const planeMesh = this.resourceTracker.track(
+      new THREE.Mesh(planeGeometry, planeMaterial)
+    );
     // Lower the floor plane enough to avoid the radius of the struts causing
     // intersection with the ground.
     const maxRadius = Math.max(...struts.map(({ radius }) => radius), 0);
     planeMesh.position.set(0, -maxRadius, 0);
     planeMesh.rotation.x = -Math.PI * 0.5;
     planeMesh.receiveShadow = true;
-    scene.add(planeMesh);
+    this.scene!.add(planeMesh);
 
     if (this.props.editMode) {
       const baseUnit = this.props.baseUnit || 1;
       const radius = baseUnit / 20;
-      const nodeGeometry = track(new THREE.SphereGeometry(radius, 32, 32));
-      const nodeMaterial = track(
+      const nodeGeometry = this.resourceTracker.track(
+        new THREE.SphereGeometry(radius, 32, 32)
+      );
+      const nodeMaterial = this.resourceTracker.track(
         new THREE.MeshStandardMaterial({ color: 0xffffff })
       );
       for (let x = -50; x <= 50; x += baseUnit) {
         for (let y = 0; y <= 50; y += baseUnit) {
           for (let z = -50; z <= 50; z += baseUnit) {
-            const nodeMesh = track(new THREE.Mesh(nodeGeometry, nodeMaterial));
+            const nodeMesh = this.resourceTracker.track(
+              new THREE.Mesh(nodeGeometry, nodeMaterial)
+            );
             nodeMesh.position.set(x, y, z);
-            scene.add(nodeMesh);
+            this.scene!.add(nodeMesh);
           }
         }
       }
