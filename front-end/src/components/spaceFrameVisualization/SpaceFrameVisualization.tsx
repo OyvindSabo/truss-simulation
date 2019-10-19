@@ -160,6 +160,24 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     planeMesh.receiveShadow = true;
     scene.add(planeMesh);
 
+    if (this.props.editMode) {
+      const baseUnit = this.props.baseUnit || 1;
+      const radius = baseUnit / 20;
+      const nodeGeometry = track(new THREE.SphereGeometry(radius, 32, 32));
+      const nodeMaterial = track(
+        new THREE.MeshStandardMaterial({ color: 0xffffff })
+      );
+      for (let x = -50; x <= 50; x += baseUnit) {
+        for (let y = 0; y <= 50; y += baseUnit) {
+          for (let z = -50; z <= 50; z += baseUnit) {
+            const nodeMesh = track(new THREE.Mesh(nodeGeometry, nodeMaterial));
+            nodeMesh.position.set(x, y, z);
+            scene.add(nodeMesh);
+          }
+        }
+      }
+    }
+
     if (this.props.deformedSpaceFrameData) {
       const { nodes: deformedNodes } = this.props.deformedSpaceFrameData;
       const animate = () => {
@@ -269,6 +287,11 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     spaceFrameData,
     editMode,
   }: SpaceFrameVisualizationProps) {
+    console.log(
+      'shouldComponentUpdate: ',
+      spaceFrameData.id !== this.props.spaceFrameData.id ||
+        editMode !== this.props.editMode
+    );
     return (
       spaceFrameData.id !== this.props.spaceFrameData.id ||
       editMode !== this.props.editMode

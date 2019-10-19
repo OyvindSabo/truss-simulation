@@ -20,7 +20,7 @@ const StructureView: React.FC<RouteComponentProps<{ structureId: string }>> = ({
     state.structures.get()
   );
   const [rightPaneIsOpen, setRightPaneIsOpen] = useState<boolean>(true);
-  const [editMode, setEditMode] = useState<boolean>(false);
+  const [editMode, setEditMode] = useState<boolean>(true);
   useEffect(() => {
     window.addEventListener(UPDATE_STRUCTURES.type, () => {
       setStructures(state.structures.get());
@@ -52,7 +52,11 @@ const StructureView: React.FC<RouteComponentProps<{ structureId: string }>> = ({
           onClick={setEditMode}
         />
       </SwitchContainer>
-      <SpaceFrameVisualization spaceFrameData={selectedStructure} />
+      <SpaceFrameVisualization
+        spaceFrameData={selectedStructure}
+        editMode={editMode}
+        baseUnit={10}
+      />
       <RightPane
         isOpen={rightPaneIsOpen}
         onOpenClose={() => setRightPaneIsOpen(!rightPaneIsOpen)}
