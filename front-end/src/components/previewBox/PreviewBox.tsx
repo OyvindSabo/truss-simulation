@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { OnClick } from '../../types';
-import { MARGIN, PADDING } from '../../constants/theme/styles';
+import { MARGIN, PADDING, BORDER_WIDTH } from '../../constants/theme/styles';
 import { HINT_OF_PENSIVE, WHITE } from '../../constants/theme/colors';
 import { PREVIEW_HEIGHT, PREVIEW_WIDTH } from '../../constants/config/sizes';
 
@@ -21,7 +21,7 @@ const PreviewBox = ({ label, onClick, children }: PreviewBox) => {
       <div
         style={{
           display: 'inline-block',
-          outline: `1px solid ${HINT_OF_PENSIVE}`,
+          outline: `${BORDER_WIDTH}px solid ${HINT_OF_PENSIVE}`,
           background: WHITE,
           cursor: 'pointer',
         }}

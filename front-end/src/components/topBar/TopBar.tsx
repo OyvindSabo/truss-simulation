@@ -4,7 +4,7 @@ import CenterVertically from '../center/CenterVertically';
 
 interface TopBarProps {
   title: string;
-  children?: JSX.Element[];
+  children?: any;
 }
 const TopBar = ({ title, children }: TopBarProps) => (
   <TopBarContainer>

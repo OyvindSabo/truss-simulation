@@ -20,3 +20,4 @@ export const BLUE_NIGHTS = '#353b48';
 export const ELECTROMAGNETIC = '#2f3640';
 
 export const WHITE = 'white';
+export const TRANSPARENT = 'rgba(0, 0, 0, 0)';

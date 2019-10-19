@@ -7,6 +7,8 @@ import RightPane from '../../components/rightPane/RightPane';
 import Structure from '../../models/structure/Structure';
 import ErrorScreen from '../../components/errorScreen/ErrorScreen';
 import TopBar from '../../components/topBar/TopBar';
+import Switch from '../../components/switch/Switch';
+import { SwitchContainer } from './atoms';
 
 const StructureView: React.FC<RouteComponentProps<{ structureId: string }>> = ({
   match,
@@ -18,6 +20,7 @@ const StructureView: React.FC<RouteComponentProps<{ structureId: string }>> = ({
     state.structures.get()
   );
   const [rightPaneIsOpen, setRightPaneIsOpen] = useState<boolean>(true);
+  const [editMode, setEditMode] = useState<boolean>(false);
   useEffect(() => {
     window.addEventListener(UPDATE_STRUCTURES.type, () => {
       setStructures(state.structures.get());
@@ -33,9 +36,22 @@ const StructureView: React.FC<RouteComponentProps<{ structureId: string }>> = ({
     structure => structure.id === selectedStructureId
   );
 
+  const options = {
+    first: { label: 'Edit', value: true },
+    second: { label: 'Preview', value: false },
+  };
+  const firstOptionSelected = editMode;
+
   return selectedStructure ? (
     <>
-      <TopBar title={selectedStructure.name.get()}></TopBar>
+      <TopBar title={selectedStructure.name.get()} />
+      <SwitchContainer>
+        <Switch
+          options={options}
+          firstOptionSelected={firstOptionSelected}
+          onClick={setEditMode}
+        />
+      </SwitchContainer>
       <SpaceFrameVisualization spaceFrameData={selectedStructure} />
       <RightPane
         isOpen={rightPaneIsOpen}

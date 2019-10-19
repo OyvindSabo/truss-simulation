@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { PADDING } from '../../constants/theme/styles';
+import { PADDING, BORDER_WIDTH } from '../../constants/theme/styles';
 import { HINT_OF_PENSIVE } from '../../constants/theme/colors';
 import { MODAL_WIDTH } from '../../constants/config/sizes';
 
@@ -15,7 +15,7 @@ export const ModalBox = styled.div`
   position: fixed;
   background: white;
   padding: ${PADDING}px;
-  outline: 1px solid ${HINT_OF_PENSIVE};
+  outline: ${BORDER_WIDTH}px solid ${HINT_OF_PENSIVE};
   margin: auto;
   width: ${MODAL_WIDTH}px;
   top: 50%;
