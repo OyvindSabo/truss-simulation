@@ -61,7 +61,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         1000 // far
       )
     );
-    this.camera!.position.set(65, 8, -10);
+    this.initializeCamera();
 
     const controls = track(
       new OrbitControls(this.camera!, renderer.domElement)
@@ -188,6 +188,10 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     }
     this.animate();
   }
+
+  initializeCamera = () => {
+    this.camera!.position.set(65, 8, -10);
+  };
 
   animate = () => {
     if (!this.props.deformedSpaceFrameData) {
