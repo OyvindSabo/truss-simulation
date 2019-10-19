@@ -32,45 +32,14 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   }
 
   componentDidMount() {
-    this.resourceTracker = new ResourceTracker();
-    const renderer = this.resourceTracker.track(
-      new THREE.WebGLRenderer({
-        antialias: true,
-      })
-    );
-    this.renderer = renderer;
-    const width = this.width || window.innerWidth;
-    const height = this.height || window.innerHeight;
-    renderer.setSize(width, height);
-    this.myRef.appendChild(renderer.domElement);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
-
-    renderer.gammaInput = true;
-    renderer.gammaOutput = true;
+    this.initializeResourceTracker();
+    this.initializeRenderer();
 
     this.scene = this.resourceTracker.track(new THREE.Scene());
 
-    this.camera = this.resourceTracker.track(
-      new THREE.PerspectiveCamera(
-        35,
-        width / height,
-        1, // near
-        1000 // far
-      )
-    );
     this.initializeCamera();
 
-    const controls = this.resourceTracker.track(
-      new OrbitControls(this.camera!, renderer.domElement)
-    );
-    this.controls = controls;
-    controls.addEventListener('change', this.render);
-    controls.minDistance = 1;
-    controls.maxDistance = 500;
-    controls.enablePan = false;
-    const center = getAverageNodePosition(this.props.spaceFrameData);
-    controls.target.set(center.x, center.y, center.z);
+    this.initializeControls();
 
     const ambient = this.resourceTracker.track(
       new THREE.AmbientLight(0xffffff, 0.01)
@@ -201,8 +170,51 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.animate();
   }
 
+  initializeResourceTracker = () => {
+    this.resourceTracker = new ResourceTracker();
+  };
+
+  initializeRenderer = () => {
+    this.renderer = this.resourceTracker.track(
+      new THREE.WebGLRenderer({
+        antialias: true,
+      })
+    );
+    const width = this.width || window.innerWidth;
+    const height = this.height || window.innerHeight;
+    this.renderer!.setSize(width, height);
+    this.myRef.appendChild(this.renderer!.domElement);
+    this.renderer!.shadowMap.enabled = true;
+    this.renderer!.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+
+    this.renderer!.gammaInput = true;
+    this.renderer!.gammaOutput = true;
+  };
+
   initializeCamera = () => {
+    const width = this.width || window.innerWidth;
+    const height = this.height || window.innerHeight;
+    this.camera = this.resourceTracker.track(
+      new THREE.PerspectiveCamera(
+        35,
+        width / height,
+        1, // near
+        1000 // far
+      )
+    );
     this.camera!.position.set(65, 8, -10);
+  };
+
+  initializeControls = () => {
+    this.controls = this.resourceTracker.track(
+      new OrbitControls(this.camera!, this.renderer!.domElement)
+    );
+    this.controls!.addEventListener('change', this.render);
+    this.controls!.minDistance = 1;
+    this.controls!.maxDistance = 500;
+    this.controls!.enablePan = false;
+    const center = getAverageNodePosition(this.props.spaceFrameData);
+    this.controls!.target.set(center.x, center.y, center.z);
   };
 
   animate = () => {
