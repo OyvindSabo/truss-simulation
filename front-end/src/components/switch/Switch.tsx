@@ -1,8 +1,6 @@
 import React from 'react';
-import { BUTTON_WIDTH, BUTTON_HEIGHT } from '../../constants/config/sizes';
 import Center from '../center/Center';
-import { PROTOSS_PYLON } from '../../constants/theme/colors';
-import { TRANSITION } from '../../constants/theme/styles';
+import { SelectionMarker, OptionButton, SwitchContainer } from './atoms';
 
 interface SwitchProps<value> {
   options: {
@@ -17,48 +15,21 @@ const Switch = ({
   firstOptionSelected,
   onClick,
 }: SwitchProps<any>) => {
+  const selectedLabel = firstOptionSelected
+    ? options.first.label
+    : options.second.label;
   return (
-    <div
-      style={{ width: `${2 * BUTTON_WIDTH}px`, height: `${BUTTON_HEIGHT}px` }}
-    >
-      <div
-        style={{
-          width: `${BUTTON_WIDTH}px`,
-          height: '100%',
-          boxSizing: 'border-box',
-          background: `${PROTOSS_PYLON}`,
-          position: 'absolute',
-          transform: `translate(${
-            firstOptionSelected ? 0 : BUTTON_WIDTH
-          }px, 0)`,
-          transition: `${TRANSITION}s`,
-        }}
-      ></div>
-      <div
-        onClick={() => onClick(true)}
-        style={{
-          width: `${BUTTON_WIDTH}px`,
-          height: `${BUTTON_HEIGHT}px`,
-          display: 'inline-block',
-          cursor: 'pointer',
-          position: 'relative',
-        }}
-      >
+    <SwitchContainer>
+      <OptionButton onClick={() => onClick(true)}>
         <Center>{options.first.label}</Center>
-      </div>
-      <div
-        onClick={() => onClick(false)}
-        style={{
-          width: `${BUTTON_WIDTH}px`,
-          height: `${BUTTON_HEIGHT}px`,
-          display: 'inline-block',
-          cursor: 'pointer',
-          position: 'relative',
-        }}
-      >
+      </OptionButton>
+      <OptionButton onClick={() => onClick(false)}>
         <Center>{options.second.label}</Center>
-      </div>
-    </div>
+      </OptionButton>
+      <SelectionMarker firstOptionSelected={firstOptionSelected}>
+        <Center>{selectedLabel}</Center>
+      </SelectionMarker>
+    </SwitchContainer>
   );
 };
 
