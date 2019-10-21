@@ -41,6 +41,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.initializeSpotlight();
     this.initializeCamera();
     this.initializeControls();
+    this.initializePlane();
     this.renderStructure();
     this.props.structure.nodes.addChangeListener(() => {
       this.renderStructure();
@@ -128,6 +129,33 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.controls!.target.set(center.x, center.y, center.z);
   };
 
+  initializePlane = () => {
+    const planeGeometry = this.resourceTracker.track(
+      new THREE.PlaneBufferGeometry(2000, 2000)
+    );
+    //Create a plane that receives shadows (but does not cast them)
+    const planeMaterial = this.resourceTracker.track(
+      new THREE.MeshPhongMaterial({
+        color: 0x808080,
+        dithering: true,
+      })
+    );
+
+    const planeMesh = this.resourceTracker.track(
+      new THREE.Mesh(planeGeometry, planeMaterial)
+    );
+    // Lower the floor plane enough to avoid the radius of the struts causing
+    // intersection with the ground.
+    const maxRadius = Math.max(
+      ...this.props.structure.struts.get().map(({ radius }) => radius),
+      0
+    );
+    planeMesh.position.set(0, -maxRadius, 0);
+    planeMesh.rotation.x = -Math.PI * 0.5;
+    planeMesh.receiveShadow = true;
+    this.scene!.add(planeMesh);
+  };
+
   renderStructure = () => {
     const { nodes, struts } = this.props.structure;
     nodes.get().forEach(node => {
@@ -187,31 +215,6 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       strutMesh.receiveShadow = false; //default
       this.strutMeshes[id] = strutMesh;
       this.scene!.add(strutMesh);
-
-      const planeGeometry = this.resourceTracker.track(
-        new THREE.PlaneBufferGeometry(2000, 2000)
-      );
-      //Create a plane that receives shadows (but does not cast them)
-      const planeMaterial = this.resourceTracker.track(
-        new THREE.MeshPhongMaterial({
-          color: 0x808080,
-          dithering: true,
-        })
-      );
-
-      const planeMesh = this.resourceTracker.track(
-        new THREE.Mesh(planeGeometry, planeMaterial)
-      );
-      // Lower the floor plane enough to avoid the radius of the struts causing
-      // intersection with the ground.
-      const maxRadius = Math.max(
-        ...struts.get().map(({ radius }) => radius),
-        0
-      );
-      planeMesh.position.set(0, -maxRadius, 0);
-      planeMesh.rotation.x = -Math.PI * 0.5;
-      planeMesh.receiveShadow = true;
-      this.scene!.add(planeMesh);
     });
   };
 
