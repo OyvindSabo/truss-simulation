@@ -4,6 +4,7 @@ import { StructureEditorContext } from '../../../types';
 import { UPDATE_STRUCTURE_EDITOR_CONTEXT } from '../../../customEvents';
 import { state } from '../../../state';
 import CreateNodeEditor from './createNodeEditor/CreateNodeEditor';
+import EditStructureEditor from './editStructureEditor/EditStructureEditor';
 
 interface StructureEditorProps {
   structure: Structure;
@@ -23,10 +24,12 @@ const StructureEditor = ({ structure }: StructureEditorProps) => {
     };
   }, []);
 
+  if (context === StructureEditorContext.EditStructure) {
+    return <EditStructureEditor structure={structure} />;
+  }
   if (context === StructureEditorContext.CreateNode) {
     return <CreateNodeEditor structure={structure} />;
   }
-  console.log('context: ', context);
   return null;
 };
 

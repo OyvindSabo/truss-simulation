@@ -29,21 +29,12 @@ const StructuresView: React.FunctionComponent<RouteComponentProps> = ({
   }, []);
   return (
     <>
-      <CreateNewStructureModal
-        active={shouldDisplayModal}
-        onOutsideClick={() => setShouldDisplayModal(false)}
-        onCancel={() => setShouldDisplayModal(false)}
-        onSubmit={({ name, description }) => {
-          const newStructure = new Structure({ name, description });
-          state.structures.add(newStructure);
-          history.push(`/structures/${newStructure.id}`);
-        }}
-      />
       <PreviewBox
         label="CREATE NEW STRUCTURE"
         onClick={() => {
-          console.log('Display modal');
-          setShouldDisplayModal(true);
+          const newStructure = new Structure({});
+          state.structures.add(newStructure);
+          history.push(`/structures/${newStructure.id}`);
         }}
       >
         <div style={{ background: HINT_OF_PENSIVE, height: '100%' }}>

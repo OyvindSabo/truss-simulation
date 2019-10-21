@@ -25,12 +25,12 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   resourceTracker?: any;
   nodeMeshes: { [key: string]: THREE.Mesh };
   strutMeshes: { [key: string]: THREE.Mesh };
-  helperMeshes: { [key: string]: THREE.Mesh };
+  helperMeshes: THREE.Mesh[];
   constructor(props: any) {
     super(props);
     this.nodeMeshes = {};
     this.strutMeshes = {};
-    this.helperMeshes = {};
+    this.helperMeshes = [];
   }
 
   componentDidMount() {
@@ -42,12 +42,14 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.initializeCamera();
     this.initializeControls();
     this.initializePlane();
+    this.initializeHelperSpheres();
     this.renderStructure();
     this.props.structure.nodes.addChangeListener(() => {
       this.renderStructure();
     });
     if (this.props.editMode && this.resourceTracker) {
-      this.showHelperSpheres();
+      this.initializeHelperSpheres();
+      this.addHelperSpheres();
     }
 
     this.animate();
@@ -225,7 +227,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       });
   };
 
-  showHelperSpheres = () => {
+  initializeHelperSpheres = () => {
     const baseUnit = this.props.baseUnit || 1;
     const radius = baseUnit / 20;
     const nodeGeometry = this.resourceTracker.track(
@@ -241,18 +243,24 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
             new THREE.Mesh(nodeGeometry, nodeMaterial)
           );
           nodeMesh.position.set(x, y, z);
-          const helperId = JSON.stringify({ x, y, z });
-          this.helperMeshes[helperId] = nodeMesh;
-          this.scene!.add(nodeMesh);
+          this.helperMeshes.push(nodeMesh);
         }
       }
     }
   };
 
-  hideHelperSpheres = () => {
-    Object.entries(this.helperMeshes).forEach(([helperId, helperMesh]) => {
+  addHelperSpheres = () => {
+    if (!this.helperMeshes.length) {
+      this.initializeHelperSpheres();
+    }
+    this.helperMeshes.forEach(helperMesh => {
+      this.scene!.add(helperMesh);
+    });
+  };
+
+  removeHelperSpheres = () => {
+    this.helperMeshes.forEach(helperMesh => {
       this.scene!.remove(helperMesh);
-      delete this.helperMeshes[helperId];
     });
   };
 
@@ -360,9 +368,9 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   componentDidUpdate = (prevProps: SpaceFrameVisualizationProps) => {
     if (this.props !== prevProps) {
       if (this.props.editMode && this.resourceTracker) {
-        this.showHelperSpheres();
+        this.addHelperSpheres();
       } else {
-        this.hideHelperSpheres();
+        this.removeHelperSpheres();
       }
     }
   };

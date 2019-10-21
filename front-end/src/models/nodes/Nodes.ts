@@ -31,6 +31,7 @@ class Nodes {
     window.dispatchEvent(UPDATE_NODES);
   }
   addChangeListener(changeListener: () => void) {
+    console.log('Added change listener');
     this._changeListeners.push(changeListener);
   }
 }

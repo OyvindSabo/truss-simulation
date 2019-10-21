@@ -14,13 +14,16 @@ const CreateNodeEditor = ({ structure }: CreateNodeEditorProps) => {
   const [y, setY] = useState<string>('');
   const [z, setZ] = useState<string>('');
   const disabled = !validateCoordinates(x, y, z);
-  console.log('disabled: ', disabled);
   const onClick = disabled
     ? undefined
-    : () =>
+    : () => {
         structure.nodes.add(
           new Node({ x: Number(x), y: Number(y), z: Number(z) })
         );
+        setX('');
+        setY('');
+        setZ('');
+      };
   return (
     <div>
       <table>
