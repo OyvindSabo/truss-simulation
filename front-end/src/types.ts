@@ -38,7 +38,8 @@ export type SpaceFrameData = {
 };
 
 export enum StructureEditorContext {
-  EditStructure = 'EDIT_STRUCTURE',
+  StructureOverview = 'STRUCTURE_OVERVIEW',
+  EditStructureInfo = 'EDIT_STRUCTURE_INFO',
   PreviewNodes = 'PREVIEW_NODES',
   CreateNode = 'CREATE_NODE',
   EditNode = 'EDIT_NODE',

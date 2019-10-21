@@ -5,16 +5,18 @@ import Button from '../../../../components/button/Button';
 import { ButtonType } from '../../../../components/button/types';
 import { validateCoordinates } from './utils';
 import Node from '../../../../models/node/Node';
+import { StructureEditorContext } from '../../../../types';
 
 interface CreateNodeEditorProps {
   structure: Structure;
+  setContext: (structureEditorContext: StructureEditorContext) => void;
 }
-const CreateNodeEditor = ({ structure }: CreateNodeEditorProps) => {
+const CreateNodeEditor = ({ structure, setContext }: CreateNodeEditorProps) => {
   const [x, setX] = useState<string>('');
   const [y, setY] = useState<string>('');
   const [z, setZ] = useState<string>('');
   const disabled = !validateCoordinates(x, y, z);
-  const onClick = disabled
+  const onCreateNodeClick = disabled
     ? undefined
     : () => {
         structure.nodes.add(
@@ -23,6 +25,7 @@ const CreateNodeEditor = ({ structure }: CreateNodeEditorProps) => {
         setX('');
         setY('');
         setZ('');
+        setContext(StructureEditorContext.StructureOverview);
       };
   return (
     <div>
@@ -56,7 +59,7 @@ const CreateNodeEditor = ({ structure }: CreateNodeEditorProps) => {
       <Button
         style={{ width: '100%' }}
         buttonType={ButtonType.Primary}
-        onClick={onClick}
+        onClick={onCreateNodeClick}
       >
         CREATE NODE
       </Button>

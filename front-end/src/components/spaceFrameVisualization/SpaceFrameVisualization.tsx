@@ -235,9 +235,9 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     const nodeMaterial = this.resourceTracker.track(
       new THREE.MeshStandardMaterial({ color: 0xffffff })
     );
-    for (let x = -25; x <= 25; x += baseUnit) {
-      for (let y = 0; y <= 25; y += baseUnit) {
-        for (let z = -25; z <= 25; z += baseUnit) {
+    for (let x = -30; x <= 30; x += baseUnit) {
+      for (let y = 0; y <= 30; y += baseUnit) {
+        for (let z = -30; z <= 30; z += baseUnit) {
           const nodeMesh = this.resourceTracker.track(
             new THREE.Mesh(nodeGeometry, nodeMaterial)
           );

@@ -30,7 +30,7 @@ export class State {
       selectedExperimentId: null,
       selectedMonitoringId: null,
 
-      structureEditorContext: StructureEditorContext.EditStructure,
+      structureEditorContext: StructureEditorContext.StructureOverview,
     };
   }
   load() {
