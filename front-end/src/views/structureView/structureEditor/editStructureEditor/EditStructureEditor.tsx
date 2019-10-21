@@ -3,7 +3,6 @@ import Structure from '../../../../models/structure/Structure';
 import Input from '../../../../components/input/Input';
 import Button from '../../../../components/button/Button';
 import { ButtonType } from '../../../../components/button/types';
-import Node from '../../../../models/node/Node';
 
 interface CreateNodeEditorProps {
   structure: Structure;

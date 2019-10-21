@@ -42,7 +42,6 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.initializeCamera();
     this.initializeControls();
     this.initializePlane();
-    this.initializeHelperSpheres();
     this.renderStructure();
     this.props.structure.nodes.addChangeListener(() => {
       this.renderStructure();
@@ -236,9 +235,9 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     const nodeMaterial = this.resourceTracker.track(
       new THREE.MeshStandardMaterial({ color: 0xffffff })
     );
-    for (let x = -50; x <= 50; x += baseUnit) {
-      for (let y = 0; y <= 50; y += baseUnit) {
-        for (let z = -50; z <= 50; z += baseUnit) {
+    for (let x = -25; x <= 25; x += baseUnit) {
+      for (let y = 0; y <= 25; y += baseUnit) {
+        for (let z = -25; z <= 25; z += baseUnit) {
           const nodeMesh = this.resourceTracker.track(
             new THREE.Mesh(nodeGeometry, nodeMaterial)
           );
@@ -376,13 +375,17 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   };
 
   componentWillUnmount() {
+    console.log('componentWillUnmount');
     if (this.myRef && this.renderer) {
       this.myRef.removeChild(this.renderer.domElement);
+      console.log('Unmounted do,Element from ref');
     }
     if (this.animationFrame) {
       window.cancelAnimationFrame(this.animationFrame);
+      console.log('cancelAnimation');
     }
     this.resourceTracker.dispose();
+    console.log('Disposed resource tracker');
   }
 
   render = () => {

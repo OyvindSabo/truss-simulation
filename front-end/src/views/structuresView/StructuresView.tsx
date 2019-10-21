@@ -5,7 +5,6 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import PreviewBox from '../../components/previewBox/PreviewBox';
 import SpaceFrameVisualization from '../../components/spaceFrameVisualization/SpaceFrameVisualization';
 import plusIcon from '../../assets/icons/plus-icon-white.png';
-import CreateNewStructureModal from '../../components/createNewStructureModal/CreateNewStructureModal';
 import Structure from '../../models/structure/Structure';
 import { HINT_OF_PENSIVE } from '../../constants/theme/colors';
 import { IMAGE_SPACING } from '../../constants/config/sizes';
@@ -13,7 +12,6 @@ import { IMAGE_SPACING } from '../../constants/config/sizes';
 const StructuresView: React.FunctionComponent<RouteComponentProps> = ({
   history,
 }) => {
-  const [shouldDisplayModal, setShouldDisplayModal] = useState<boolean>(false);
   const [structures, setStructures] = useState<Structure[]>(
     state.structures.get()
   );
