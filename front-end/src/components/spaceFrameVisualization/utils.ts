@@ -6,12 +6,12 @@ import Structure from '../../models/structure/Structure';
  * @param param0
  */
 export const getAverageNodePosition = ({ nodes }: Structure) => {
-  const { length } = nodes;
-  return nodes.reduce(
+  const { length } = nodes.get();
+  return nodes.get().reduce(
     (average, node) => ({
-      x: average.x + node.x / length,
-      y: average.y + node.y / length,
-      z: average.z + node.z / length,
+      x: average.x + node.coordinates.get().x / length,
+      y: average.y + node.coordinates.get().y / length,
+      z: average.z + node.coordinates.get().z / length,
     }),
     { x: 0, y: 0, z: 0 }
   );

@@ -42,7 +42,7 @@ const ExperimentView: React.FC<ExperimentProps> = ({
     selectedExperiment.structure &&
     selectedExperiment.deformedStructure ? (
     <SpaceFrameVisualization
-      spaceFrameData={selectedExperiment.structure}
+      structure={selectedExperiment.structure}
       deformedSpaceFrameData={selectedExperiment.deformedStructure}
     />
   ) : (

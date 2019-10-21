@@ -8,7 +8,7 @@ import Center from '../center/Center';
 interface RightPaneProps {
   isOpen: boolean;
   onOpenClose: () => void;
-  children?: JSX.Element[];
+  children: any;
 }
 const RightPane = ({ isOpen, children, onOpenClose }: RightPaneProps) => {
   return (

@@ -7,7 +7,7 @@ import ResourceTracker from './ResourceTracker';
 import Structure from '../../models/structure/Structure';
 
 interface SpaceFrameVisualizationProps {
-  spaceFrameData: Structure;
+  structure: Structure;
   deformedSpaceFrameData?: Structure;
   editMode?: boolean;
   baseUnit?: number;
@@ -41,91 +41,10 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.initializeSpotlight();
     this.initializeCamera();
     this.initializeControls();
-
-    // This is where we start creating the actual space frame
-    const { nodes, struts } = this.props.spaceFrameData;
-    nodes.forEach(node => {
-      const { x, y, z, id } = node;
-      const strutsConnectedToNode = struts
-        .filter(({ sourceId, targetId }) => [sourceId, targetId].includes(id))
-        .map(({ radius }) => radius);
-      const radius = Math.max(...strutsConnectedToNode, 0);
-      const nodeGeometry = this.resourceTracker.track(
-        new THREE.SphereGeometry(radius, 32, 32)
-      );
-      const nodeMaterial = this.resourceTracker.track(
-        new THREE.MeshStandardMaterial({ color: 0xffffff })
-      );
-      const nodeMesh = this.resourceTracker.track(
-        new THREE.Mesh(nodeGeometry, nodeMaterial)
-      );
-      nodeMesh.position.set(x, y, z);
-      this.nodeMeshes[id] = nodeMesh;
-      this.scene!.add(nodeMesh);
+    this.renderStructure();
+    this.props.structure.nodes.addChangeListener(() => {
+      this.renderStructure();
     });
-
-    struts.forEach(({ id, radius, sourceId, targetId }) => {
-      const sourceNode = nodes.find(({ id }) => id === sourceId);
-      const targetNode = nodes.find(({ id }) => id === targetId);
-      if (!sourceNode || !targetNode) return;
-      const { x: sourceX, y: sourceY, z: sourceZ } = sourceNode;
-      const { x: targetX, y: targetY, z: targetZ } = targetNode;
-      const structVector = this.resourceTracker.track(
-        new THREE.Curve<Vector3>()
-      );
-      structVector.getPoint = (t: number) =>
-        this.resourceTracker.track(
-          new THREE.Vector3(
-            sourceX + t * (targetX - sourceX),
-            sourceY + t * (targetY - sourceY),
-            sourceZ + t * (targetZ - sourceZ)
-          )
-        );
-
-      const strutGeometry = this.resourceTracker.track(
-        new THREE.TubeGeometry(
-          structVector, // path
-          1, // tubularSegments
-          radius, // radius
-          32 // radiusSegments
-        )
-      );
-      const strutMaterial = this.resourceTracker.track(
-        new THREE.MeshStandardMaterial({
-          color: 0xffffff,
-        })
-      );
-      const strutMesh = this.resourceTracker.track(
-        new THREE.Mesh(strutGeometry, strutMaterial)
-      );
-      strutMesh.castShadow = true; //default is false
-      strutMesh.receiveShadow = false; //default
-      this.strutMeshes[id] = strutMesh;
-      this.scene!.add(strutMesh);
-    });
-
-    const planeGeometry = this.resourceTracker.track(
-      new THREE.PlaneBufferGeometry(2000, 2000)
-    );
-    //Create a plane that receives shadows (but does not cast them)
-    const planeMaterial = this.resourceTracker.track(
-      new THREE.MeshPhongMaterial({
-        color: 0x808080,
-        dithering: true,
-      })
-    );
-
-    const planeMesh = this.resourceTracker.track(
-      new THREE.Mesh(planeGeometry, planeMaterial)
-    );
-    // Lower the floor plane enough to avoid the radius of the struts causing
-    // intersection with the ground.
-    const maxRadius = Math.max(...struts.map(({ radius }) => radius), 0);
-    planeMesh.position.set(0, -maxRadius, 0);
-    planeMesh.rotation.x = -Math.PI * 0.5;
-    planeMesh.receiveShadow = true;
-    this.scene!.add(planeMesh);
-
     if (this.props.editMode && this.resourceTracker) {
       this.showHelperSpheres();
     }
@@ -205,8 +124,110 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.controls!.minDistance = 1;
     this.controls!.maxDistance = 500;
     this.controls!.enablePan = false;
-    const center = getAverageNodePosition(this.props.spaceFrameData);
+    const center = getAverageNodePosition(this.props.structure);
     this.controls!.target.set(center.x, center.y, center.z);
+  };
+
+  renderStructure = () => {
+    console.log('render structure');
+    const { nodes, struts } = this.props.structure;
+    nodes.get().forEach(node => {
+      const { id } = node;
+      const { x, y, z } = node.coordinates.get();
+      const strutsConnectedToNode = struts
+        .filter(({ sourceId, targetId }) => [sourceId, targetId].includes(id))
+        .map(({ radius }) => radius);
+      const radius = Math.max(...strutsConnectedToNode, 0);
+      const nodeGeometry = this.resourceTracker.track(
+        new THREE.SphereGeometry(radius, 32, 32)
+      );
+      const nodeMaterial = this.resourceTracker.track(
+        new THREE.MeshStandardMaterial({ color: 0xffffff })
+      );
+      const nodeMesh = this.resourceTracker.track(
+        new THREE.Mesh(nodeGeometry, nodeMaterial)
+      );
+      nodeMesh.position.set(x, y, z);
+      this.nodeMeshes[id] = nodeMesh;
+      this.scene!.add(nodeMesh);
+    });
+
+    struts.forEach(({ id, radius, sourceId, targetId }) => {
+      const sourceNode = nodes.get().find(({ id }) => id === sourceId);
+      const targetNode = nodes.get().find(({ id }) => id === targetId);
+      if (!sourceNode || !targetNode) return;
+      const {
+        x: sourceX,
+        y: sourceY,
+        z: sourceZ,
+      } = sourceNode.coordinates.get();
+      const {
+        x: targetX,
+        y: targetY,
+        z: targetZ,
+      } = targetNode.coordinates.get();
+      const structVector = this.resourceTracker.track(
+        new THREE.Curve<Vector3>()
+      );
+      structVector.getPoint = (t: number) =>
+        this.resourceTracker.track(
+          new THREE.Vector3(
+            sourceX + t * (targetX - sourceX),
+            sourceY + t * (targetY - sourceY),
+            sourceZ + t * (targetZ - sourceZ)
+          )
+        );
+
+      const strutGeometry = this.resourceTracker.track(
+        new THREE.TubeGeometry(
+          structVector, // path
+          1, // tubularSegments
+          radius, // radius
+          32 // radiusSegments
+        )
+      );
+      const strutMaterial = this.resourceTracker.track(
+        new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+        })
+      );
+      const strutMesh = this.resourceTracker.track(
+        new THREE.Mesh(strutGeometry, strutMaterial)
+      );
+      strutMesh.castShadow = true; //default is false
+      strutMesh.receiveShadow = false; //default
+      this.strutMeshes[id] = strutMesh;
+      this.scene!.add(strutMesh);
+
+      const planeGeometry = this.resourceTracker.track(
+        new THREE.PlaneBufferGeometry(2000, 2000)
+      );
+      //Create a plane that receives shadows (but does not cast them)
+      const planeMaterial = this.resourceTracker.track(
+        new THREE.MeshPhongMaterial({
+          color: 0x808080,
+          dithering: true,
+        })
+      );
+
+      const planeMesh = this.resourceTracker.track(
+        new THREE.Mesh(planeGeometry, planeMaterial)
+      );
+      // Lower the floor plane enough to avoid the radius of the struts causing
+      // intersection with the ground.
+      const maxRadius = Math.max(...struts.map(({ radius }) => radius), 0);
+      planeMesh.position.set(0, -maxRadius, 0);
+      planeMesh.rotation.x = -Math.PI * 0.5;
+      planeMesh.receiveShadow = true;
+      this.scene!.add(planeMesh);
+    });
+  };
+
+  clearStructure = () => {
+    this.scene &&
+      this.scene.children.forEach(child => {
+        child.remove();
+      });
   };
 
   showHelperSpheres = () => {
@@ -247,16 +268,22 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       return;
     }
     // If this.props.deformedSpaceFrameData
-    const { nodes, struts } = this.props.spaceFrameData;
+    const { nodes, struts } = this.props.structure;
     const { nodes: deformedNodes } = this.props.deformedSpaceFrameData;
     const animationFrame = requestAnimationFrame(this.animate);
     this.animationFrame = animationFrame;
-    nodes.forEach(({ id, x, y, z }) => {
-      const deformedNode = deformedNodes.find(
-        ({ id: deformedId }) => deformedId === id
-      );
+    nodes.get().forEach(node => {
+      const { id } = node;
+      const { x, y, z } = node.coordinates.get();
+      const deformedNode = deformedNodes
+        .get()
+        .find(({ id: deformedId }) => deformedId === id);
       if (!deformedNode) return;
-      const { x: deformedX, y: deformedY, z: deformedZ } = deformedNode;
+      const {
+        x: deformedX,
+        y: deformedY,
+        z: deformedZ,
+      } = deformedNode.coordinates.get();
       this.nodeMeshes[id].position.x = getAnimatedPosition(
         x,
         deformedX,
@@ -274,14 +301,14 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       );
     });
     struts.forEach(({ id, radius, sourceId, targetId }) => {
-      const sourceNode = nodes.find(({ id }) => id === sourceId);
-      const targetNode = nodes.find(({ id }) => id === targetId);
-      const deformedSourceNode = deformedNodes.find(
-        ({ id }) => id === sourceId
-      );
-      const deformedTargetNode = deformedNodes.find(
-        ({ id }) => id === targetId
-      );
+      const sourceNode = nodes.get().find(({ id }) => id === sourceId);
+      const targetNode = nodes.get().find(({ id }) => id === targetId);
+      const deformedSourceNode = deformedNodes
+        .get()
+        .find(({ id }) => id === sourceId);
+      const deformedTargetNode = deformedNodes
+        .get()
+        .find(({ id }) => id === targetId);
       if (
         !sourceNode ||
         !targetNode ||
@@ -290,33 +317,33 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       )
         return;
       const newSourceX = getAnimatedPosition(
-        sourceNode.x,
-        deformedSourceNode.x,
+        sourceNode.coordinates.get().x,
+        deformedSourceNode.coordinates.get().x,
         animationFrame
       );
       const newSourceY = getAnimatedPosition(
-        sourceNode.y,
-        deformedSourceNode.y,
+        sourceNode.coordinates.get().y,
+        deformedSourceNode.coordinates.get().y,
         animationFrame
       );
       const newSourceZ = getAnimatedPosition(
-        sourceNode.z,
-        deformedSourceNode.z,
+        sourceNode.coordinates.get().z,
+        deformedSourceNode.coordinates.get().z,
         animationFrame
       );
       const newTargetX = getAnimatedPosition(
-        targetNode.x,
-        deformedTargetNode.x,
+        targetNode.coordinates.get().x,
+        deformedTargetNode.coordinates.get().x,
         animationFrame
       );
       const newTargetY = getAnimatedPosition(
-        targetNode.y,
-        deformedTargetNode.y,
+        targetNode.coordinates.get().y,
+        deformedTargetNode.coordinates.get().y,
         animationFrame
       );
       const newTargetZ = getAnimatedPosition(
-        targetNode.z,
-        deformedTargetNode.z,
+        targetNode.coordinates.get().z,
+        deformedTargetNode.coordinates.get().z,
         animationFrame
       );
       const structVector = this.resourceTracker.track(

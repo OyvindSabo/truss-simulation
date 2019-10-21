@@ -36,3 +36,12 @@ export type SpaceFrameData = {
   nodes: Node[];
   struts: Strut[];
 };
+
+export enum StructureEditorContext {
+  PreviewNodes = 'PREVIEW_NODES',
+  CreateNode = 'CREATE_NODE',
+  EditNode = 'EDIT_NODE',
+  PreviewStruts = 'PREVIEW_STRUTS',
+  CreateStrut = 'CREATE_STRUT',
+  EditStrut = 'EDIT_STRUT',
+}

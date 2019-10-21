@@ -2,11 +2,13 @@ import {
   UPDATE_SELECTED_STRUCTURE_ID,
   UPDATE_SELECTED_EXPERIMENT_ID,
   UPDATE_SELECTED_MONITOR_ID,
+  UPDATE_STRUCTURE_EDITOR_CONTEXT,
 } from './customEvents';
 import Structures from './models/structures/Structures';
 import { loadStructures, loadExperiments } from './services/services';
 import Experiments from './models/experiments/Experiments';
 import Monitors from './models/monitors/Monitors';
+import { StructureEditorContext } from './types';
 
 export class State {
   structures: Structures;
@@ -16,6 +18,8 @@ export class State {
     selectedStructureId: string | null;
     selectedExperimentId: string | null;
     selectedMonitoringId: string | null;
+
+    structureEditorContext: StructureEditorContext;
   };
   constructor() {
     this.structures = new Structures();
@@ -25,6 +29,8 @@ export class State {
       selectedStructureId: null,
       selectedExperimentId: null,
       selectedMonitoringId: null,
+
+      structureEditorContext: StructureEditorContext.CreateNode,
     };
   }
   load() {
@@ -56,6 +62,14 @@ export class State {
   setSelectedMonitorId(selectedMonitoringId: string | null) {
     this._state.selectedMonitoringId = selectedMonitoringId;
     window.dispatchEvent(UPDATE_SELECTED_MONITOR_ID);
+  }
+
+  getStructureEditorContext() {
+    return this._state.structureEditorContext;
+  }
+  setStructureEditorContext(structureEditorContext: StructureEditorContext) {
+    this._state.structureEditorContext = structureEditorContext;
+    window.dispatchEvent(UPDATE_STRUCTURE_EDITOR_CONTEXT);
   }
 }
 

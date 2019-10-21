@@ -20,17 +20,21 @@ const highlightedButtonColor = new Map([
   [ButtonType.Danger, HARLEY_DAVIDSON_ORANGE],
 ]);
 
-const Button = styled.div`
+interface ButtonProps {
+  buttonType: ButtonType;
+  children: any;
+}
+const Button = styled.div<ButtonProps>`
   padding: ${PADDING}px;
   display: inline-block;
   box-sizing: border-box;
-  background: ${({ buttonType }: { buttonType: ButtonType }) =>
+  background: ${({ buttonType }) =>
     buttonColor.get(buttonType) || HINT_OF_PENSIVE};
   transition: ${TRANSITION}s;
   cursor: pointer;
   color: ${LYNX_WHITE};
   &:hover {
-    background: ${({ buttonType }: { buttonType: ButtonType }) =>
+    background: ${({ buttonType }) =>
       highlightedButtonColor.get(buttonType) || HINT_OF_PENSIVE};
   }
 `;
