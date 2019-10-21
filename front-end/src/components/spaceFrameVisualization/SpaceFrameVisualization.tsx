@@ -298,10 +298,10 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     struts.get().forEach(({ id, radius, source, target }) => {
       const deformedSourceNode = deformedNodes
         .get()
-        .find(node => node === source);
+        .find(({ id }) => id === source.id);
       const deformedTargetNode = deformedNodes
         .get()
-        .find(node => node === target);
+        .find(({ id }) => id === target.id);
       if (!source || !target || !deformedSourceNode || !deformedTargetNode)
         return;
       const newSourceX = getAnimatedPosition(
