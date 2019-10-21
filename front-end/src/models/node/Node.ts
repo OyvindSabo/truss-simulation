@@ -13,9 +13,9 @@ class Node {
   id: string;
   name: Name;
   coordinates: Coordinates;
-  constructor({ id, name = '', x, y, z }: NodeProps) {
+  constructor({ id, name, x, y, z }: NodeProps) {
     this.id = id || `${new Date().getTime()}`;
-    this.name = new Name(name);
+    this.name = new Name(name || '');
     this.coordinates = new Coordinates({ x, y, z });
   }
 }

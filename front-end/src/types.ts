@@ -14,7 +14,7 @@ export type OnMouseMove = (
   event: React.MouseEvent<HTMLDivElement, MouseEvent>
 ) => void;
 
-export type Node = {
+export type NodeData = {
   id: string;
   name: string;
   x: number;
@@ -22,7 +22,7 @@ export type Node = {
   z: number;
 };
 
-export type Strut = {
+export type StrutData = {
   id: string;
   name: string;
   sourceId: string;
@@ -33,8 +33,8 @@ export type Strut = {
 export type SpaceFrameData = {
   id: string;
   name: string;
-  nodes: Node[];
-  struts: Strut[];
+  nodes: NodeData[];
+  struts: StrutData[];
 };
 
 export enum StructureEditorContext {

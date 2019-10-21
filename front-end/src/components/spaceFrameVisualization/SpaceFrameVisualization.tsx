@@ -129,13 +129,13 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   };
 
   renderStructure = () => {
-    console.log('render structure');
     const { nodes, struts } = this.props.structure;
     nodes.get().forEach(node => {
       const { id } = node;
       const { x, y, z } = node.coordinates.get();
       const strutsConnectedToNode = struts
-        .filter(({ sourceId, targetId }) => [sourceId, targetId].includes(id))
+        .get()
+        .filter(({ source, target }) => [source, target].includes(node))
         .map(({ radius }) => radius);
       const radius = Math.max(...strutsConnectedToNode, 0);
       const nodeGeometry = this.resourceTracker.track(
@@ -152,20 +152,9 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       this.scene!.add(nodeMesh);
     });
 
-    struts.forEach(({ id, radius, sourceId, targetId }) => {
-      const sourceNode = nodes.get().find(({ id }) => id === sourceId);
-      const targetNode = nodes.get().find(({ id }) => id === targetId);
-      if (!sourceNode || !targetNode) return;
-      const {
-        x: sourceX,
-        y: sourceY,
-        z: sourceZ,
-      } = sourceNode.coordinates.get();
-      const {
-        x: targetX,
-        y: targetY,
-        z: targetZ,
-      } = targetNode.coordinates.get();
+    struts.get().forEach(({ id, radius, source, target }) => {
+      const { x: sourceX, y: sourceY, z: sourceZ } = source.coordinates.get();
+      const { x: targetX, y: targetY, z: targetZ } = target.coordinates.get();
       const structVector = this.resourceTracker.track(
         new THREE.Curve<Vector3>()
       );
@@ -215,7 +204,10 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       );
       // Lower the floor plane enough to avoid the radius of the struts causing
       // intersection with the ground.
-      const maxRadius = Math.max(...struts.map(({ radius }) => radius), 0);
+      const maxRadius = Math.max(
+        ...struts.get().map(({ radius }) => radius),
+        0
+      );
       planeMesh.position.set(0, -maxRadius, 0);
       planeMesh.rotation.x = -Math.PI * 0.5;
       planeMesh.receiveShadow = true;
@@ -300,49 +292,42 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         animationFrame
       );
     });
-    struts.forEach(({ id, radius, sourceId, targetId }) => {
-      const sourceNode = nodes.get().find(({ id }) => id === sourceId);
-      const targetNode = nodes.get().find(({ id }) => id === targetId);
+    struts.get().forEach(({ id, radius, source, target }) => {
       const deformedSourceNode = deformedNodes
         .get()
-        .find(({ id }) => id === sourceId);
+        .find(node => node === source);
       const deformedTargetNode = deformedNodes
         .get()
-        .find(({ id }) => id === targetId);
-      if (
-        !sourceNode ||
-        !targetNode ||
-        !deformedSourceNode ||
-        !deformedTargetNode
-      )
+        .find(node => node === target);
+      if (!source || !target || !deformedSourceNode || !deformedTargetNode)
         return;
       const newSourceX = getAnimatedPosition(
-        sourceNode.coordinates.get().x,
+        source.coordinates.get().x,
         deformedSourceNode.coordinates.get().x,
         animationFrame
       );
       const newSourceY = getAnimatedPosition(
-        sourceNode.coordinates.get().y,
+        source.coordinates.get().y,
         deformedSourceNode.coordinates.get().y,
         animationFrame
       );
       const newSourceZ = getAnimatedPosition(
-        sourceNode.coordinates.get().z,
+        source.coordinates.get().z,
         deformedSourceNode.coordinates.get().z,
         animationFrame
       );
       const newTargetX = getAnimatedPosition(
-        targetNode.coordinates.get().x,
+        target.coordinates.get().x,
         deformedTargetNode.coordinates.get().x,
         animationFrame
       );
       const newTargetY = getAnimatedPosition(
-        targetNode.coordinates.get().y,
+        target.coordinates.get().y,
         deformedTargetNode.coordinates.get().y,
         animationFrame
       );
       const newTargetZ = getAnimatedPosition(
-        targetNode.coordinates.get().z,
+        target.coordinates.get().z,
         deformedTargetNode.coordinates.get().z,
         animationFrame
       );
