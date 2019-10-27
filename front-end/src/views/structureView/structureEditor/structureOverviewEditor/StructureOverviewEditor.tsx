@@ -32,6 +32,15 @@ const StructureOverviewEditor = ({
         CREATE NODE
       </Button>
     </Margin>
+    <Margin>
+      <Button
+        style={{ width: '100%' }}
+        buttonType={ButtonType.Primary}
+        onClick={() => setContext(StructureEditorContext.CreateNode)}
+      >
+        CREATE STRUT
+      </Button>
+    </Margin>
   </div>
 );
 
