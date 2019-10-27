@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import { PADDING } from '../../constants/theme/styles';
+import { MARGIN } from '../../constants/theme/styles';
 
-const Padding = styled.div`
-  padding: ${PADDING}px;
+const Margin = styled.div`
+  margin: ${MARGIN}px;
 `;
 
-export default Padding;
+export default Margin;

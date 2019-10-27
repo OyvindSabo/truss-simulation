@@ -46,6 +46,9 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.props.structure.nodes.addChangeListener(() => {
       this.renderStructure();
     });
+    this.props.structure.struts.addChangeListener(() => {
+      this.renderStructure();
+    });
     if (this.props.editMode && this.resourceTracker) {
       this.initializeHelperSpheres();
       this.addHelperSpheres();

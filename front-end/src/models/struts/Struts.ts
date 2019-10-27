@@ -27,6 +27,9 @@ class Struts {
   }
   set(struts: Strut[]) {
     this._struts = struts;
+    this._changeListeners.forEach(changeListener => {
+      changeListener();
+    });
     window.dispatchEvent(UPDATE_NODES);
   }
   addChangeListener(changeListener: () => void) {

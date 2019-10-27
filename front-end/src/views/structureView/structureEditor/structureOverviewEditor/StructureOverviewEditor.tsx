@@ -36,7 +36,7 @@ const StructureOverviewEditor = ({
       <Button
         style={{ width: '100%' }}
         buttonType={ButtonType.Primary}
-        onClick={() => setContext(StructureEditorContext.CreateNode)}
+        onClick={() => setContext(StructureEditorContext.CreateStrut)}
       >
         CREATE STRUT
       </Button>

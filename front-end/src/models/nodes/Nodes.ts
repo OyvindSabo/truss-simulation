@@ -28,6 +28,9 @@ class Nodes {
   }
   set(nodes: Node[]) {
     this._nodes = nodes;
+    this._changeListeners.forEach(changeListener => {
+      changeListener();
+    });
     window.dispatchEvent(UPDATE_NODES);
   }
   addChangeListener(changeListener: () => void) {

@@ -22,20 +22,28 @@ const highlightedButtonColor = new Map([
 
 interface ButtonProps {
   buttonType: ButtonType;
+  disabled?: boolean;
+  highlighted?: boolean;
   children: any;
 }
 const Button = styled.div<ButtonProps>`
   padding: ${PADDING}px;
   display: inline-block;
   box-sizing: border-box;
-  background: ${({ buttonType }) =>
-    buttonColor.get(buttonType) || HINT_OF_PENSIVE};
+  background: ${({ buttonType, disabled, highlighted }) =>
+    disabled
+      ? HINT_OF_PENSIVE
+      : highlighted
+      ? highlightedButtonColor.get(buttonType)
+      : buttonColor.get(buttonType) || HINT_OF_PENSIVE};
   transition: ${TRANSITION}s;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
   color: ${LYNX_WHITE};
   &:hover {
-    background: ${({ buttonType }) =>
-      highlightedButtonColor.get(buttonType) || HINT_OF_PENSIVE};
+    background: ${({ buttonType, disabled }) =>
+      disabled
+        ? HINT_OF_PENSIVE
+        : highlightedButtonColor.get(buttonType) || HINT_OF_PENSIVE};
   }
 `;
 

@@ -60,6 +60,7 @@ const CreateNodeEditor = ({ structure, setContext }: CreateNodeEditorProps) => {
         style={{ width: '100%' }}
         buttonType={ButtonType.Primary}
         onClick={onCreateNodeClick}
+        disabled={disabled}
       >
         CREATE NODE
       </Button>

@@ -7,6 +7,7 @@ import CreateNodeEditor from './createNodeEditor/CreateNodeEditor';
 import EditStructureEditor from './editStructureEditor/EditStructureEditor';
 import { StructureEditorHeader } from './atoms';
 import StructureOverviewEditor from './structureOverviewEditor/StructureOverviewEditor';
+import CreateStrutEditor from './createStrutEditor/CreateStrutEditor';
 
 interface StructureEditorProps {
   structure: Structure;
@@ -50,6 +51,14 @@ const StructureEditor = ({ structure }: StructureEditorProps) => {
       <>
         <StructureEditorHeader>CREATE NODE</StructureEditorHeader>
         <CreateNodeEditor structure={structure} setContext={setContext} />
+      </>
+    );
+  }
+  if (context === StructureEditorContext.CreateStrut) {
+    return (
+      <>
+        <StructureEditorHeader>CREATE STRUT</StructureEditorHeader>
+        <CreateStrutEditor structure={structure} setContext={setContext} />
       </>
     );
   }

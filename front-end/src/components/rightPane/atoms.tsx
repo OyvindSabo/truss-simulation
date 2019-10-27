@@ -11,7 +11,7 @@ import { OnClick } from '../../types';
 export const RightPaneContainer = styled.div`
   background: ${RIGHT_PANE_BACKGROUND};
   position: fixed;
-  height: 100vh;
+  height: calc(100vh - ${TOP_BAR_HEIGHT}px);
   width: ${RIGHT_PANE_WIDTH}px;
   right: ${({ isOpen }: { isOpen: boolean }) =>
     isOpen ? 0 : -RIGHT_PANE_WIDTH}px;
