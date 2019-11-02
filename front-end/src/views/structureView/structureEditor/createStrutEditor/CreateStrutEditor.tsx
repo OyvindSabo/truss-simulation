@@ -39,7 +39,7 @@ const CreateStrutEditor = ({
         <div
           style={{
             height: '100%',
-            overflowY: 'scroll',
+            overflowY: 'auto',
           }}
         >
           {structure.nodes.get().map(node => (
