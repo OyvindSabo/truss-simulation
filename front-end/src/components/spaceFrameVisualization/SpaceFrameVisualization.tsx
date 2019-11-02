@@ -49,11 +49,6 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.props.structure.struts.addChangeListener(() => {
       this.renderStructure();
     });
-    if (this.props.editMode && this.resourceTracker) {
-      this.initializeHelperSpheres();
-      this.addHelperSpheres();
-    }
-
     this.animate();
   }
 
@@ -169,19 +164,27 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         .get()
         .filter(({ source, target }) => [source, target].includes(node))
         .map(({ radius }) => radius);
-      const radius = Math.max(...strutsConnectedToNode, 0);
+
+      const baseUnit = this.props.baseUnit || 1;
+      const radius = this.props.editMode
+        ? baseUnit / 20
+        : Math.max(...strutsConnectedToNode, 0);
       const nodeGeometry = this.resourceTracker.track(
         new THREE.SphereGeometry(radius, 32, 32)
       );
-      const nodeMaterial = this.resourceTracker.track(
-        new THREE.MeshStandardMaterial({ color: 0xffffff })
-      );
-      const nodeMesh = this.resourceTracker.track(
-        new THREE.Mesh(nodeGeometry, nodeMaterial)
-      );
-      nodeMesh.position.set(x, y, z);
-      this.nodeMeshes[id] = nodeMesh;
-      this.scene!.add(nodeMesh);
+      if (this.nodeMeshes[id]) {
+        this.nodeMeshes[id].geometry = nodeGeometry;
+      } else {
+        const nodeMaterial = this.resourceTracker.track(
+          new THREE.MeshStandardMaterial({ color: 0xffffff })
+        );
+        const nodeMesh = this.resourceTracker.track(
+          new THREE.Mesh(nodeGeometry, nodeMaterial)
+        );
+        nodeMesh.position.set(x, y, z);
+        this.nodeMeshes[id] = nodeMesh;
+        this.scene!.add(nodeMesh);
+      }
     });
 
     struts.get().forEach(({ id, radius, source, target }) => {
@@ -369,26 +372,27 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
 
   componentDidUpdate = (prevProps: SpaceFrameVisualizationProps) => {
     if (this.props !== prevProps) {
-      if (this.props.editMode && this.resourceTracker) {
-        this.addHelperSpheres();
+      this.renderStructure();
+      /*if (this.props.editMode && this.resourceTracker) {
+        // We currently o nothing here, but might want to pull out the process
+        // of enlarging all nodes in the structure here.
+        // In the future, I might also want to render a coordingate system here.
       } else {
-        this.removeHelperSpheres();
-      }
+        // We currently o nothing here, but might want to pull out the process
+        // of making the nodes in the structure match the thickest edge, from
+        // renderStructure to here.
+      }*/
     }
   };
 
   componentWillUnmount() {
-    console.log('componentWillUnmount');
     if (this.myRef && this.renderer) {
       this.myRef.removeChild(this.renderer.domElement);
-      console.log('Unmounted do,Element from ref');
     }
     if (this.animationFrame) {
       window.cancelAnimationFrame(this.animationFrame);
-      console.log('cancelAnimation');
     }
     this.resourceTracker.dispose();
-    console.log('Disposed resource tracker');
   }
 
   render = () => {
