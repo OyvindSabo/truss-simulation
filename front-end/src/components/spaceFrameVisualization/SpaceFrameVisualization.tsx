@@ -5,6 +5,10 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { getAverageNodePosition, getAnimatedPosition } from './utils';
 import ResourceTracker from './ResourceTracker';
 import Structure from '../../models/structure/Structure';
+import {
+  STRUCTURE_COLOR,
+  HIGHLIGHTED_STRUCTURE_COLOR,
+} from '../../constants/config/colors';
 
 interface SpaceFrameVisualizationProps {
   structure: Structure;
@@ -29,11 +33,15 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   resourceTracker?: any;
   nodeMeshes: { [key: string]: THREE.Mesh };
   strutMeshes: { [key: string]: THREE.Mesh };
+  highlightedObjects: THREE.Object3D[];
+  selectedObjects: THREE.Object3D[];
   helperMeshes: THREE.Mesh[];
   constructor(props: any) {
     super(props);
     this.nodeMeshes = {};
     this.strutMeshes = {};
+    this.highlightedObjects = [];
+    this.selectedObjects = [];
     this.helperMeshes = [];
   }
 
@@ -210,7 +218,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         this.nodeMeshes[id].geometry = nodeGeometry;
       } else {
         const nodeMaterial = this.resourceTracker.track(
-          new THREE.MeshStandardMaterial({ color: 0xffffff })
+          new THREE.MeshStandardMaterial({ color: STRUCTURE_COLOR })
         );
         const nodeMesh = this.resourceTracker.track(
           new THREE.Mesh(nodeGeometry, nodeMaterial)
@@ -246,7 +254,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       );
       const strutMaterial = this.resourceTracker.track(
         new THREE.MeshStandardMaterial({
-          color: 0xffffff,
+          color: STRUCTURE_COLOR,
         })
       );
       const strutMesh = this.resourceTracker.track(
@@ -274,7 +282,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       new THREE.SphereGeometry(radius, 32, 32)
     );
     const nodeMaterial = this.resourceTracker.track(
-      new THREE.MeshStandardMaterial({ color: 0xffffff })
+      new THREE.MeshStandardMaterial({ color: STRUCTURE_COLOR })
     );
     for (let x = -30; x <= 30; x += baseUnit) {
       for (let y = 0; y <= 30; y += baseUnit) {
@@ -324,8 +332,15 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       // calculate objects intersecting the picking ray
       const intersects = this.raycaster.intersectObjects(this.scene.children);
 
-      for (let i = 0; i < intersects.length; i++) {
-        (intersects[i].object as any).material.color.set(0xff0000);
+      this.highlightedObjects.forEach(object => {
+        (object as any).material.color.set(STRUCTURE_COLOR);
+      });
+
+      if (intersects.length) {
+        console.log('intersects: ', intersects);
+        const object = intersects[0].object as any;
+        object.material.color.set(HIGHLIGHTED_STRUCTURE_COLOR);
+        this.highlightedObjects = [object];
       }
 
       this.renderer.render(this.scene, this.camera);
