@@ -15,12 +15,16 @@ interface SpaceFrameVisualizationProps {
 
 class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   private myRef: any;
+  top?: number;
+  left?: number;
   width?: number;
   height?: number;
   renderer?: THREE.WebGLRenderer;
   scene?: THREE.Scene;
   camera?: THREE.PerspectiveCamera;
   controls?: OrbitControls;
+  raycaster?: THREE.Raycaster;
+  mouse?: THREE.Vector2;
   animationFrame?: number;
   resourceTracker?: any;
   nodeMeshes: { [key: string]: THREE.Mesh };
@@ -42,6 +46,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.initializeCamera();
     this.initializeControls();
     this.initializePlane();
+    this.initializePicking();
     this.renderStructure();
     this.props.structure.nodes.addChangeListener(() => {
       this.renderStructure();
@@ -155,6 +160,35 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.scene!.add(planeMesh);
   };
 
+  getMousePixelX = (event: MouseEvent) => {
+    const containerLeft = this.left || 0;
+    const mousePixelX = event.clientX - containerLeft;
+    return mousePixelX;
+  };
+
+  getMousePixelY = (event: MouseEvent) => {
+    const containerTop = this.top || 0;
+    const mousePixelY = event.clientY - containerTop;
+    return mousePixelY;
+  };
+
+  onMouseMove = (event: MouseEvent) => {
+    if (!this.mouse) return;
+    // calculate mouse position in normalized device coordinates
+    // (-1 to +1) for both components
+    const containerWidth = this.width || window.innerWidth;
+    const containerHeight = this.height || window.innerHeight;
+
+    this.mouse.x = (this.getMousePixelX(event) / containerWidth) * 2 - 1;
+    this.mouse.y = -(this.getMousePixelY(event) / containerHeight) * 2 + 1;
+  };
+
+  initializePicking = () => {
+    this.raycaster = this.resourceTracker.track(new THREE.Raycaster());
+    this.mouse = this.resourceTracker.track(new THREE.Vector2());
+    window.addEventListener('mousemove', this.onMouseMove, false);
+  };
+
   renderStructure = () => {
     const { nodes, struts } = this.props.structure;
     nodes.get().forEach(node => {
@@ -232,6 +266,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       });
   };
 
+  /* Not used, but should be replaced with a coordinate system renderer
   initializeHelperSpheres = () => {
     const baseUnit = this.props.baseUnit || 1;
     const radius = baseUnit / 20;
@@ -252,8 +287,9 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         }
       }
     }
-  };
+  };*/
 
+  /* Not used, but should be replaced with a coordinate system renderer
   addHelperSpheres = () => {
     if (!this.helperMeshes.length) {
       this.initializeHelperSpheres();
@@ -261,7 +297,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.helperMeshes.forEach(helperMesh => {
       this.scene!.add(helperMesh);
     });
-  };
+  };*/
 
   removeHelperSpheres = () => {
     this.helperMeshes.forEach(helperMesh => {
@@ -272,7 +308,27 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   animate = () => {
     if (!this.props.deformedSpaceFrameData) {
       this.animationFrame = requestAnimationFrame(this.animate);
-      this.renderer!.render(this.scene!, this.camera!);
+
+      // update the picking ray with the camera and mouse position
+      if (
+        !(
+          this.raycaster &&
+          this.mouse &&
+          this.camera &&
+          this.scene &&
+          this.renderer
+        )
+      )
+        return;
+      this.raycaster.setFromCamera(this.mouse, this.camera);
+      // calculate objects intersecting the picking ray
+      const intersects = this.raycaster.intersectObjects(this.scene.children);
+
+      for (let i = 0; i < intersects.length; i++) {
+        (intersects[i].object as any).material.color.set(0xff0000);
+      }
+
+      this.renderer.render(this.scene, this.camera);
       return;
     }
     // If this.props.deformedSpaceFrameData
@@ -401,7 +457,9 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         ref={ref => {
           this.myRef = ref;
           if (ref) {
-            const { width, height } = ref.getBoundingClientRect();
+            const { height, left, top, width } = ref.getBoundingClientRect();
+            this.top = top;
+            this.left = left;
             this.width = width;
             this.height = height;
           }
