@@ -10,7 +10,6 @@ class Nodes {
   }
   add(node: Node) {
     this._nodes.push(node);
-    console.log('Added node');
     this._changeListeners.forEach(changeListener => {
       changeListener();
     });
@@ -34,7 +33,6 @@ class Nodes {
     window.dispatchEvent(UPDATE_NODES);
   }
   addChangeListener(changeListener: () => void) {
-    console.log('Added change listener');
     this._changeListeners.push(changeListener);
   }
 }

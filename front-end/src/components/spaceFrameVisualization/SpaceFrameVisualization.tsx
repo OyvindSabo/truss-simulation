@@ -8,7 +8,10 @@ import Structure from '../../models/structure/Structure';
 import {
   STRUCTURE_COLOR,
   HIGHLIGHTED_STRUCTURE_COLOR,
+  SELECTED_STRUCTURE_COLOR,
 } from '../../constants/config/colors';
+import Node from '../../models/node/Node';
+import Strut from '../../models/strut/Strut';
 
 interface SpaceFrameVisualizationProps {
   structure: Structure;
@@ -31,16 +34,20 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   mouse?: THREE.Vector2;
   animationFrame?: number;
   resourceTracker?: any;
+  planeMesh: THREE.Mesh | null;
   nodeMeshes: { [key: string]: THREE.Mesh };
   strutMeshes: { [key: string]: THREE.Mesh };
-  highlightedObjects: THREE.Object3D[];
-  selectedObjects: THREE.Object3D[];
+  threeObjectIdToStrutureElement: { [key: string]: Node | Strut };
+  highlightedObject: THREE.Mesh | null;
+  selectedObjects: THREE.Mesh[];
   helperMeshes: THREE.Mesh[];
   constructor(props: any) {
     super(props);
+    this.planeMesh = null;
     this.nodeMeshes = {};
     this.strutMeshes = {};
-    this.highlightedObjects = [];
+    this.threeObjectIdToStrutureElement = {};
+    this.highlightedObject = null;
     this.selectedObjects = [];
     this.helperMeshes = [];
   }
@@ -156,6 +163,8 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     const planeMesh = this.resourceTracker.track(
       new THREE.Mesh(planeGeometry, planeMaterial)
     );
+    this.planeMesh = planeMesh;
+
     // Lower the floor plane enough to avoid the radius of the struts causing
     // intersection with the ground.
     const maxRadius = Math.max(
@@ -191,10 +200,32 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.mouse.y = -(this.getMousePixelY(event) / containerHeight) * 2 + 1;
   };
 
+  onClick = () => {
+    if (this.highlightedObject) {
+      if (this.selectedObjects.includes(this.highlightedObject)) {
+        this.selectedObjects = this.selectedObjects.filter(
+          object => object !== this.highlightedObject
+        );
+      } else {
+        this.selectedObjects.push(this.highlightedObject);
+      }
+      const selectedNodes = this.selectedObjects
+        .map(({ id }) => this.getStructureElementFromThreeObjectId(id))
+        .filter(strutOrNode => strutOrNode instanceof Node) as Node[];
+
+      if (selectedNodes.length === 2) {
+        const [source, target] = selectedNodes;
+        this.props.structure.struts.add(new Strut({ source, target }));
+        this.selectedObjects = [];
+      }
+    }
+  };
+
   initializePicking = () => {
     this.raycaster = this.resourceTracker.track(new THREE.Raycaster());
     this.mouse = this.resourceTracker.track(new THREE.Vector2());
     window.addEventListener('mousemove', this.onMouseMove, false);
+    window.addEventListener('click', this.onClick, false);
   };
 
   renderStructure = () => {
@@ -223,13 +254,15 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         const nodeMesh = this.resourceTracker.track(
           new THREE.Mesh(nodeGeometry, nodeMaterial)
         );
+        this.threeObjectIdToStrutureElement[nodeMesh.id] = node;
         nodeMesh.position.set(x, y, z);
         this.nodeMeshes[id] = nodeMesh;
         this.scene!.add(nodeMesh);
       }
     });
 
-    struts.get().forEach(({ id, radius, source, target }) => {
+    struts.get().forEach(strut => {
+      const { id, radius, source, target } = strut;
       const { x: sourceX, y: sourceY, z: sourceZ } = source.coordinates.get();
       const { x: targetX, y: targetY, z: targetZ } = target.coordinates.get();
       const structVector = this.resourceTracker.track(
@@ -260,6 +293,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       const strutMesh = this.resourceTracker.track(
         new THREE.Mesh(strutGeometry, strutMaterial)
       );
+      this.threeObjectIdToStrutureElement[strutMesh.id] = strut;
       strutMesh.castShadow = true; //default is false
       strutMesh.receiveShadow = false; //default
       this.strutMeshes[id] = strutMesh;
@@ -272,6 +306,10 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       this.scene.children.forEach(child => {
         child.remove();
       });
+  };
+
+  getStructureElementFromThreeObjectId = (id: number) => {
+    return this.threeObjectIdToStrutureElement[id];
   };
 
   /* Not used, but should be replaced with a coordinate system renderer
@@ -328,20 +366,29 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         )
       )
         return;
+
+      // This raycaster logic should maybe be moved out to this.onCick and this.onMouseMove
       this.raycaster.setFromCamera(this.mouse, this.camera);
       // calculate objects intersecting the picking ray
       const intersects = this.raycaster.intersectObjects(this.scene.children);
 
-      this.highlightedObjects.forEach(object => {
-        (object as any).material.color.set(STRUCTURE_COLOR);
-      });
-
-      if (intersects.length) {
-        console.log('intersects: ', intersects);
-        const object = intersects[0].object as any;
-        object.material.color.set(HIGHLIGHTED_STRUCTURE_COLOR);
-        this.highlightedObjects = [object];
+      // Unhighlight previously highlighted objects
+      if (this.highlightedObject) {
+        (this.highlightedObject.material as any).color.set(STRUCTURE_COLOR);
+        this.highlightedObject = null;
       }
+
+      // Highlight hovered objects
+      if (intersects.length) {
+        const object = intersects[0].object as THREE.Mesh;
+        (object.material as any).color.set(HIGHLIGHTED_STRUCTURE_COLOR);
+        this.highlightedObject = object;
+      }
+
+      // Highlight selected items
+      this.selectedObjects.forEach(selectedObject => {
+        (selectedObject.material as any).color.set(SELECTED_STRUCTURE_COLOR);
+      });
 
       this.renderer.render(this.scene, this.camera);
       return;

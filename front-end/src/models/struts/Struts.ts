@@ -11,7 +11,6 @@ class Struts {
   add(strut: Strut) {
     this._struts.push(strut);
     this._changeListeners.forEach(changeListener => {
-      console.log('changeListener: ', changeListener);
       changeListener();
     });
   }

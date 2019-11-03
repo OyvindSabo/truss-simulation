@@ -35,9 +35,6 @@ const ExperimentView: React.FC<ExperimentProps> = ({
     experiment => experiment.id === selectedExperimentId
   );
 
-  console.log('selectedExperimentId: ', selectedExperimentId);
-  console.log('experiments: ', experiments);
-  console.log('selectedExperiment: ', selectedExperiment);
   return selectedExperiment &&
     selectedExperiment.structure &&
     selectedExperiment.deformedStructure ? (
