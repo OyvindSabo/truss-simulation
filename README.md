@@ -12,6 +12,10 @@ https://tulip.labri.fr/TulipDrupal/?q=tlp-file-format
 
 https://tulip.labri.fr/Documentation/4_10_0/tulip-dev/html/graph_format.html
 
+#### YAML Based Input File Format For Finite Element Analysis
+
+https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2621457
+
 ### vtk json format
 
 https://kitware.github.io/vtk-js/docs/structures_PolyData.html
