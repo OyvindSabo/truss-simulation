@@ -32,6 +32,15 @@ class Structure {
     });
     this.struts = new Struts(strutsProps);
   }
+
+  getCfemExport() {
+    // NODE nodeID X Y Z ix iy iz irx iry irz rotID
+    const nodeData = this.nodes.get().map((node, nodeId) => {
+      const { x, y, z } = node.coordinates.get();
+      return `NODE ${nodeId} ${x} ${y} ${z}`;
+    });
+    return [...nodeData].join('\n');
+  }
 }
 
 export default Structure;

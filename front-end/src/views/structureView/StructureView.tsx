@@ -9,6 +9,9 @@ import Switch from '../../components/switch/Switch';
 import { SwitchContainer } from './atoms';
 import StructureEditor from './structureEditor/StructureEditor';
 import Structure from '../../models/structure/Structure';
+import Icon from '../../components/icon/Icon';
+import rightChevron from '../../assets/icons/download-icon.png';
+import { ICON_COLOR } from '../../constants/config/colors';
 
 const options = {
   first: { label: 'Edit', value: true },
@@ -45,11 +48,31 @@ class StructureView extends Component<
       });
   }
 
+  downloadFile = () => {
+    if (this.selectedStructure) {
+      const element = document.createElement('a');
+      const fileContent = this.selectedStructure.getCfemExport();
+      const file = new Blob([fileContent], {
+        type: 'text/plain',
+      });
+      element.href = URL.createObjectURL(file);
+      element.download = 'myFile.txt';
+      document.body.appendChild(element); // Required for this to work in FireFox
+      element.click();
+    }
+  };
+
   render = () => {
     const firstOptionSelected = this.state.editMode;
     return this.selectedStructure ? (
       <>
-        <TopBar title={this.state.selectedStructureName} />
+        <TopBar title={this.state.selectedStructureName}>
+          <Icon
+            icon={rightChevron}
+            color={ICON_COLOR}
+            onClick={() => this.downloadFile()}
+          />
+        </TopBar>
         <SwitchContainer>
           <Switch
             options={options}
