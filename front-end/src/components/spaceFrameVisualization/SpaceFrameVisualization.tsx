@@ -216,6 +216,9 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       if (selectedNodes.length === 2) {
         const [source, target] = selectedNodes;
         this.props.structure.struts.add(new Strut({ source, target }));
+        this.selectedObjects.forEach(selectedObject => {
+          (selectedObject.material as any).color.set(STRUCTURE_COLOR);
+        });
         this.selectedObjects = [];
       }
     }
