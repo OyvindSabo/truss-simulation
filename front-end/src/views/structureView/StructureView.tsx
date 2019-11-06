@@ -56,7 +56,7 @@ class StructureView extends Component<
         type: 'text/plain',
       });
       element.href = URL.createObjectURL(file);
-      element.download = 'myFile.txt';
+      element.download = `${this.state.selectedStructureName}.usf`;
       document.body.appendChild(element); // Required for this to work in FireFox
       element.click();
     }
@@ -67,6 +67,7 @@ class StructureView extends Component<
     return this.selectedStructure ? (
       <>
         <TopBar title={this.state.selectedStructureName}>
+          {' '}
           <Icon
             icon={rightChevron}
             color={ICON_COLOR}

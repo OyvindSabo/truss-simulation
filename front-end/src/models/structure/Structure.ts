@@ -34,12 +34,20 @@ class Structure {
   }
 
   getCfemExport() {
+    const nodeIdToCfemId: { [key: string]: number } = {};
     // NODE nodeID X Y Z ix iy iz irx iry irz rotID
-    const nodeData = this.nodes.get().map((node, nodeId) => {
+    const nodalData = this.nodes.get().map((node, nodeId) => {
+      nodeIdToCfemId[node.id] = nodeId;
       const { x, y, z } = node.coordinates.get();
       return `NODE ${nodeId} ${x} ${y} ${z}`;
     });
-    return [...nodeData].join('\n');
+    // TRUSS elemID node1 node2 matID secID
+    const elementData = this.struts.get().map((strut, elementId) => {
+      const node1 = nodeIdToCfemId[strut.source.id];
+      const node2 = nodeIdToCfemId[strut.target.id];
+      return `TRUSS ${elementId} ${node1} ${node2}`;
+    });
+    return [...nodalData, ...elementData].join('\n');
   }
 }
 
