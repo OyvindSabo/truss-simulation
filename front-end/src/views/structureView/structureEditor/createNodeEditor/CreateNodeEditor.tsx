@@ -160,6 +160,7 @@ const CreateNodeEditor = ({ structure, setContext }: CreateNodeEditorProps) => {
           onClick={(irz: boolean) => setIRZ(!irz)}
         />
       </SwitchContainer>
+      <br />
       <Button
         style={{ width: '100%' }}
         buttonType={ButtonType.Primary}

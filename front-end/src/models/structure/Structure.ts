@@ -39,7 +39,18 @@ class Structure {
     const nodalData = this.nodes.get().map((node, nodeId) => {
       nodeIdToCfemId[node.id] = nodeId;
       const { x, y, z } = node.coordinates.get();
-      return `NODE ${nodeId} ${x} ${y} ${z}`;
+
+      const translationalDegreesOfFreedom = node.translationalDegreesOfFreedom.get();
+      const ix = translationalDegreesOfFreedom.ix ? 1 : 0;
+      const iy = translationalDegreesOfFreedom.iy ? 1 : 0;
+      const iz = translationalDegreesOfFreedom.iz ? 1 : 0;
+
+      const rotationalDegreesOfFreedom = node.rotationalDegreesOfFreedom.get();
+      const irx = rotationalDegreesOfFreedom.irx ? 1 : 0;
+      const iry = rotationalDegreesOfFreedom.iry ? 1 : 0;
+      const irz = rotationalDegreesOfFreedom.irz ? 1 : 0;
+
+      return `NODE ${nodeId} ${x} ${y} ${z} ${ix} ${iy} ${iz} ${irx} ${iry} ${irz}`;
     });
     // TRUSS elemID node1 node2 matID secID
     const elementData = this.struts.get().map((strut, elementId) => {
