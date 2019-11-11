@@ -20,6 +20,12 @@ export type NodeData = {
   x: number;
   y: number;
   z: number;
+  ix?: boolean;
+  iy?: boolean;
+  iz?: boolean;
+  irx?: boolean;
+  iry?: boolean;
+  irz?: boolean;
 };
 
 export type StrutData = {
