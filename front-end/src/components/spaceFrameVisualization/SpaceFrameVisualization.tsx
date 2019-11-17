@@ -17,7 +17,7 @@ import Loads from '../../models/loads/Loads';
 interface SpaceFrameVisualizationProps {
   structure: Structure;
   loads?: Loads;
-  deformedSpaceFrameData?: Structure;
+  deformedSpaceFrameData?: Structure | null;
   editMode?: boolean;
   baseUnit?: number;
 }

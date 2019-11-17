@@ -10,7 +10,7 @@ import { SwitchContainer } from './atoms';
 import StructureEditor from './structureEditor/StructureEditor';
 import Structure from '../../models/structure/Structure';
 import Icon from '../../components/icon/Icon';
-import rightChevron from '../../assets/icons/download-icon.png';
+import downloadIcon from '../../assets/icons/download-icon.png';
 import { ICON_COLOR } from '../../constants/config/colors';
 
 const options = {
@@ -69,7 +69,7 @@ class StructureView extends Component<
         <TopBar title={this.state.selectedStructureName}>
           {' '}
           <Icon
-            icon={rightChevron}
+            icon={downloadIcon}
             color={ICON_COLOR}
             onClick={() => this.downloadFile()}
           />
