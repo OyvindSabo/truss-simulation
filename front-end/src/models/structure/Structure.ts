@@ -5,7 +5,7 @@ import Nodes from '../nodes/Nodes';
 import { StrutProps } from '../strut/Strut';
 import Struts from '../struts/Struts';
 
-interface StructureProps {
+export interface StructureProps {
   id?: string;
   name?: string;
   description?: string;

@@ -58,7 +58,7 @@ const StructuresView: React.FunctionComponent<RouteComponentProps> = ({
             history.push(`/structures/${structure.id}`);
           }}
         >
-          <SpaceFrameVisualization structure={structures[key]} />
+          <SpaceFrameVisualization structure={structure} />
         </PreviewBox>
       ))}
     </>

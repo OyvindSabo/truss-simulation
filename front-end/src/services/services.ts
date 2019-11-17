@@ -1622,7 +1622,7 @@ export const loadExperiments = () =>
         id,
         name,
         description,
-        structure: new Structure(structure),
+        structure,
         deformedStructure: new Structure(deformedStructure),
       })
   );

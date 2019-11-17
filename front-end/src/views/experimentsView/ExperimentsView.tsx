@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { state } from '../../state';
-import { UPDATE_STRUCTURES } from '../../customEvents';
+import { UPDATE_EXPERIMENTS } from '../../customEvents';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import PreviewBox from '../../components/previewBox/PreviewBox';
 import SpaceFrameVisualization from '../../components/spaceFrameVisualization/SpaceFrameVisualization';
@@ -8,28 +8,33 @@ import plusIcon from '../../assets/icons/plus-icon-white.png';
 import Structure from '../../models/structure/Structure';
 import { HINT_OF_PENSIVE } from '../../constants/theme/colors';
 import { IMAGE_SPACING } from '../../constants/config/sizes';
+import Experiment from '../../models/experiment/Experiment';
 
 const ExperimentsView: React.FunctionComponent<RouteComponentProps> = ({
   history,
 }) => {
-  const [structures, setStructures] = useState<Structure[]>(
-    state.structures.get()
+  const [experiments, setExperiments] = useState<Experiment[]>(
+    state.experiments.get()
   );
   useEffect(() => {
-    window.addEventListener(UPDATE_STRUCTURES.type, () => {
-      setStructures(state.structures.get());
+    // For consistency, rewrite Experiments accept change listeners
+    window.addEventListener(UPDATE_EXPERIMENTS.type, () => {
+      setExperiments(state.experiments.get());
     });
     return () => {
-      window.removeEventListener(UPDATE_STRUCTURES.type, () => {
-        setStructures(state.structures.get());
+      window.removeEventListener(UPDATE_EXPERIMENTS.type, () => {
+        setExperiments(state.experiments.get());
       });
     };
   }, []);
   return (
     <>
       <PreviewBox
-        label="CREATE NEW STRUCTURE"
+        // This currently creates a new structure, not an experiment
+        label="CREATE NEW EXPERIMENT"
         onClick={() => {
+          // This one will have to be rewritten so that there is an extra step
+          // where the user can select a structure to base the experiment on
           const newStructure = new Structure({});
           state.structures.add(newStructure);
           history.push(`/structures/${newStructure.id}`);
@@ -49,16 +54,16 @@ const ExperimentsView: React.FunctionComponent<RouteComponentProps> = ({
           />
         </div>
       </PreviewBox>
-      {structures.map((structure, key) => (
+      {experiments.map((experiment, key) => (
         <PreviewBox
           key={key}
-          label={structure.name.get()}
+          label={experiment.name.get()}
           onClick={() => {
-            state.setSelectedStructureId(structure.id);
-            history.push(`/structures/${structure.id}`);
+            state.setSelectedStructureId(experiment.id);
+            history.push(`/structures/${experiment.id}`);
           }}
         >
-          <SpaceFrameVisualization structure={structures[key]} />
+          <SpaceFrameVisualization structure={experiment.structure} />
         </PreviewBox>
       ))}
     </>
