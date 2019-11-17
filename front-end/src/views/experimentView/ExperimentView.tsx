@@ -8,6 +8,15 @@ import TopBar from '../../components/topBar/TopBar';
 import Icon from '../../components/icon/Icon';
 import downloadIcon from '../../assets/icons/download-icon.png';
 import { ICON_COLOR } from '../../constants/config/colors';
+import Switch from '../../components/switch/Switch';
+import RightPane from '../../components/rightPane/RightPane';
+import StructureEditor from '../structureView/structureEditor/StructureEditor';
+import { SwitchContainer } from './atoms';
+
+const options = {
+  first: { label: 'Edit', value: true },
+  second: { label: 'Preview', value: false },
+};
 
 class ExperimentView extends Component<
   RouteComponentProps<{ experimentId: string }>,
@@ -58,6 +67,7 @@ class ExperimentView extends Component<
   };
 
   render = () => {
+    const firstOptionSelected = this.state.editMode;
     return this.selectedExperiment && this.selectedExperiment.structure ? (
       <>
         <TopBar title={this.state.selectedExperimentName}>
@@ -68,10 +78,27 @@ class ExperimentView extends Component<
             onClick={() => this.downloadFile()}
           />
         </TopBar>
+        <SwitchContainer>
+          <Switch
+            options={options}
+            firstOptionSelected={firstOptionSelected}
+            onClick={(editMode: boolean) => this.setState({ editMode })}
+          />
+        </SwitchContainer>
         <SpaceFrameVisualization
           structure={this.selectedExperiment.structure}
+          editMode={this.state.editMode}
           deformedSpaceFrameData={this.selectedExperiment.deformedStructure}
+          baseUnit={10}
         />
+        <RightPane
+          isOpen={this.state.rightPaneIsOpen}
+          onOpenClose={() =>
+            this.setState({ rightPaneIsOpen: !this.state.rightPaneIsOpen })
+          }
+        >
+          <StructureEditor structure={this.selectedExperiment.structure} />
+        </RightPane>
       </>
     ) : (
       <ErrorScreen>THIS EXPERIMENT DOES NOT EXIST</ErrorScreen>

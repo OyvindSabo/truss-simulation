@@ -357,7 +357,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   };
 
   animate = () => {
-    if (!this.props.deformedSpaceFrameData) {
+    if (!this.props.deformedSpaceFrameData || this.props.editMode) {
       this.animationFrame = requestAnimationFrame(this.animate);
 
       // update the picking ray with the camera and mouse position
@@ -398,7 +398,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       this.renderer.render(this.scene, this.camera);
       return;
     }
-    // If this.props.deformedSpaceFrameData
+    // If this.props.deformedSpaceFrameData && !this.editMode
     const { nodes, struts } = this.props.structure;
     const { nodes: deformedNodes } = this.props.deformedSpaceFrameData;
     const animationFrame = requestAnimationFrame(this.animate);
