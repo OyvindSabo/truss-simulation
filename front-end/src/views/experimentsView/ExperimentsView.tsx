@@ -60,10 +60,13 @@ const ExperimentsView: React.FunctionComponent<RouteComponentProps> = ({
           label={experiment.name.get()}
           onClick={() => {
             state.setSelectedStructureId(experiment.id);
-            history.push(`/structures/${experiment.id}`);
+            history.push(`/experiments/${experiment.id}`);
           }}
         >
-          <SpaceFrameVisualization structure={experiment.structure} />
+          <SpaceFrameVisualization
+            structure={experiment.structure}
+            loads={experiment.loads}
+          />
         </PreviewBox>
       ))}
     </>

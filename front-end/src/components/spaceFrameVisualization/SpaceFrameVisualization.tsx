@@ -12,9 +12,11 @@ import {
 } from '../../constants/config/colors';
 import Node from '../../models/node/Node';
 import Strut from '../../models/strut/Strut';
+import Loads from '../../models/loads/Loads';
 
 interface SpaceFrameVisualizationProps {
   structure: Structure;
+  loads?: Loads;
   deformedSpaceFrameData?: Structure;
   editMode?: boolean;
   baseUnit?: number;
