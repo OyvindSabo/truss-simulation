@@ -40,6 +40,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   planeMesh: THREE.Mesh | null;
   nodeMeshes: { [key: string]: THREE.Mesh };
   strutMeshes: { [key: string]: THREE.Mesh };
+  loadMeshes: { [key: string]: THREE.Mesh };
   threeObjectIdToStrutureElement: { [key: string]: Node | Strut };
   highlightedObject: THREE.Mesh | null;
   selectedObjects: THREE.Mesh[];
@@ -49,6 +50,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.planeMesh = null;
     this.nodeMeshes = {};
     this.strutMeshes = {};
+    this.loadMeshes = {};
     this.threeObjectIdToStrutureElement = {};
     this.highlightedObject = null;
     this.selectedObjects = [];
@@ -318,12 +320,10 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     // Render loads
     if (!this.props.loads) return;
     this.props.loads.get().forEach(load => {
-      const { node, fx, fy, fz } = load;
+      const { id, node, fx, fy, fz } = load;
       const { x, y, z } = node.coordinates.get();
-      const structVector = this.resourceTracker.track(
-        new THREE.Curve<Vector3>()
-      );
-      structVector.getPoint = (t: number) =>
+      const loadVector = this.resourceTracker.track(new THREE.Curve<Vector3>());
+      loadVector.getPoint = (t: number) =>
         this.resourceTracker.track(
           new THREE.Vector3(x - t * fx, y - t * fy, z - t * fz)
         );
@@ -340,23 +340,24 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         ? baseUnit / 20
         : Math.max(...strutsConnectedToNode, 0);
 
-      const strutGeometry = this.resourceTracker.track(
+      const loadGeometry = this.resourceTracker.track(
         new THREE.TubeGeometry(
-          structVector, // path
+          loadVector, // path
           1, // tubularSegments
           radius, // radius
           32 // radiusSegments
         )
       );
-      const strutMaterial = this.resourceTracker.track(
+      const loadMaterial = this.resourceTracker.track(
         new THREE.MeshStandardMaterial({
           color: LOAD_COLOR,
         })
       );
-      const strutMesh = this.resourceTracker.track(
-        new THREE.Mesh(strutGeometry, strutMaterial)
+      const loadMesh = this.resourceTracker.track(
+        new THREE.Mesh(loadGeometry, loadMaterial)
       );
-      this.scene!.add(strutMesh);
+      this.loadMeshes[id] = loadMesh;
+      this.scene!.add(loadMesh);
     });
   };
 
@@ -432,7 +433,10 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       const intersects = this.raycaster.intersectObjects(this.scene.children);
 
       // Unhighlight previously highlighted objects
-      if (this.highlightedObject) {
+      if (
+        this.highlightedObject &&
+        !Object.values(this.loadMeshes).includes(this.highlightedObject)
+      ) {
         (this.highlightedObject.material as any).color.set(STRUCTURE_COLOR);
         this.highlightedObject = null;
       }
