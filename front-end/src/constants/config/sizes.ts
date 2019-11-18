@@ -11,3 +11,4 @@ export const BUTTON_HEIGHT = 56;
 export const BUTTON_WIDTH = 200;
 export const SWITCH_BORDER_WIDTH = 5;
 export const STRUCTURE_EDITOR_HEADER_HEIGHT = 56;
+export const EXPERIMENT_EDITOR_HEADER_HEIGHT = 56;

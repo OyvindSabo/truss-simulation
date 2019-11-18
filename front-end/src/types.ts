@@ -53,3 +53,9 @@ export enum StructureEditorContext {
   CreateStrut = 'CREATE_STRUT',
   EditStrut = 'EDIT_STRUT',
 }
+
+export enum ExperimentEditorContext {
+  ExperimentOverview = 'STRUCTURE_OVERVIEW',
+  EditExperimentInfo = 'EDIT_STRUCTURE_INFO',
+  CreateLoad = 'CREATE_LOAD',
+}

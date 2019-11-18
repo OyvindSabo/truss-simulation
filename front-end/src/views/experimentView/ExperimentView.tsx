@@ -10,8 +10,8 @@ import downloadIcon from '../../assets/icons/download-icon.png';
 import { ICON_COLOR } from '../../constants/config/colors';
 import Switch from '../../components/switch/Switch';
 import RightPane from '../../components/rightPane/RightPane';
-import StructureEditor from '../structureView/structureEditor/StructureEditor';
 import { SwitchContainer } from './atoms';
+import ExperimentEditor from './experimentEditor/ExperimentEditor';
 
 const options = {
   first: { label: 'Edit', value: true },
@@ -97,7 +97,7 @@ class ExperimentView extends Component<
             this.setState({ rightPaneIsOpen: !this.state.rightPaneIsOpen })
           }
         >
-          <StructureEditor structure={this.selectedExperiment.structure} />
+          <ExperimentEditor experiment={this.selectedExperiment} />
         </RightPane>
       </>
     ) : (

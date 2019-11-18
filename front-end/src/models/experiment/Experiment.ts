@@ -2,6 +2,7 @@ import Structure, { StructureProps } from '../structure/Structure';
 import Name from '../name/Name';
 import Loads from '../loads/Loads';
 import { LoadProps } from '../load/Load';
+import Description from '../description/Description';
 
 interface ExperimentProps {
   id?: string;
@@ -14,7 +15,7 @@ interface ExperimentProps {
 class Experiment {
   id: string;
   name: Name;
-  description: string;
+  description: Description;
   structure: Structure;
   loads: Loads;
   deformedStructure: Structure | null;
@@ -28,7 +29,7 @@ class Experiment {
   }: ExperimentProps) {
     this.id = id || `${new Date().getTime()}`;
     this.name = new Name(name);
-    this.description = description || '';
+    this.description = new Description(description);
     this.structure = new Structure(structure);
     this.loads = new Loads(loads);
     this.deformedStructure = deformedStructure || null;

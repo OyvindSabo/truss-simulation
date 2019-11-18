@@ -8,7 +8,7 @@ import Structures from './models/structures/Structures';
 import { loadStructures, loadExperiments } from './services/services';
 import Experiments from './models/experiments/Experiments';
 import Monitors from './models/monitors/Monitors';
-import { StructureEditorContext } from './types';
+import { StructureEditorContext, ExperimentEditorContext } from './types';
 
 export class State {
   structures: Structures;
@@ -20,6 +20,7 @@ export class State {
     selectedMonitoringId: string | null;
 
     structureEditorContext: StructureEditorContext;
+    experimentEditorContext: ExperimentEditorContext;
   };
   constructor() {
     this.structures = new Structures();
@@ -31,6 +32,7 @@ export class State {
       selectedMonitoringId: null,
 
       structureEditorContext: StructureEditorContext.StructureOverview,
+      experimentEditorContext: ExperimentEditorContext.ExperimentOverview,
     };
   }
   load() {
@@ -70,6 +72,13 @@ export class State {
   setStructureEditorContext(structureEditorContext: StructureEditorContext) {
     this._state.structureEditorContext = structureEditorContext;
     window.dispatchEvent(UPDATE_STRUCTURE_EDITOR_CONTEXT);
+  }
+
+  getExperimentEditorContext() {
+    return this._state.experimentEditorContext;
+  }
+  setExperimentEditorContext(experimentEditorContext: ExperimentEditorContext) {
+    this._state.experimentEditorContext = experimentEditorContext;
   }
 }
 
