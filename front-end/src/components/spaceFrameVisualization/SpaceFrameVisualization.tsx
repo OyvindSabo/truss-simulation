@@ -9,6 +9,7 @@ import {
   STRUCTURE_COLOR,
   HIGHLIGHTED_STRUCTURE_COLOR,
   SELECTED_STRUCTURE_COLOR,
+  LOAD_COLOR,
 } from '../../constants/config/colors';
 import Node from '../../models/node/Node';
 import Strut from '../../models/strut/Strut';
@@ -71,6 +72,11 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.props.structure.struts.addChangeListener(() => {
       this.renderStructure();
     });
+    if (this.props.loads) {
+      this.props.loads.addChangeListener(() => {
+        this.renderStructure();
+      });
+    }
     this.animate();
   }
 
@@ -235,6 +241,8 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
 
   renderStructure = () => {
     const { nodes, struts } = this.props.structure;
+
+    // Render nodes
     nodes.get().forEach(node => {
       const { id } = node;
       const { x, y, z } = node.coordinates.get();
@@ -266,6 +274,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       }
     });
 
+    // Render struts
     struts.get().forEach(strut => {
       const { id, radius, source, target } = strut;
       const { x: sourceX, y: sourceY, z: sourceZ } = source.coordinates.get();
@@ -299,9 +308,54 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         new THREE.Mesh(strutGeometry, strutMaterial)
       );
       this.threeObjectIdToStrutureElement[strutMesh.id] = strut;
+      // Not sure why we don't do the following for nodes
       strutMesh.castShadow = true; //default is false
       strutMesh.receiveShadow = false; //default
       this.strutMeshes[id] = strutMesh;
+      this.scene!.add(strutMesh);
+    });
+
+    // Render loads
+    if (!this.props.loads) return;
+    this.props.loads.get().forEach(load => {
+      const { node, fx, fy, fz } = load;
+      const { x, y, z } = node.coordinates.get();
+      const structVector = this.resourceTracker.track(
+        new THREE.Curve<Vector3>()
+      );
+      structVector.getPoint = (t: number) =>
+        this.resourceTracker.track(
+          new THREE.Vector3(x - t * fx, y - t * fy, z - t * fz)
+        );
+
+      // Let the radius of the visual representation of the force be as large as
+      // the radius of the thickest strut connected to the load's target node
+      const strutsConnectedToNode = struts
+        .get()
+        .filter(({ source, target }) => [source, target].includes(node))
+        .map(({ radius }) => radius);
+
+      const baseUnit = this.props.baseUnit || 1;
+      const radius = this.props.editMode
+        ? baseUnit / 20
+        : Math.max(...strutsConnectedToNode, 0);
+
+      const strutGeometry = this.resourceTracker.track(
+        new THREE.TubeGeometry(
+          structVector, // path
+          1, // tubularSegments
+          radius, // radius
+          32 // radiusSegments
+        )
+      );
+      const strutMaterial = this.resourceTracker.track(
+        new THREE.MeshStandardMaterial({
+          color: LOAD_COLOR,
+        })
+      );
+      const strutMesh = this.resourceTracker.track(
+        new THREE.Mesh(strutGeometry, strutMaterial)
+      );
       this.scene!.add(strutMesh);
     });
   };

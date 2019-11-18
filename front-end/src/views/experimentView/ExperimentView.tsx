@@ -87,6 +87,7 @@ class ExperimentView extends Component<
         </SwitchContainer>
         <SpaceFrameVisualization
           structure={this.selectedExperiment.structure}
+          loads={this.selectedExperiment.loads}
           editMode={this.state.editMode}
           deformedSpaceFrameData={this.selectedExperiment.deformedStructure}
           baseUnit={10}
