@@ -19,3 +19,7 @@ https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2621457
 ### vtk json format
 
 https://kitware.github.io/vtk-js/docs/structures_PolyData.html
+
+### Thesis whose introduction describes the badness of simulation software interfaces well
+
+https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2567180/Thesis_Wollebaek.pdf?sequence=1
