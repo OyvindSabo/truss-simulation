@@ -20,6 +20,7 @@ import {
 import Node from '../../models/node/Node';
 import Strut from '../../models/strut/Strut';
 import Loads from '../../models/loads/Loads';
+import { HINT_OF_PENSIVE } from '../../constants/theme/colors';
 
 interface SpaceFrameVisualizationProps {
   structure: Structure;
@@ -108,6 +109,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
 
     this.renderer!.gammaInput = true;
     this.renderer!.gammaOutput = true;
+    this.renderer!.setClearColor(0xffffff, 1);
   };
 
   initializeScene = () => {
@@ -116,7 +118,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
 
   initializeAmbientLight = () => {
     const ambient = this.resourceTracker.track(
-      new THREE.AmbientLight(0xffffff, 0.01)
+      new THREE.AmbientLight(0xffffff, 1)
     );
     this.scene!.add(ambient);
   };
@@ -172,7 +174,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     //Create a plane that receives shadows (but does not cast them)
     const planeMaterial = this.resourceTracker.track(
       new THREE.MeshPhongMaterial({
-        color: 0x808080,
+        color: HINT_OF_PENSIVE,
         dithering: true,
       })
     );
