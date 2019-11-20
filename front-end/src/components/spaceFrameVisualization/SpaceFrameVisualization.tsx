@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import * as THREE from 'three';
 import { Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { getAverageNodePosition, getAnimatedPosition } from './utils';
+import {
+  getAverageNodePosition,
+  getAnimatedPosition,
+  getRadiusOfThickestConnectedStrut,
+} from './utils';
 import ResourceTracker from './ResourceTracker';
 import Structure from '../../models/structure/Structure';
 import {
@@ -249,15 +253,10 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     nodes.get().forEach(node => {
       const { id } = node;
       const { x, y, z } = node.coordinates.get();
-      const strutsConnectedToNode = struts
-        .get()
-        .filter(({ source, target }) => [source, target].includes(node))
-        .map(({ radius }) => radius);
-
       const baseUnit = this.props.baseUnit || 1;
       const radius = this.props.editMode
         ? baseUnit / 20
-        : Math.max(...strutsConnectedToNode, 0);
+        : getRadiusOfThickestConnectedStrut(node, struts);
       const nodeGeometry = this.resourceTracker.track(
         new THREE.SphereGeometry(radius, 32, 32)
       );
@@ -329,14 +328,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
           new THREE.Vector3(x - t * fx, y - t * fy, z - t * fz)
         );
 
-      // Let the radius of the visual representation of the force be as large as
-      // the radius of the thickest strut connected to the load's target node
-      const radiusesOfStrutsConnectedToNode = struts
-        .get()
-        .filter(({ source, target }) => [source, target].includes(node))
-        .map(({ radius }) => radius);
-
-      const radius = Math.max(...radiusesOfStrutsConnectedToNode, 0);
+      const radius = getRadiusOfThickestConnectedStrut(node, struts);
 
       const loadGeometry = this.resourceTracker.track(
         new THREE.TubeGeometry(

@@ -1,4 +1,6 @@
 import Structure from '../../models/structure/Structure';
+import Node from '../../models/node/Node';
+import Struts from '../../models/struts/Struts';
 
 /**
  * Returns the average of all node positions in the space frame
@@ -26,3 +28,15 @@ export const getAnimatedPosition = (
   ((deformedPosition - position) *
     (1 + Math.sin((animationFrame / 180) * Math.PI))) /
     2;
+
+export const getRadiusOfThickestConnectedStrut = (
+  node: Node,
+  struts: Struts
+) => {
+  const radiusesOfConnectedStruts = struts
+    .get()
+    .filter(({ source, target }) => [source, target].includes(node))
+    .map(({ radius }) => radius);
+
+  return Math.max(...radiusesOfConnectedStruts, 0);
+};
