@@ -20,6 +20,7 @@ interface SpaceFrameVisualizationProps {
   loads?: Loads;
   deformedSpaceFrameData?: Structure | null;
   editMode?: boolean;
+  // The default unit of the coordinate system (1m by default)
   baseUnit?: number;
 }
 
@@ -330,15 +331,12 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
 
       // Let the radius of the visual representation of the force be as large as
       // the radius of the thickest strut connected to the load's target node
-      const strutsConnectedToNode = struts
+      const radiusesOfStrutsConnectedToNode = struts
         .get()
         .filter(({ source, target }) => [source, target].includes(node))
         .map(({ radius }) => radius);
 
-      const baseUnit = this.props.baseUnit || 1;
-      const radius = this.props.editMode
-        ? baseUnit / 20
-        : Math.max(...strutsConnectedToNode, 0);
+      const radius = Math.max(...radiusesOfStrutsConnectedToNode, 0);
 
       const loadGeometry = this.resourceTracker.track(
         new THREE.TubeGeometry(
