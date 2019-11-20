@@ -7,7 +7,8 @@ import {
   getAnimatedPosition,
   getRadiusOfThickestConnectedStrut,
   getRadiusOfThickestStrut,
-  getLoadArrowDimensions,
+  getLoadArrowShaftDimensions,
+  getLoadArrowHeadHeight,
 } from './utils';
 import ResourceTracker from './ResourceTracker';
 import Structure from '../../models/structure/Structure';
@@ -249,12 +250,12 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
 
   renderStructure = () => {
     const { nodes, struts } = this.props.structure;
+    const baseUnit = this.props.baseUnit || 1;
 
     // Render nodes
     nodes.get().forEach(node => {
       const { id } = node;
       const { x, y, z } = node.coordinates.get();
-      const baseUnit = this.props.baseUnit || 1;
       const radius = this.props.editMode
         ? baseUnit / 20
         : getRadiusOfThickestConnectedStrut(node, struts);
@@ -322,41 +323,99 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     if (!this.props.loads) return;
     this.props.loads.get().forEach(load => {
       const { id, node } = load;
-      const loadArrowDimensions = getLoadArrowDimensions(
+      const loadArrowShaftDimensions = getLoadArrowShaftDimensions(
         load,
         // We have already returned if this.props.loads === undefined
         // For some reasone TypeScript doesn't understand that
         this.props.loads!,
         this.props.structure
       );
-      const { x: x0, y: y0, z: z0 } = loadArrowDimensions;
-      const { x: x1, y: y1, z: z1 } = node.coordinates.get();
-      const loadVector = this.resourceTracker.track(new THREE.Curve<Vector3>());
-      loadVector.getPoint = (t: number) =>
+      const loadArrowHead = node.coordinates.get();
+      const loadArrowShaftVector = this.resourceTracker.track(
+        new THREE.Curve<Vector3>()
+      );
+      loadArrowShaftVector.getPoint = (t: number) =>
         this.resourceTracker.track(
-          new THREE.Vector3(x1 - t * x0, y1 - t * y0, z1 - t * z0)
+          new THREE.Vector3(
+            loadArrowHead.x - t * loadArrowShaftDimensions.x,
+            loadArrowHead.y - t * loadArrowShaftDimensions.y,
+            loadArrowHead.z - t * loadArrowShaftDimensions.z
+          )
         );
 
-      const radius = getRadiusOfThickestConnectedStrut(node, struts);
+      const loadArrowTail = {
+        x: loadArrowHead.x + loadArrowShaftDimensions.x,
+        y: loadArrowHead.y + loadArrowShaftDimensions.y,
+        z: loadArrowHead.z + loadArrowShaftDimensions.z,
+      };
+      console.log('loadArrowTail: ', loadArrowTail);
+      const loadArrowShaftRadius = getRadiusOfThickestConnectedStrut(
+        node,
+        struts
+      );
 
-      const loadGeometry = this.resourceTracker.track(
+      const loadArrowShaftGeometry = this.resourceTracker.track(
         new THREE.TubeGeometry(
-          loadVector, // path
+          loadArrowShaftVector, // path
           1, // tubularSegments
-          radius, // radius
+          loadArrowShaftRadius, // radius
           32 // radiusSegments
         )
       );
-      const loadMaterial = this.resourceTracker.track(
+      const loadArrowShaftMaterial = this.resourceTracker.track(
         new THREE.MeshStandardMaterial({
           color: LOAD_COLOR,
         })
       );
-      const loadMesh = this.resourceTracker.track(
-        new THREE.Mesh(loadGeometry, loadMaterial)
+      const loadArrowShaftMesh = this.resourceTracker.track(
+        new THREE.Mesh(loadArrowShaftGeometry, loadArrowShaftMaterial)
       );
-      this.loadMeshes[id] = loadMesh;
-      this.scene!.add(loadMesh);
+      this.loadMeshes[`${id}-arrow-shaft`] = loadArrowShaftMesh;
+      this.scene!.add(loadArrowShaftMesh);
+
+      const loadArrowHeadRadius = baseUnit / 20;
+      const loadArrowHeadHeight = getLoadArrowHeadHeight(this.props.structure);
+      const loadArrowHeadGeometry = this.resourceTracker.track(
+        new THREE.ConeGeometry(
+          loadArrowHeadRadius, // radius
+          loadArrowHeadHeight, // height
+          32 // radialSegment
+        )
+      );
+      const loadArrowHeadMaterial = this.resourceTracker.track(
+        new THREE.MeshBasicMaterial({
+          color: 0xffff00,
+        })
+      );
+      const loadArrowHeadMesh = this.resourceTracker.track(
+        new THREE.Mesh(loadArrowHeadGeometry, loadArrowHeadMaterial)
+      );
+      loadArrowHeadMesh.position.set(
+        loadArrowHead.x,
+        loadArrowHead.y,
+        loadArrowHead.z
+      );
+      console.log('loadArrowTail.y: ', loadArrowTail.y);
+      console.log('loadArrowHead.y: ', loadArrowHead.y);
+      console.log('deltaY: ', loadArrowTail.y - loadArrowHead.y);
+      console.log('deltaZ: ', loadArrowTail.z - loadArrowHead.z);
+      loadArrowHeadMesh.rotation.set(
+        -Math.atan2(
+          loadArrowTail.y - loadArrowHead.y,
+          loadArrowTail.z - loadArrowHead.z
+        ) -
+          (3 * Math.PI) / 2,
+        /*Math.atan2(
+          loadArrowTail.z - loadArrowHead.z,
+          loadArrowTail.x - loadArrowHead.x
+        )*/ 0,
+        /*Math.atan2(
+          loadArrowTail.y - loadArrowHead.y,
+          loadArrowTail.x - loadArrowHead.x
+        )*/ 0
+      );
+      this.loadMeshes[`${id}-arrow-head`] = loadArrowHeadMesh;
+      this.scene!.add(loadArrowHeadMesh);
     });
   };
 

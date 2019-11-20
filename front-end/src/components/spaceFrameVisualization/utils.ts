@@ -92,7 +92,7 @@ const getMaxLoad = (loads: Loads) => {
   return maxLoad;
 };
 
-export const getLoadArrowDimensions = (
+export const getLoadArrowShaftDimensions = (
   load: Load,
   loads: Loads,
   structure: Structure
@@ -117,3 +117,6 @@ export const getLoadArrowDimensions = (
       : 0,
   };
 };
+
+export const getLoadArrowHeadHeight = (structure: Structure) =>
+  getMaxStructureDimension(structure) / 5;
