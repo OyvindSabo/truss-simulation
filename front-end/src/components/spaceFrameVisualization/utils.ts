@@ -29,6 +29,11 @@ export const getAnimatedPosition = (
     (1 + Math.sin((animationFrame / 180) * Math.PI))) /
     2;
 
+export const getRadiusOfThickestStrut = (structure: Structure) => {
+  const radiusesOfStruts = structure.struts.get().map(({ radius }) => radius);
+  return Math.max(...radiusesOfStruts, 0);
+};
+
 export const getRadiusOfThickestConnectedStrut = (
   node: Node,
   struts: Struts

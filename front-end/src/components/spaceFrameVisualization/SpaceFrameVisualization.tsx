@@ -6,6 +6,7 @@ import {
   getAverageNodePosition,
   getAnimatedPosition,
   getRadiusOfThickestConnectedStrut,
+  getRadiusOfThickestStrut,
 } from './utils';
 import ResourceTracker from './ResourceTracker';
 import Structure from '../../models/structure/Structure';
@@ -182,10 +183,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
 
     // Lower the floor plane enough to avoid the radius of the struts causing
     // intersection with the ground.
-    const maxRadius = Math.max(
-      ...this.props.structure.struts.get().map(({ radius }) => radius),
-      0
-    );
+    const maxRadius = getRadiusOfThickestStrut(this.props.structure);
     planeMesh.position.set(0, -maxRadius, 0);
     planeMesh.rotation.x = -Math.PI * 0.5;
     planeMesh.receiveShadow = true;
