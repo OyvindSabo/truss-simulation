@@ -7,6 +7,7 @@ import {
   getAnimatedPosition,
   getRadiusOfThickestConnectedStrut,
   getRadiusOfThickestStrut,
+  getLoadArrowDimensions,
 } from './utils';
 import ResourceTracker from './ResourceTracker';
 import Structure from '../../models/structure/Structure';
@@ -318,12 +319,21 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     // Render loads
     if (!this.props.loads) return;
     this.props.loads.get().forEach(load => {
-      const { id, node, fx, fy, fz } = load;
-      const { x, y, z } = node.coordinates.get();
+      const { id, node } = load;
+      const loadArrowDimensions = getLoadArrowDimensions(
+        load,
+        // We have already returned if this.props.loads === undefined
+        // For some reasone TypeScript doesn't understand that
+        this.props.loads!,
+        this.props.structure
+      );
+      const { x: x0, y: y0, z: z0 } = loadArrowDimensions;
+      console.log('x0: ', x0, 'y0: ', y0, 'z0: ', z0);
+      const { x: x1, y: y1, z: z1 } = node.coordinates.get();
       const loadVector = this.resourceTracker.track(new THREE.Curve<Vector3>());
       loadVector.getPoint = (t: number) =>
         this.resourceTracker.track(
-          new THREE.Vector3(x - t * fx, y - t * fy, z - t * fz)
+          new THREE.Vector3(x1 - t * x0, y1 - t * y0, z1 - t * z0)
         );
 
       const radius = getRadiusOfThickestConnectedStrut(node, struts);
