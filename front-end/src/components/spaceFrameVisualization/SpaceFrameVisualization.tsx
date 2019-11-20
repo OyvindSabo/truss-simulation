@@ -49,7 +49,8 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   planeMesh: THREE.Mesh | null;
   nodeMeshes: { [key: string]: THREE.Mesh };
   strutMeshes: { [key: string]: THREE.Mesh };
-  loadMeshes: { [key: string]: THREE.Mesh };
+  loadArrowShaftMeshes: { [key: string]: THREE.Mesh };
+  loadArrowHeadMeshes: { [key: string]: THREE.Mesh };
   threeObjectIdToStrutureElement: { [key: string]: Node | Strut };
   highlightedObject: THREE.Mesh | null;
   selectedObjects: THREE.Mesh[];
@@ -59,7 +60,8 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.planeMesh = null;
     this.nodeMeshes = {};
     this.strutMeshes = {};
-    this.loadMeshes = {};
+    this.loadArrowShaftMeshes = {};
+    this.loadArrowHeadMeshes = {};
     this.threeObjectIdToStrutureElement = {};
     this.highlightedObject = null;
     this.selectedObjects = [];
@@ -319,9 +321,10 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       this.scene!.add(strutMesh);
     });
 
-    // Render loads
+    // Render load arrows
     if (!this.props.loads) return;
     this.props.loads.get().forEach(load => {
+      // Create and render load arrow shaft
       const { id, node } = load;
       const loadArrowShaftDimensions = getLoadArrowShaftDimensions(
         load,
@@ -330,25 +333,19 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         this.props.loads!,
         this.props.structure
       );
-      const loadArrowHead = node.coordinates.get();
-      const loadArrowShaftVector = this.resourceTracker.track(
+      const loadArrowHeadCoordinates = node.coordinates.get();
+      const loadArrowShaftVector: THREE.Curve<Vector3> = this.resourceTracker.track(
         new THREE.Curve<Vector3>()
       );
       loadArrowShaftVector.getPoint = (t: number) =>
         this.resourceTracker.track(
           new THREE.Vector3(
-            loadArrowHead.x - t * loadArrowShaftDimensions.x,
-            loadArrowHead.y - t * loadArrowShaftDimensions.y,
-            loadArrowHead.z - t * loadArrowShaftDimensions.z
+            loadArrowHeadCoordinates.x - t * loadArrowShaftDimensions.x,
+            loadArrowHeadCoordinates.y - t * loadArrowShaftDimensions.y,
+            loadArrowHeadCoordinates.z - t * loadArrowShaftDimensions.z
           )
         );
 
-      const loadArrowTail = {
-        x: loadArrowHead.x + loadArrowShaftDimensions.x,
-        y: loadArrowHead.y + loadArrowShaftDimensions.y,
-        z: loadArrowHead.z + loadArrowShaftDimensions.z,
-      };
-      console.log('loadArrowTail: ', loadArrowTail);
       const loadArrowShaftRadius = getRadiusOfThickestConnectedStrut(
         node,
         struts
@@ -370,9 +367,10 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       const loadArrowShaftMesh = this.resourceTracker.track(
         new THREE.Mesh(loadArrowShaftGeometry, loadArrowShaftMaterial)
       );
-      this.loadMeshes[`${id}-arrow-shaft`] = loadArrowShaftMesh;
+      this.loadArrowShaftMeshes[id] = loadArrowShaftMesh;
       this.scene!.add(loadArrowShaftMesh);
 
+      // Create and render load arrow head
       const loadArrowHeadRadius = baseUnit / 20;
       const loadArrowHeadHeight = getLoadArrowHeadHeight(this.props.structure);
       const loadArrowHeadGeometry = this.resourceTracker.track(
@@ -384,37 +382,32 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       );
       const loadArrowHeadMaterial = this.resourceTracker.track(
         new THREE.MeshBasicMaterial({
-          color: 0xffff00,
+          color: LOAD_COLOR,
         })
       );
       const loadArrowHeadMesh = this.resourceTracker.track(
         new THREE.Mesh(loadArrowHeadGeometry, loadArrowHeadMaterial)
       );
       loadArrowHeadMesh.position.set(
-        loadArrowHead.x,
-        loadArrowHead.y,
-        loadArrowHead.z
+        loadArrowHeadCoordinates.x,
+        loadArrowHeadCoordinates.y,
+        loadArrowHeadCoordinates.z
       );
-      console.log('loadArrowTail.y: ', loadArrowTail.y);
-      console.log('loadArrowHead.y: ', loadArrowHead.y);
-      console.log('deltaY: ', loadArrowTail.y - loadArrowHead.y);
-      console.log('deltaZ: ', loadArrowTail.z - loadArrowHead.z);
-      loadArrowHeadMesh.rotation.set(
-        -Math.atan2(
-          loadArrowTail.y - loadArrowHead.y,
-          loadArrowTail.z - loadArrowHead.z
-        ) -
-          (3 * Math.PI) / 2,
-        /*Math.atan2(
-          loadArrowTail.z - loadArrowHead.z,
-          loadArrowTail.x - loadArrowHead.x
-        )*/ 0,
-        /*Math.atan2(
-          loadArrowTail.y - loadArrowHead.y,
-          loadArrowTail.x - loadArrowHead.x
-        )*/ 0
+
+      const loadArrowDirectionVector: THREE.Vector3 = this.resourceTracker.track(
+        new THREE.Vector3(
+          loadArrowShaftDimensions.x,
+          loadArrowShaftDimensions.y,
+          loadArrowShaftDimensions.z
+        )
       );
-      this.loadMeshes[`${id}-arrow-head`] = loadArrowHeadMesh;
+      const defaultDirectionVector = new THREE.Vector3(0, 1, 0);
+      loadArrowHeadMesh.quaternion.setFromUnitVectors(
+        defaultDirectionVector,
+        loadArrowDirectionVector.clone().normalize()
+      );
+
+      this.loadArrowHeadMeshes[id] = loadArrowHeadMesh;
       this.scene!.add(loadArrowHeadMesh);
     });
   };
@@ -493,7 +486,12 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       // Unhighlight previously highlighted objects
       if (
         this.highlightedObject &&
-        !Object.values(this.loadMeshes).includes(this.highlightedObject)
+        !Object.values(this.loadArrowShaftMeshes).includes(
+          this.highlightedObject
+        ) &&
+        !Object.values(this.loadArrowHeadMeshes).includes(
+          this.highlightedObject
+        )
       ) {
         (this.highlightedObject.material as any).color.set(STRUCTURE_COLOR);
         this.highlightedObject = null;
