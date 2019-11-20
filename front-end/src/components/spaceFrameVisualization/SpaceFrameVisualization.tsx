@@ -328,7 +328,6 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         this.props.structure
       );
       const { x: x0, y: y0, z: z0 } = loadArrowDimensions;
-      console.log('x0: ', x0, 'y0: ', y0, 'z0: ', z0);
       const { x: x1, y: y1, z: z1 } = node.coordinates.get();
       const loadVector = this.resourceTracker.track(new THREE.Curve<Vector3>());
       loadVector.getPoint = (t: number) =>

@@ -89,7 +89,6 @@ const getMaxLoad = (loads: Loads) => {
       .map(Math.abs),
     0
   );
-  console.log('maxLoad: ', maxLoad);
   return maxLoad;
 };
 
@@ -100,12 +99,6 @@ export const getLoadArrowDimensions = (
 ) => {
   const maxLoad = getMaxLoad(loads);
   const maxStructureDimension = getMaxStructureDimension(structure);
-  console.log('maxStructureDimension: ', maxStructureDimension);
-  console.log(
-    'y: ',
-    load.fy ? ((load.fy / maxLoad + 1) * maxStructureDimension) / 5 : 0
-  );
-  console.log('load.fy / maxLoad: ', load.fy ? load.fy / maxLoad : 0);
   return {
     x: load.fx
       ? ((load.fx / maxLoad + load.fx / Math.abs(load.fx)) *
