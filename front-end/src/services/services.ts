@@ -1,8 +1,8 @@
-import Structure from '../models/structure/Structure';
+import Structure, { StructureProps } from '../models/structure/Structure';
 import Experiment from '../models/experiment/Experiment';
 import Structures from '../models/structures/Structures';
 
-export const loadStructures = () =>
+/*export const loadStructures = () =>
   [
     {
       id: '1',
@@ -750,7 +750,7 @@ export const loadStructures = () =>
         },
       ],
     },
-  ].map(structure => new Structure(structure));
+  ].map(structure => new Structure(structure));*/
 
 export const storeStructures = () => {};
 
@@ -1629,6 +1629,18 @@ export const loadExperiments = () =>
         deformedStructure: new Structure(deformedStructure),
       })
   );
+
+export const loadStructures = (): Structure[] => {
+  const stringifiedStructuresProps = localStorage.getItem('structures');
+  if (!stringifiedStructuresProps) return [];
+  const structuresProps = JSON.parse(
+    stringifiedStructuresProps
+  ) as StructureProps[];
+  const structures = structuresProps.map(
+    structureProps => new Structure(structureProps)
+  );
+  return structures;
+};
 
 export const saveStructures = (structures: Structures) => {
   localStorage.setItem('structures', JSON.stringify(structures.objectify()));

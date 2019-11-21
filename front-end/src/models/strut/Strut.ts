@@ -39,8 +39,8 @@ class Strut {
     return {
       id: this.id,
       name: this.name.objectify(),
-      source: this.source.id,
-      target: this.target.id,
+      sourceId: this.source.id,
+      targetId: this.target.id,
       radius: this.radius,
     };
   }

@@ -78,8 +78,6 @@ class Structure {
 
   // This will be passed as a callback so it has to be an arrow function
   _callChangeListeners = () => {
-    console.log('calling Structure change listener');
-    console.log('this._changeListeners: ', this._changeListeners);
     this._changeListeners.forEach(changeListener => {
       changeListener();
     });

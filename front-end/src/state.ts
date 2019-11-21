@@ -49,10 +49,6 @@ export class State {
   // This will be passed as a callback so it has to be an arrow function
   saveStructures = () => {
     saveStructures(this.structures);
-    console.log(
-      'localStorage.getItem("structures"): ',
-      localStorage.getItem('structures')
-    );
     //saveExperiments(this.experiments);
   };
 

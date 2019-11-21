@@ -10,7 +10,6 @@ class Structures {
     this._changeListeners = [];
   }
   add = (structure: Structure) => {
-    console.log('Adding change listeners to structure');
     this._structures.push(structure);
     structure.addChangeListener(this._callChangeListeners);
     this._callChangeListeners();
@@ -43,7 +42,6 @@ class Structures {
   }
   // This will be passed as a callback so it has to be an arrow function
   _callChangeListeners = () => {
-    console.log('Calling structures change listener');
     this._changeListeners.forEach(changeListener => {
       changeListener();
     });

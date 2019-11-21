@@ -34,7 +34,6 @@ class Nodes {
   }
   // This will be passed as a callback so it has to be an arrow function
   _callChangeListeners = () => {
-    console.log('Calling nodes change listener');
     this._changeListeners.forEach(changeListener => {
       changeListener();
     });
