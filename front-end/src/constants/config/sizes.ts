@@ -1,4 +1,4 @@
-export const NAVIGATOR_WIDTH = 200;
+export const NAVIGATOR_WIDTH = 240;
 export const RIGHT_PANE_WIDTH = 400;
 export const IMAGE_SPACING = 100;
 export const MODAL_WIDTH = 640;

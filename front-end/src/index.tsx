@@ -21,7 +21,7 @@ const views = [
   {
     path: '/',
     getPath: () => '/',
-    label: 'HOME',
+    label: '🏠 HOME',
     component: HomeView,
     exact: true,
     strict: false,
@@ -29,7 +29,7 @@ const views = [
   {
     path: '/structures/',
     getPath: () => '/structures/',
-    label: 'STRUCTURES',
+    label: '⛩️ STRUCTURES',
     component: StructuresView,
     exact: true,
     strict: false,
@@ -37,7 +37,7 @@ const views = [
   {
     path: '/structures/:structureId/',
     getPath: () => `/structures/${state.getSelectedStructureId()}/`,
-    label: 'ACTIVE STRUCTURE',
+    label: '⛩️ ACTIVE STRUCTURE',
     component: StructureView,
     exact: true,
     strict: false,
@@ -45,7 +45,7 @@ const views = [
   {
     path: '/experiments/',
     getPath: () => '/experiments/',
-    label: 'EXPERIMENTS',
+    label: '🧪 EXPERIMENTS',
     component: ExperimentsView,
     exact: true,
     strict: false,
@@ -53,7 +53,7 @@ const views = [
   {
     path: '/experiments/:experimentId/',
     getPath: () => `/experiments/${state.getSelectedExperimentId()}/`,
-    label: 'ACTIVE EXPERIMENT',
+    label: '🧪 ACTIVE EXPERIMENT',
     component: ExperimentView,
     exact: true,
     strict: false,
@@ -61,7 +61,7 @@ const views = [
   {
     path: '/monitors/',
     getPath: () => `/monitors/`,
-    label: 'MONITORS',
+    label: '🖥️ MONITORS',
     component: MonitorsView,
     exact: true,
     strict: false,
@@ -69,7 +69,7 @@ const views = [
   {
     path: '/monitors/:monitorId/',
     getPath: () => `/monitors/${state.getSelectedMonitorId()}/`,
-    label: 'ACTIVE MONITOR',
+    label: '🖥️ ACTIVE MONITOR',
     component: MonitorView,
     exact: true,
     strict: false,
