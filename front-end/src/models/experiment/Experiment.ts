@@ -1,14 +1,14 @@
-import Structure, { StructureProps } from '../structure/Structure';
+import Structure from '../structure/Structure';
 import Name from '../name/Name';
 import Loads from '../loads/Loads';
 import { LoadProps } from '../load/Load';
 import Description from '../description/Description';
 
-interface ExperimentProps {
+export interface ExperimentProps {
   id?: string;
   name?: string;
   description?: string;
-  structure: StructureProps;
+  structure: Structure;
   loads?: LoadProps[];
   deformedStructure?: Structure;
 }
@@ -19,6 +19,7 @@ class Experiment {
   structure: Structure;
   loads: Loads;
   deformedStructure: Structure | null;
+  _changeListeners: (() => void)[];
   constructor({
     id,
     name,
@@ -28,11 +29,20 @@ class Experiment {
     deformedStructure,
   }: ExperimentProps) {
     this.id = id || `${new Date().getTime()}`;
+
     this.name = new Name(name);
+    this.name.addChangeListener(this._callChangeListeners);
+
     this.description = new Description(description);
-    this.structure = new Structure(structure);
+    this.description.addChangeListener(this._callChangeListeners);
+
+    this.structure = structure;
     this.loads = new Loads(loads);
+    this.loads.addChangeListener(this._callChangeListeners);
+
     this.deformedStructure = deformedStructure || null;
+
+    this._changeListeners = [];
   }
 
   getCfemExport() {
@@ -61,6 +71,30 @@ class Experiment {
       return `TRUSS ${elementId} ${node1} ${node2}`;
     });
     return [...nodalData, ...elementData].join('\n');
+  }
+
+  addChangeListener(changeListener: () => void) {
+    this._changeListeners.push(changeListener);
+  }
+
+  // This will be passed as a callback so it has to be an arrow function
+  _callChangeListeners = () => {
+    this._changeListeners.forEach(changeListener => {
+      changeListener();
+    });
+  };
+
+  objectify() {
+    return {
+      id: this.id,
+      name: this.name.objectify(),
+      description: this.description.objectify(),
+      structureId: this.structure.id,
+      loads: this.loads.objectify(),
+      deformedStructure: this.deformedStructure
+        ? this.deformedStructure.objectify()
+        : null,
+    };
   }
 }
 

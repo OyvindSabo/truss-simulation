@@ -9,6 +9,7 @@ class Loads {
   }
   add(load: Load) {
     this._loads.push(load);
+    this._callChangeListeners();
     this._changeListeners.forEach(changeListener => {
       changeListener();
     });
@@ -21,18 +22,26 @@ class Loads {
   }
   removeById(id: string) {
     this._loads = this._loads.filter(load => load.id !== id);
-    this._changeListeners.forEach(changeListener => {
-      changeListener();
-    });
+    this._callChangeListeners();
   }
   set(loads: Load[]) {
     this._loads = loads;
+    this._callChangeListeners();
     this._changeListeners.forEach(changeListener => {
       changeListener();
     });
   }
   addChangeListener(changeListener: () => void) {
     this._changeListeners.push(changeListener);
+  }
+  // This will be passed as a callback so it has to be an arrow function
+  _callChangeListeners = () => {
+    this._changeListeners.forEach(changeListener => {
+      changeListener();
+    });
+  };
+  objectify() {
+    return this._loads.map(load => load.objectify());
   }
 }
 

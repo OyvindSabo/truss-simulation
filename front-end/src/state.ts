@@ -9,6 +9,7 @@ import {
   loadStructures,
   loadExperiments,
   saveStructures,
+  saveExperiments,
 } from './services/services';
 import Experiments from './models/experiments/Experiments';
 import Monitors from './models/monitors/Monitors';
@@ -42,14 +43,24 @@ export class State {
   load() {
     this.structures.set(loadStructures());
     this.structures.addChangeListener(this.saveStructures);
-    this.experiments.set(loadExperiments());
-    // TODO: this.experiments.set(loadExperiments());
+
+    // Experiments refer to structures, so we have to supply them
+    this.experiments.set(loadExperiments(this.structures));
+    this.experiments.addChangeListener(this.saveExperiments);
+
     // TODO: this.monitors.set(loadMonitors());
+    // TODO: this.monitors.addChangeListener(this.saveMonitors);
   }
+
   // This will be passed as a callback so it has to be an arrow function
   saveStructures = () => {
     saveStructures(this.structures);
-    //saveExperiments(this.experiments);
+  };
+
+  // This will be passed as a callback so it has to be an arrow function
+  saveExperiments = () => {
+    console.log('saveExperiments');
+    saveExperiments(this.experiments);
   };
 
   getSelectedStructureId() {

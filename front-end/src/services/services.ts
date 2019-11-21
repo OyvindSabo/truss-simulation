@@ -1,10 +1,10 @@
 import Structure, { StructureProps } from '../models/structure/Structure';
 import Experiment from '../models/experiment/Experiment';
 import Structures from '../models/structures/Structures';
+import { LoadProps } from '../models/load/Load';
+import Experiments from '../models/experiments/Experiments';
 
-export const storeStructures = () => {};
-
-export const loadExperiments = () =>
+export const loadExperiments = (structures: Structures) =>
   [
     {
       id: '1',
@@ -875,7 +875,7 @@ export const loadExperiments = () =>
         id,
         name,
         description,
-        structure,
+        structure: new Structure(structure),
         deformedStructure: new Structure(deformedStructure),
       })
   );
@@ -894,4 +894,38 @@ export const loadStructures = (): Structure[] => {
 
 export const saveStructures = (structures: Structures) => {
   localStorage.setItem('structures', JSON.stringify(structures.objectify()));
+};
+
+/*export const loadExperiments = (structures: Structures): Experiment[] => {
+  const stringifiedExperimentsProps = localStorage.getItem('experiments');
+  if (!stringifiedExperimentsProps) return [];
+  const experimentsProps = JSON.parse(stringifiedExperimentsProps) as {
+    id: string;
+    name: string;
+    description: string;
+    structureId: string;
+    loads: LoadProps[];
+    deformedStructure: StructureProps;
+  }[];
+  const experiments = experimentsProps
+    .map(({ id, name, description, structureId, loads, deformedStructure }) => {
+      const structure = structures
+        .get()
+        .find(structure => structure.id === structureId);
+      if (!structure) return null;
+      return new Experiment({
+        id,
+        name,
+        description,
+        structure,
+        loads,
+        deformedStructure: new Structure(deformedStructure),
+      });
+    })
+    .filter(Boolean) as Experiment[];
+  return experiments;
+};*/
+
+export const saveExperiments = (experiments: Experiments) => {
+  localStorage.setItem('experiments', JSON.stringify(experiments.objectify()));
 };
