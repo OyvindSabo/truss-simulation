@@ -18,11 +18,19 @@ class Structure {
   description: Description;
   nodes: Nodes; // TODO: Create a class called nodes with nodes.add
   struts: Struts;
+  _changeListeners: (() => void)[];
   constructor({ id, name, description, nodes, struts }: StructureProps) {
     this.id = id || `${new Date().getTime()}`;
+
     this.name = new Name(name);
+    this.name.addChangeListener(this._callChangeListeners);
+
     this.description = new Description(description);
+    this.description.addChangeListener(this._callChangeListeners);
+
     this.nodes = new Nodes(nodes);
+    this.nodes.addChangeListener(this._callChangeListeners);
+
     const strutsProps: StrutProps[] = [];
     (struts || []).forEach(({ id, name, sourceId, targetId, radius }) => {
       const source = this.nodes.getById(sourceId);
@@ -31,6 +39,9 @@ class Structure {
       strutsProps.push({ id, name, source, target, radius });
     });
     this.struts = new Struts(strutsProps);
+    this.struts.addChangeListener(this._callChangeListeners);
+
+    this._changeListeners = [];
   }
 
   getCfemExport() {
@@ -59,6 +70,29 @@ class Structure {
       return `TRUSS ${elementId} ${node1} ${node2}`;
     });
     return [...nodalData, ...elementData].join('\n');
+  }
+
+  addChangeListener(changeListener: () => void) {
+    this._changeListeners.push(changeListener);
+  }
+
+  // This will be passed as a callback so it has to be an arrow function
+  _callChangeListeners = () => {
+    console.log('calling Structure change listener');
+    console.log('this._changeListeners: ', this._changeListeners);
+    this._changeListeners.forEach(changeListener => {
+      changeListener();
+    });
+  };
+
+  objectify() {
+    return {
+      id: this.id,
+      name: this.name.objectify(),
+      description: this.description.objectify(),
+      nodes: this.nodes.objectify(),
+      struts: this.struts.objectify(),
+    };
   }
 }
 

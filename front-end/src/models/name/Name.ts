@@ -9,9 +9,7 @@ class Name {
   }
   set(name: string) {
     this._name = name;
-    this._changeListeners.forEach(changeListener => {
-      changeListener();
-    });
+    this._callChangeListeners();
     window.dispatchEvent(UPDATE_NAME);
   }
   get() {
@@ -19,6 +17,15 @@ class Name {
   }
   addChangeListener(changeListener: () => void) {
     this._changeListeners.push(changeListener);
+  }
+  // This will be passed as a callback so it has to be an arrow function
+  _callChangeListeners = () => {
+    this._changeListeners.forEach(changeListener => {
+      changeListener();
+    });
+  };
+  objectify() {
+    return this._name;
   }
 }
 

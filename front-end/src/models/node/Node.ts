@@ -25,6 +25,7 @@ class Node {
   coordinates: Coordinates;
   translationalDegreesOfFreedom: TranslationalDegreesOfFreedom;
   rotationalDegreesOfFreedom: RotationalDegreesOfFreedom;
+  _changeListeners: (() => void)[];
   constructor({
     id,
     name,
@@ -40,17 +41,48 @@ class Node {
   }: NodeProps) {
     this.id = id || `${new Date().getTime()}`;
     this.name = new Name(name || '');
+    this.name.addChangeListener(this._callChangeListeners);
+
     this.coordinates = new Coordinates({ x, y, z });
+    this.coordinates.addChangeListener(this._callChangeListeners);
+
     this.translationalDegreesOfFreedom = new TranslationalDegreesOfFreedom({
       ix,
       iy,
       iz,
     });
+    this.translationalDegreesOfFreedom.addChangeListener(
+      this._callChangeListeners
+    );
+
     this.rotationalDegreesOfFreedom = new RotationalDegreesOfFreedom({
       irx,
       iry,
       irz,
     });
+    this.rotationalDegreesOfFreedom.addChangeListener(
+      this._callChangeListeners
+    );
+
+    this._changeListeners = [];
+  }
+  addChangeListener(changeListener: () => void) {
+    this._changeListeners.push(changeListener);
+  }
+  // This will be passed as a callback so it has to be an arrow function
+  _callChangeListeners = () => {
+    this._changeListeners.forEach(changeListener => {
+      changeListener();
+    });
+  };
+  objectify() {
+    return {
+      id: this.id,
+      name: this.name.objectify(),
+      ...this.coordinates.get(),
+      ...this.translationalDegreesOfFreedom.get(),
+      ...this.rotationalDegreesOfFreedom.get(),
+    };
   }
 }
 

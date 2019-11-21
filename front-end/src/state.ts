@@ -5,7 +5,11 @@ import {
   UPDATE_STRUCTURE_EDITOR_CONTEXT,
 } from './customEvents';
 import Structures from './models/structures/Structures';
-import { loadStructures, loadExperiments } from './services/services';
+import {
+  loadStructures,
+  loadExperiments,
+  saveStructures,
+} from './services/services';
 import Experiments from './models/experiments/Experiments';
 import Monitors from './models/monitors/Monitors';
 import { StructureEditorContext, ExperimentEditorContext } from './types';
@@ -37,10 +41,20 @@ export class State {
   }
   load() {
     this.structures.set(loadStructures());
+    this.structures.addChangeListener(this.saveStructures);
     this.experiments.set(loadExperiments());
     // TODO: this.experiments.set(loadExperiments());
     // TODO: this.monitors.set(loadMonitors());
   }
+  // This will be passed as a callback so it has to be an arrow function
+  saveStructures = () => {
+    saveStructures(this.structures);
+    console.log(
+      'localStorage.getItem("structures"): ',
+      localStorage.getItem('structures')
+    );
+    //saveExperiments(this.experiments);
+  };
 
   getSelectedStructureId() {
     return this._state.selectedStructureId;
