@@ -8,35 +8,37 @@ import {
 } from '../../constants/theme/styles';
 import { HINT_OF_PENSIVE, WHITE } from '../../constants/theme/colors';
 import { PREVIEW_HEIGHT, PREVIEW_WIDTH } from '../../constants/config/sizes';
+import { ICON_COLOR } from '../../constants/config/colors';
+import trashIcon from '../../assets/icons/trash-icon.png';
+import Icon from '../icon/Icon';
 
 interface PreviewBox {
   label: string;
   onClick?: OnClick;
+  onDelete?: () => void;
   children?: any;
 }
-const PreviewBox = ({ label, onClick, children }: PreviewBox) => {
+const PreviewBox = ({ label, onClick, onDelete, children }: PreviewBox) => {
   const [shouldAbortClick, setShouldAbortClick] = useState<boolean>(false);
   return (
-    <div
-      style={{ margin: `${MARGIN}px`, display: 'inline-block' }}
-      onMouseDown={() => setShouldAbortClick(false)}
-      onClick={shouldAbortClick ? undefined : onClick}
-      onMouseMove={() => setShouldAbortClick(true)}
-    >
+    <div style={{ margin: `${MARGIN}px`, display: 'inline-block' }}>
       <div
         style={{
           display: 'inline-block',
           outline: `${BORDER_WIDTH}px solid ${HINT_OF_PENSIVE}`,
           background: WHITE,
-          cursor: 'pointer',
         }}
       >
         <div
           style={{
+            cursor: 'pointer',
             height: PREVIEW_HEIGHT,
             width: PREVIEW_WIDTH,
             background: WHITE,
           }}
+          onMouseDown={() => setShouldAbortClick(false)}
+          onClick={shouldAbortClick ? undefined : onClick}
+          onMouseMove={() => setShouldAbortClick(true)}
         >
           {children}
         </div>
@@ -48,7 +50,15 @@ const PreviewBox = ({ label, onClick, children }: PreviewBox) => {
             textAlign: 'center',
           }}
         >
-          {label}
+          <span onClick={onClick} style={{ cursor: 'pointer' }}>
+            {label}
+          </span>
+          <Icon
+            style={{ float: 'right' }}
+            icon={trashIcon}
+            color={ICON_COLOR}
+            onClick={onDelete}
+          />
         </div>
       </div>
     </div>

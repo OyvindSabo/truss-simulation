@@ -57,6 +57,20 @@ const StructuresView: React.FunctionComponent<RouteComponentProps> = ({
             state.setSelectedStructureId(structure.id);
             history.push(`/structures/${structure.id}`);
           }}
+          onDelete={() => {
+            // It would be preferrable to have a reducer to make sure that the
+            // state remains consistent when deleting structures.
+
+            // Remove experiment
+            state.experiments
+              .get()
+              .filter(experiment => experiment.structure.id === structure.id)
+              .forEach(experiment => {
+                state.experiments.removeById(experiment.id);
+              });
+            // Remove structure
+            state.structures.removeById(structure.id);
+          }}
         >
           <SpaceFrameVisualization structure={structure} />
         </PreviewBox>
