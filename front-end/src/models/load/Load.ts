@@ -42,7 +42,7 @@ class Load {
     return {
       id: this.id,
       name: this.name.objectify(),
-      node: this.node.objectify(),
+      nodeId: this.node.id,
       fx: this.fx,
       fy: this.fy,
       fz: this.fz,
