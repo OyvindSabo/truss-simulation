@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { OnClick } from '../../types';
-import { MARGIN, PADDING, BORDER_WIDTH } from '../../constants/theme/styles';
+import {
+  MARGIN,
+  PADDING,
+  BORDER_WIDTH,
+  FONT_SIZE,
+} from '../../constants/theme/styles';
 import { HINT_OF_PENSIVE, WHITE } from '../../constants/theme/colors';
 import { PREVIEW_HEIGHT, PREVIEW_WIDTH } from '../../constants/config/sizes';
 
@@ -35,7 +40,14 @@ const PreviewBox = ({ label, onClick, children }: PreviewBox) => {
         >
           {children}
         </div>
-        <div style={{ padding: `${PADDING}px`, textAlign: 'center' }}>
+        <div
+          style={{
+            height: 2 * PADDING + FONT_SIZE,
+            boxSizing: 'border-box',
+            padding: PADDING,
+            textAlign: 'center',
+          }}
+        >
           {label}
         </div>
       </div>

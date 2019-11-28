@@ -5,10 +5,16 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import PreviewBox from '../../components/previewBox/PreviewBox';
 import SpaceFrameVisualization from '../../components/spaceFrameVisualization/SpaceFrameVisualization';
 import plusIcon from '../../assets/icons/plus-icon-white.png';
-import Structure from '../../models/structure/Structure';
 import { HINT_OF_PENSIVE } from '../../constants/theme/colors';
-import { IMAGE_SPACING } from '../../constants/config/sizes';
+import { IMAGE_SPACING, PREVIEW_HEIGHT } from '../../constants/config/sizes';
 import Experiment from '../../models/experiment/Experiment';
+import Modal from '../../components/modal/Modal';
+import {
+  MARGIN,
+  PADDING,
+  BORDER_WIDTH,
+  FONT_SIZE,
+} from '../../constants/theme/styles';
 
 const ExperimentsView: React.FunctionComponent<RouteComponentProps> = ({
   history,
@@ -16,6 +22,9 @@ const ExperimentsView: React.FunctionComponent<RouteComponentProps> = ({
   const [experiments, setExperiments] = useState<Experiment[]>(
     state.experiments.get()
   );
+  const [selectStructureModalIsOpen, setSelectStructureModalIsOpen] = useState<
+    boolean
+  >(false);
   useEffect(() => {
     // For consistency, rewrite Experiments accept change listeners
     window.addEventListener(UPDATE_EXPERIMENTS.type, () => {
@@ -30,14 +39,9 @@ const ExperimentsView: React.FunctionComponent<RouteComponentProps> = ({
   return (
     <>
       <PreviewBox
-        // This currently creates a new structure, not an experiment
         label="CREATE NEW EXPERIMENT"
         onClick={() => {
-          // This one will have to be rewritten so that there is an extra step
-          // where the user can select a structure to base the experiment on
-          const newStructure = new Structure({});
-          state.structures.add(newStructure);
-          history.push(`/structures/${newStructure.id}`);
+          setSelectStructureModalIsOpen(true);
         }}
       >
         <div style={{ background: HINT_OF_PENSIVE, height: '100%' }}>
@@ -69,6 +73,41 @@ const ExperimentsView: React.FunctionComponent<RouteComponentProps> = ({
           />
         </PreviewBox>
       ))}
+      <Modal
+        active={selectStructureModalIsOpen}
+        onOutsideClick={() => setSelectStructureModalIsOpen(false)}
+      >
+        <div
+          style={{
+            borderBottom: `${BORDER_WIDTH}px solid ${HINT_OF_PENSIVE}`,
+            padding: PADDING,
+          }}
+        >
+          SELECT A STRUCTURE FOR YOUR EXPERIMENT
+        </div>
+        <div
+          style={{
+            height: PREVIEW_HEIGHT + FONT_SIZE + 4 * MARGIN,
+            overflowX: 'hidden',
+            overflowY: 'scroll',
+          }}
+        >
+          {state.structures.get().map((structure, key) => (
+            <PreviewBox
+              key={key}
+              label={structure.name.get()}
+              onClick={() => {
+                const newExperiment = new Experiment({ structure });
+                state.experiments.add(newExperiment);
+                state.setSelectedExperimentId(newExperiment.id);
+                history.push(`/experiments/${newExperiment.id}`);
+              }}
+            >
+              <SpaceFrameVisualization structure={structure} />
+            </PreviewBox>
+          ))}
+        </div>
+      </Modal>
     </>
   );
 };

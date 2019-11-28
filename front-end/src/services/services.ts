@@ -4,7 +4,7 @@ import Structures from '../models/structures/Structures';
 import { LoadProps } from '../models/load/Load';
 import Experiments from '../models/experiments/Experiments';
 
-export const loadExperiments = (structures: Structures) =>
+/*export const loadExperiments = (structures: Structures) =>
   [
     {
       id: '1',
@@ -878,7 +878,7 @@ export const loadExperiments = (structures: Structures) =>
         structure: new Structure(structure),
         deformedStructure: new Structure(deformedStructure),
       })
-  );
+  );*/
 
 export const loadStructures = (): Structure[] => {
   const stringifiedStructuresProps = localStorage.getItem('structures');
@@ -886,9 +886,10 @@ export const loadStructures = (): Structure[] => {
   const structuresProps = JSON.parse(
     stringifiedStructuresProps
   ) as StructureProps[];
-  const structures = structuresProps.map(
-    structureProps => new Structure(structureProps)
-  );
+  const structures = structuresProps.map(structureProps => {
+    console.log('structureProps: ', structureProps);
+    return new Structure(structureProps);
+  });
   return structures;
 };
 
@@ -896,7 +897,7 @@ export const saveStructures = (structures: Structures) => {
   localStorage.setItem('structures', JSON.stringify(structures.objectify()));
 };
 
-/*export const loadExperiments = (structures: Structures): Experiment[] => {
+export const loadExperiments = (structures: Structures): Experiment[] => {
   const stringifiedExperimentsProps = localStorage.getItem('experiments');
   if (!stringifiedExperimentsProps) return [];
   const experimentsProps = JSON.parse(stringifiedExperimentsProps) as {
@@ -908,10 +909,8 @@ export const saveStructures = (structures: Structures) => {
     deformedStructure: StructureProps;
   }[];
   const experiments = experimentsProps
-    .map(({ id, name, description, structureId, loads, deformedStructure }) => {
-      const structure = structures
-        .get()
-        .find(structure => structure.id === structureId);
+    .map(({ id, name, description, structureId, loads }) => {
+      const structure = structures.getById(structureId);
       if (!structure) return null;
       return new Experiment({
         id,
@@ -919,12 +918,12 @@ export const saveStructures = (structures: Structures) => {
         description,
         structure,
         loads,
-        deformedStructure: new Structure(deformedStructure),
+        deformedStructure: undefined /*new Structure(deformedStructure)*/,
       });
     })
     .filter(Boolean) as Experiment[];
   return experiments;
-};*/
+};
 
 export const saveExperiments = (experiments: Experiments) => {
   localStorage.setItem('experiments', JSON.stringify(experiments.objectify()));

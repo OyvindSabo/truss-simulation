@@ -4,13 +4,13 @@ import { OnClick } from '../../types';
 
 interface ModalProps {
   active: boolean;
-  children: JSX.Element[];
+  children: any;
   onOutsideClick: OnClick;
 }
 const Modal = ({ active, children, onOutsideClick }: ModalProps) => (
   <ModalBackground active={active} onClick={onOutsideClick}>
     <ModalBox active={active} onClick={event => event.stopPropagation()}>
-      {children}
+      {active && children}
     </ModalBox>
   </ModalBackground>
 );
