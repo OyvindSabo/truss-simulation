@@ -66,6 +66,9 @@ const ExperimentsView: React.FunctionComponent<RouteComponentProps> = ({
             state.setSelectedStructureId(experiment.id);
             history.push(`/experiments/${experiment.id}`);
           }}
+          onDelete={() => {
+            state.experiments.removeById(experiment.id);
+          }}
         >
           <SpaceFrameVisualization
             structure={experiment.structure}
