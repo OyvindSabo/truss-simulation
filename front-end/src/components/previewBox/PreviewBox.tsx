@@ -53,12 +53,14 @@ const PreviewBox = ({ label, onClick, onDelete, children }: PreviewBox) => {
           <span onClick={onClick} style={{ cursor: 'pointer' }}>
             {label}
           </span>
-          <Icon
-            style={{ float: 'right' }}
-            icon={trashIcon}
-            color={ICON_COLOR}
-            onClick={onDelete}
-          />
+          {onDelete && (
+            <Icon
+              style={{ float: 'right' }}
+              icon={trashIcon}
+              color={ICON_COLOR}
+              onClick={onDelete}
+            />
+          )}
         </div>
       </div>
     </div>
