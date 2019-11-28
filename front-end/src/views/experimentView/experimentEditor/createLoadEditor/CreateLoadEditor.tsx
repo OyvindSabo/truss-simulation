@@ -100,7 +100,7 @@ const CreateLoadEditor = ({
           onClick={onCreateStrutClick}
           disabled={disabled}
         >
-          CREATE STRUT
+          CREATE LOAD
         </Button>
       </Margin>
     </div>
