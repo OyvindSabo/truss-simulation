@@ -53,9 +53,15 @@ const CreateLoadEditor = ({
         >
           <table>
             <tr>
-              <td>X-coordinate</td>
-              <td>Y-coordinate</td>
-              <td>Z-coordinate</td>
+              <td>
+                F<sub>x</sub>
+              </td>
+              <td>
+                F<sub>y</sub>
+              </td>
+              <td>
+                F<sub>z</sub>
+              </td>
             </tr>
             <tr>
               <td>
