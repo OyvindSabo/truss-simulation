@@ -27,12 +27,14 @@ const EditStructureEditor = ({
   return (
     <div>
       <Margin>
+        STRUCTURE NAME
         <Input
           value={name}
           onChange={({ target }) => setName(target.value)}
         ></Input>
       </Margin>
       <Margin>
+        STRUCTURE DESCRIPTION
         <Input
           value={description}
           onChange={({ target }) => setDescription(target.value)}

@@ -27,12 +27,14 @@ const EditExperimentEditor = ({
   return (
     <div>
       <Margin>
+        EXPERIMENT NAME
         <Input
           value={name}
           onChange={({ target }) => setName(target.value)}
         ></Input>
       </Margin>
       <Margin>
+        EXPERIMENT DESCRIPTION
         <Input
           value={description}
           onChange={({ target }) => setDescription(target.value)}
