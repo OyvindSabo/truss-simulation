@@ -99,22 +99,13 @@ export const getLoadArrowShaftDimensions = (
 ) => {
   const maxLoad = getMaxLoad(loads);
   const maxStructureDimension = getMaxStructureDimension(structure);
+  const scaleFactor = maxStructureDimension / ((5 / 2) * Math.log(1 + maxLoad));
+  // The arrow length scales logarithmically with a length in the interval
+  // [0, maxStructureDimension]
   return {
-    x: load.fx
-      ? ((load.fx / maxLoad + load.fx / Math.abs(load.fx)) *
-          maxStructureDimension) /
-        5
-      : 0,
-    y: load.fy
-      ? ((load.fy / maxLoad + load.fy / Math.abs(load.fy)) *
-          maxStructureDimension) /
-        5
-      : 0,
-    z: load.fz
-      ? ((load.fz / maxLoad + load.fz / Math.abs(load.fz)) *
-          maxStructureDimension) /
-        5
-      : 0,
+    x: Math.sign(load.fx) * Math.log(1 + Math.abs(load.fx)) * scaleFactor,
+    y: Math.sign(load.fy) * Math.log(1 + Math.abs(load.fy)) * scaleFactor,
+    z: Math.sign(load.fz) * Math.log(1 + Math.abs(load.fz)) * scaleFactor,
   };
 };
 
