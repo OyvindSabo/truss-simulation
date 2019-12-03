@@ -9,6 +9,7 @@ import {
   getRadiusOfThickestStrut,
   getLoadArrowShaftDimensions,
   getLoadArrowHeadHeight,
+  getLoadArrowHeadRadius,
 } from './utils';
 import ResourceTracker from './ResourceTracker';
 import Structure from '../../models/structure/Structure';
@@ -30,6 +31,14 @@ interface SpaceFrameVisualizationProps {
   editMode?: boolean;
   // The default unit of the coordinate system (1m by default)
   baseUnit?: number;
+  onClick?: (parameters: {
+    clickedNode?: Node;
+    clickedStrut?: Strut;
+    selectedNodes: Node[];
+    selectedStruts: Strut[];
+    selectedNodeObjects: THREE.Mesh[];
+    selectedStrutObjects: THREE.Mesh[];
+  }) => void;
 }
 
 class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
@@ -228,16 +237,48 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       } else {
         this.selectedObjects.push(this.highlightedObject);
       }
+      const clickedElement = this.getStructureElementFromThreeObjectId(
+        this.highlightedObject.id
+      );
+      const clickedNode =
+        clickedElement instanceof Node ? clickedElement : undefined;
+      const clickedStrut =
+        clickedElement instanceof Strut ? clickedElement : undefined;
       const selectedNodes = this.selectedObjects
         .map(({ id }) => this.getStructureElementFromThreeObjectId(id))
         .filter(strutOrNode => strutOrNode instanceof Node) as Node[];
 
-      if (selectedNodes.length === 2) {
-        const [source, target] = selectedNodes;
-        this.props.structure.struts.add(new Strut({ source, target }));
-        this.selectedObjects.forEach(selectedObject => {
-          (selectedObject.material as any).color.set(STRUCTURE_COLOR);
+      const selectedNodeObjects = this.selectedObjects.filter(
+        strutOrNodeObject =>
+          this.getStructureElementFromThreeObjectId(
+            strutOrNodeObject.id
+          ) instanceof Node
+      );
+
+      const selectedStrutObjects = this.selectedObjects.filter(
+        strutOrNodeObject =>
+          this.getStructureElementFromThreeObjectId(
+            strutOrNodeObject.id
+          ) instanceof Strut
+      );
+
+      const selectedStruts = this.selectedObjects
+        .map(({ id }) => this.getStructureElementFromThreeObjectId(id))
+        .filter(strutOrNode => strutOrNode instanceof Strut) as Strut[];
+
+      this.props.onClick &&
+        this.props.onClick({
+          clickedNode,
+          clickedStrut,
+          selectedNodes,
+          selectedStruts,
+          selectedNodeObjects,
+          selectedStrutObjects,
         });
+
+      // TODO: This state should rather be kept by the parent component, and
+      // then selectedObjects can be passed as ids instead.
+      if (selectedNodes.length === 2) {
         this.selectedObjects = [];
       }
     }
@@ -371,8 +412,20 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       this.scene!.add(loadArrowShaftMesh);
 
       // Create and render load arrow head
-      const loadArrowHeadRadius = baseUnit / 20;
-      const loadArrowHeadHeight = getLoadArrowHeadHeight(this.props.structure);
+      const loadArrowHeadRadius = getLoadArrowHeadRadius(
+        load,
+        // We have already returned if this.props.loads === undefined
+        // For some reasone TypeScript doesn't understand that
+        this.props.loads!,
+        this.props.structure
+      );
+      const loadArrowHeadHeight = getLoadArrowHeadHeight(
+        load,
+        // We have already returned if this.props.loads === undefined
+        // For some reasone TypeScript doesn't understand that
+        this.props.loads!,
+        this.props.structure
+      );
       const loadArrowHeadGeometry = this.resourceTracker.track(
         new THREE.ConeGeometry(
           loadArrowHeadRadius, // radius

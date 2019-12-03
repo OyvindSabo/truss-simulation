@@ -11,12 +11,23 @@ import StructureEditor from './structureEditor/StructureEditor';
 import Structure from '../../models/structure/Structure';
 import Icon from '../../components/icon/Icon';
 import downloadIcon from '../../assets/icons/download-icon.png';
-import { ICON_COLOR } from '../../constants/config/colors';
+import { ICON_COLOR, STRUCTURE_COLOR } from '../../constants/config/colors';
+import Node from '../../models/node/Node';
+import Strut from '../../models/strut/Strut';
 
 const options = {
   first: { label: 'Edit', value: true },
   second: { label: 'Preview', value: false },
 };
+
+interface OnClick {
+  clickedNode?: Node;
+  clickedStrut?: Strut;
+  selectedNodes: Node[];
+  selectedStruts: Strut[];
+  selectedNodeObjects: THREE.Mesh[];
+  selectedStrutObjects: THREE.Mesh[];
+}
 
 class StructureView extends Component<
   RouteComponentProps<{ structureId: string }>,
@@ -62,6 +73,27 @@ class StructureView extends Component<
     }
   };
 
+  onClick = ({
+    clickedNode,
+    clickedStrut,
+    selectedNodes,
+    selectedStruts,
+    selectedNodeObjects,
+    selectedStrutObjects,
+  }: OnClick) => {
+    if (!this.selectedStructure) return;
+    if (selectedNodes.length === 2) {
+      const [source, target] = selectedNodes;
+      this.selectedStructure.struts.add(new Strut({ source, target }));
+      selectedNodeObjects.forEach(selectedObject => {
+        (selectedObject.material as any).color.set(STRUCTURE_COLOR);
+      });
+      selectedStrutObjects.forEach(selectedObject => {
+        (selectedObject.material as any).color.set(STRUCTURE_COLOR);
+      });
+    }
+  };
+
   render = () => {
     const firstOptionSelected = this.state.editMode;
     return this.selectedStructure ? (
@@ -85,6 +117,7 @@ class StructureView extends Component<
           structure={this.selectedStructure}
           editMode={this.state.editMode}
           baseUnit={10}
+          onClick={this.onClick}
         />
         <RightPane
           isOpen={this.state.rightPaneIsOpen}

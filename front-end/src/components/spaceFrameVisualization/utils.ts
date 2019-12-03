@@ -101,7 +101,7 @@ export const getLoadArrowShaftDimensions = (
   const maxStructureDimension = getMaxStructureDimension(structure);
   const scaleFactor = maxStructureDimension / ((5 / 2) * Math.log(1 + maxLoad));
   // The arrow length scales logarithmically with a length in the interval
-  // [0, maxStructureDimension]
+  // [0, 2/5 * maxStructureDimension]
   return {
     x: Math.sign(load.fx) * Math.log(1 + Math.abs(load.fx)) * scaleFactor,
     y: Math.sign(load.fy) * Math.log(1 + Math.abs(load.fy)) * scaleFactor,
@@ -109,5 +109,26 @@ export const getLoadArrowShaftDimensions = (
   };
 };
 
-export const getLoadArrowHeadHeight = (structure: Structure) =>
-  getMaxStructureDimension(structure) / 5;
+export const getLoadArrowHeadRadius = (
+  load: Load,
+  loads: Loads,
+  structure: Structure
+) => {
+  const { x, y, z } = getLoadArrowShaftDimensions(load, loads, structure);
+  const loadMagnitude = Math.sqrt(
+    Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2)
+  );
+  return loadMagnitude / 4;
+};
+
+export const getLoadArrowHeadHeight = (
+  load: Load,
+  loads: Loads,
+  structure: Structure
+) => {
+  const { x, y, z } = getLoadArrowShaftDimensions(load, loads, structure);
+  const loadMagnitude = Math.sqrt(
+    Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2)
+  );
+  return loadMagnitude / 2;
+};
