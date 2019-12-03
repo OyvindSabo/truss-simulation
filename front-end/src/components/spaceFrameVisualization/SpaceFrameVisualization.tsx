@@ -292,8 +292,24 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   };
 
   renderStructure = () => {
+    console.log('Inside renderStructure');
     const { nodes, struts } = this.props.structure;
     const baseUnit = this.props.baseUnit || 1;
+
+    // Remove old node meshes
+    // This could probably be extracted out to a function
+    Object.entries(this.nodeMeshes).forEach(([key, value]) => {
+      if (
+        !nodes
+          .get()
+          .map(({ id }) => id)
+          .includes(key)
+      ) {
+        console.log('Deleting node mesh: ', key);
+        this.scene!.remove(value);
+        delete this.nodeMeshes[key];
+      }
+    });
 
     // Render nodes
     nodes.get().forEach(node => {
@@ -318,6 +334,34 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         nodeMesh.position.set(x, y, z);
         this.nodeMeshes[id] = nodeMesh;
         this.scene!.add(nodeMesh);
+        console.log('Rerendered: About to delete node mesh');
+        Object.entries(this.nodeMeshes).forEach(([key, value]) => {
+          if (
+            !nodes
+              .get()
+              .map(({ id }) => id)
+              .includes(key)
+          ) {
+            console.log('Deleting node mesh: ', key);
+            this.scene!.remove(this.nodeMeshes[key]);
+            delete this.nodeMeshes[key];
+          }
+        });
+      }
+    });
+
+    // Remove old strut meshes
+    // This could probably be extracted out to a function
+    Object.entries(this.strutMeshes).forEach(([key, value]) => {
+      if (
+        !struts
+          .get()
+          .map(({ id }) => id)
+          .includes(key)
+      ) {
+        console.log('Remove old strut mesh');
+        this.scene!.remove(value);
+        delete this.strutMeshes[key];
       }
     });
 
