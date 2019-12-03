@@ -4,16 +4,13 @@ import Input from '../../../../components/input/Input';
 import Button from '../../../../components/button/Button';
 import { ButtonType } from '../../../../components/button/types';
 import Margin from '../../../../components/margin/Margin';
-import { StructureEditorContext } from '../../../../types';
+import { StructureEditorContextEnum } from '../../../../types';
+import { state } from '../../../../state';
 
 interface CreateNodeEditorProps {
   structure: Structure;
-  setContext: (structureEditorContext: StructureEditorContext) => void;
 }
-const EditStructureEditor = ({
-  structure,
-  setContext,
-}: CreateNodeEditorProps) => {
+const EditStructureEditor = ({ structure }: CreateNodeEditorProps) => {
   const [name, setName] = useState<string>(structure.name.get());
   const [description, setDescription] = useState<string>(
     structure.description.get()
@@ -22,7 +19,10 @@ const EditStructureEditor = ({
   const onClick = () => {
     structure.name.set(name);
     structure.description.set(description);
-    setContext(StructureEditorContext.StructureOverview);
+    state.setStructureEditorContext({
+      context: StructureEditorContextEnum.StructureOverview,
+      selectedElementId: null,
+    });
   };
   return (
     <div>

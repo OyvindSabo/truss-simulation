@@ -43,7 +43,7 @@ export type SpaceFrameData = {
   struts: StrutData[];
 };
 
-export enum StructureEditorContext {
+export enum StructureEditorContextEnum {
   StructureOverview = 'STRUCTURE_OVERVIEW',
   EditStructureInfo = 'EDIT_STRUCTURE_INFO',
   PreviewNodes = 'PREVIEW_NODES',
@@ -54,8 +54,61 @@ export enum StructureEditorContext {
   EditStrut = 'EDIT_STRUT',
 }
 
-export enum ExperimentEditorContext {
+export type StructureEditorContext =
+  | {
+      context: StructureEditorContextEnum.StructureOverview;
+      selectedElementId: null;
+    }
+  | {
+      context: StructureEditorContextEnum.EditStructureInfo;
+      selectedElementId: null;
+    }
+  | {
+      context: StructureEditorContextEnum.PreviewNodes;
+      selectedElementId: null;
+    }
+  | {
+      context: StructureEditorContextEnum.CreateNode;
+      selectedElementId: null;
+    }
+  | {
+      context: StructureEditorContextEnum.EditNode;
+      selectedElementId: string;
+    }
+  | {
+      context: StructureEditorContextEnum.PreviewStruts;
+      selectedElementId: null;
+    }
+  | {
+      context: StructureEditorContextEnum.CreateStrut;
+      selectedElementId: null;
+    }
+  | {
+      context: StructureEditorContextEnum.EditStrut;
+      selectedElementId: string;
+    };
+
+export enum ExperimentEditorContextEnum {
   ExperimentOverview = 'STRUCTURE_OVERVIEW',
   EditExperimentInfo = 'EDIT_STRUCTURE_INFO',
   CreateLoad = 'CREATE_LOAD',
+  EditLoad = 'EDIT_LOAD',
 }
+
+export type ExperimentEditorContext =
+  | {
+      context: ExperimentEditorContextEnum.ExperimentOverview;
+      selectedElementId: null;
+    }
+  | {
+      context: ExperimentEditorContextEnum.EditExperimentInfo;
+      selectedElementId: null;
+    }
+  | {
+      context: ExperimentEditorContextEnum.CreateLoad;
+      selectedElementId: null;
+    }
+  | {
+      context: ExperimentEditorContextEnum.EditLoad;
+      selectedElementId: string;
+    };

@@ -3,7 +3,7 @@ import Structure from '../../../../models/structure/Structure';
 import Button from '../../../../components/button/Button';
 import { ButtonType } from '../../../../components/button/types';
 import Node from '../../../../models/node/Node';
-import { StructureEditorContext } from '../../../../types';
+import { StructureEditorContextEnum } from '../../../../types';
 import Strut from '../../../../models/strut/Strut';
 import Margin from '../../../../components/margin/Margin';
 import { MARGIN } from '../../../../constants/theme/styles';
@@ -11,15 +11,12 @@ import {
   BUTTON_HEIGHT,
   STRUCTURE_EDITOR_HEADER_HEIGHT,
 } from '../../../../constants/config/sizes';
+import { state } from '../../../../state';
 
 interface CreateStrutEditorProps {
   structure: Structure;
-  setContext: (structureEditorContext: StructureEditorContext) => void;
 }
-const CreateStrutEditor = ({
-  structure,
-  setContext,
-}: CreateStrutEditorProps) => {
+const CreateStrutEditor = ({ structure }: CreateStrutEditorProps) => {
   const [sourceNode, setSourceNode] = useState<Node | null>(null);
   const [targetNode, setTargetNode] = useState<Node | null>(null);
   const disabled = !(sourceNode && targetNode);
@@ -29,7 +26,10 @@ const CreateStrutEditor = ({
         structure.struts.add(
           new Strut({ source: sourceNode!, target: targetNode! })
         );
-        setContext(StructureEditorContext.StructureOverview);
+        state.setStructureEditorContext({
+          context: StructureEditorContextEnum.StructureOverview,
+          selectedElementId: null,
+        });
       };
   return (
     <div style={{ height: `calc(100% - ${STRUCTURE_EDITOR_HEADER_HEIGHT}px` }}>

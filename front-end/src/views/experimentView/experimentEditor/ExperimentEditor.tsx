@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ExperimentEditorContext } from '../../../types';
+import { ExperimentEditorContextEnum } from '../../../types';
 import { UPDATE_EXPERIMENT_EDITOR_CONTEXT } from '../../../customEvents';
 import { state } from '../../../state';
 import { ExperimentEditorHeader } from './atoms';
@@ -12,21 +12,21 @@ interface ExperimentEditorProps {
   experiment: Experiment;
 }
 const ExperimentEditor = ({ experiment }: ExperimentEditorProps) => {
-  const [context, setContext] = useState<ExperimentEditorContext>(
-    state.getExperimentEditorContext()
+  const [context, setContext] = useState<ExperimentEditorContextEnum>(
+    state.getExperimentEditorContext().context
   );
   useEffect(() => {
     window.addEventListener(UPDATE_EXPERIMENT_EDITOR_CONTEXT.type, () => {
-      setContext(state.getExperimentEditorContext());
+      setContext(state.getExperimentEditorContext().context);
     });
     return () => {
       window.removeEventListener(UPDATE_EXPERIMENT_EDITOR_CONTEXT.type, () => {
-        setContext(state.getExperimentEditorContext());
+        setContext(state.getExperimentEditorContext().context);
       });
     };
   }, []);
 
-  if (context === ExperimentEditorContext.ExperimentOverview) {
+  if (context === ExperimentEditorContextEnum.ExperimentOverview) {
     return (
       <>
         <ExperimentEditorHeader>STRUCTURE OVERVIEW</ExperimentEditorHeader>
@@ -37,7 +37,7 @@ const ExperimentEditor = ({ experiment }: ExperimentEditorProps) => {
       </>
     );
   }
-  if (context === ExperimentEditorContext.EditExperimentInfo) {
+  if (context === ExperimentEditorContextEnum.EditExperimentInfo) {
     return (
       <>
         <ExperimentEditorHeader>EDIT EXPERIMENT INFO</ExperimentEditorHeader>
@@ -45,7 +45,7 @@ const ExperimentEditor = ({ experiment }: ExperimentEditorProps) => {
       </>
     );
   }
-  if (context === ExperimentEditorContext.CreateLoad) {
+  if (context === ExperimentEditorContextEnum.CreateLoad) {
     return (
       <>
         <ExperimentEditorHeader>CREATE LOAD</ExperimentEditorHeader>

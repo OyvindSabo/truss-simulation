@@ -3,22 +3,26 @@ import Structure from '../../../../models/structure/Structure';
 import Button from '../../../../components/button/Button';
 import { ButtonType } from '../../../../components/button/types';
 import Margin from '../../../../components/margin/Margin';
-import { StructureEditorContext } from '../../../../types';
+import { StructureEditorContextEnum } from '../../../../types';
+import { state } from '../../../../state';
 
 interface StructureOverviewEditorProps {
   structure: Structure;
-  setContext: (structureEditorContext: StructureEditorContext) => void;
 }
 const StructureOverviewEditor = ({
   structure,
-  setContext,
 }: StructureOverviewEditorProps) => (
   <div>
     <Margin>
       <Button
         style={{ width: '100%' }}
         buttonType={ButtonType.Primary}
-        onClick={() => setContext(StructureEditorContext.EditStructureInfo)}
+        onClick={() =>
+          state.setStructureEditorContext({
+            context: StructureEditorContextEnum.EditStructureInfo,
+            selectedElementId: null,
+          })
+        }
       >
         EDIT STRUCTURE INFO
       </Button>
@@ -27,7 +31,12 @@ const StructureOverviewEditor = ({
       <Button
         style={{ width: '100%' }}
         buttonType={ButtonType.Primary}
-        onClick={() => setContext(StructureEditorContext.CreateNode)}
+        onClick={() =>
+          state.setStructureEditorContext({
+            context: StructureEditorContextEnum.CreateNode,
+            selectedElementId: null,
+          })
+        }
       >
         CREATE NODE
       </Button>
@@ -36,7 +45,12 @@ const StructureOverviewEditor = ({
       <Button
         style={{ width: '100%' }}
         buttonType={ButtonType.Primary}
-        onClick={() => setContext(StructureEditorContext.CreateStrut)}
+        onClick={() =>
+          state.setStructureEditorContext({
+            context: StructureEditorContextEnum.CreateStrut,
+            selectedElementId: null,
+          })
+        }
       >
         CREATE STRUT
       </Button>

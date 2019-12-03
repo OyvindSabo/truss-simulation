@@ -3,12 +3,12 @@ import Input from '../../../../components/input/Input';
 import Button from '../../../../components/button/Button';
 import { ButtonType } from '../../../../components/button/types';
 import Margin from '../../../../components/margin/Margin';
-import { ExperimentEditorContext } from '../../../../types';
+import { ExperimentEditorContextEnum } from '../../../../types';
 import Experiment from '../../../../models/experiment/Experiment';
 
 interface CreateNodeEditorProps {
   experiment: Experiment;
-  setContext: (experimentEditorContext: ExperimentEditorContext) => void;
+  setContext: (experimentEditorContext: ExperimentEditorContextEnum) => void;
 }
 const EditExperimentEditor = ({
   experiment,
@@ -22,7 +22,7 @@ const EditExperimentEditor = ({
   const onClick = () => {
     experiment.name.set(name);
     experiment.description.set(description);
-    setContext(ExperimentEditorContext.ExperimentOverview);
+    setContext(ExperimentEditorContextEnum.ExperimentOverview);
   };
   return (
     <div>

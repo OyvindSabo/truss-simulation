@@ -14,6 +14,7 @@ import downloadIcon from '../../assets/icons/download-icon.png';
 import { ICON_COLOR, STRUCTURE_COLOR } from '../../constants/config/colors';
 import Node from '../../models/node/Node';
 import Strut from '../../models/strut/Strut';
+import { StructureEditorContextEnum } from '../../types';
 
 const options = {
   first: { label: 'Edit', value: true },
@@ -31,7 +32,12 @@ interface OnClick {
 
 class StructureView extends Component<
   RouteComponentProps<{ structureId: string }>,
-  { selectedStructureName: string; rightPaneIsOpen: boolean; editMode: boolean }
+  {
+    selectedStructureName: string;
+    selectedStructureId: string | null;
+    rightPaneIsOpen: boolean;
+    editMode: boolean;
+  }
 > {
   selectedStructure: Structure | undefined;
   constructor(props: RouteComponentProps<{ structureId: string }>) {
@@ -43,6 +49,7 @@ class StructureView extends Component<
       selectedStructureName: this.selectedStructure
         ? this.selectedStructure.name.get()
         : '',
+      selectedStructureId: null,
       rightPaneIsOpen: true,
       editMode: true,
     };
@@ -82,6 +89,18 @@ class StructureView extends Component<
     selectedStrutObjects,
   }: OnClick) => {
     if (!this.selectedStructure) return;
+    if (clickedNode) {
+      state.setStructureEditorContext({
+        context: StructureEditorContextEnum.EditNode,
+        selectedElementId: clickedNode.id,
+      });
+    }
+    if (clickedStrut) {
+      state.setStructureEditorContext({
+        context: StructureEditorContextEnum.EditStrut,
+        selectedElementId: clickedStrut.id,
+      });
+    }
     if (selectedNodes.length === 2) {
       const [source, target] = selectedNodes;
       this.selectedStructure.struts.add(new Strut({ source, target }));

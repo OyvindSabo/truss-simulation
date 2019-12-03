@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Button from '../../../../components/button/Button';
 import { ButtonType } from '../../../../components/button/types';
 import Node from '../../../../models/node/Node';
-import { ExperimentEditorContext } from '../../../../types';
+import { ExperimentEditorContextEnum } from '../../../../types';
 import Margin from '../../../../components/margin/Margin';
 import { MARGIN } from '../../../../constants/theme/styles';
 import {
@@ -16,7 +16,7 @@ import Load from '../../../../models/load/Load';
 
 interface CreateLoadEditorProps {
   experiment: Experiment;
-  setContext: (experimentEditorContext: ExperimentEditorContext) => void;
+  setContext: (experimentEditorContext: ExperimentEditorContextEnum) => void;
 }
 const CreateLoadEditor = ({
   experiment,
@@ -38,7 +38,7 @@ const CreateLoadEditor = ({
             fz: Number(fz),
           })
         );
-        setContext(ExperimentEditorContext.ExperimentOverview);
+        setContext(ExperimentEditorContextEnum.ExperimentOverview);
       };
   return (
     <div style={{ height: `calc(100% - ${EXPERIMENT_EDITOR_HEADER_HEIGHT}px` }}>

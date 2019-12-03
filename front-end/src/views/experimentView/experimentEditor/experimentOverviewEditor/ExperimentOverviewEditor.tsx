@@ -2,12 +2,12 @@ import React from 'react';
 import Button from '../../../../components/button/Button';
 import { ButtonType } from '../../../../components/button/types';
 import Margin from '../../../../components/margin/Margin';
-import { ExperimentEditorContext } from '../../../../types';
+import { ExperimentEditorContextEnum } from '../../../../types';
 import Experiment from '../../../../models/experiment/Experiment';
 
 interface ExperimentOverviewEditorProps {
   experiment: Experiment;
-  setContext: (experimentEditorContext: ExperimentEditorContext) => void;
+  setContext: (experimentEditorContext: ExperimentEditorContextEnum) => void;
 }
 const ExperimentOverviewEditor = ({
   experiment,
@@ -18,7 +18,9 @@ const ExperimentOverviewEditor = ({
       <Button
         style={{ width: '100%' }}
         buttonType={ButtonType.Primary}
-        onClick={() => setContext(ExperimentEditorContext.EditExperimentInfo)}
+        onClick={() =>
+          setContext(ExperimentEditorContextEnum.EditExperimentInfo)
+        }
       >
         EDIT EXPERIMENT INFO
       </Button>
@@ -27,7 +29,7 @@ const ExperimentOverviewEditor = ({
       <Button
         style={{ width: '100%' }}
         buttonType={ButtonType.Primary}
-        onClick={() => setContext(ExperimentEditorContext.CreateLoad)}
+        onClick={() => setContext(ExperimentEditorContextEnum.CreateLoad)}
       >
         CREATE LOAD
       </Button>

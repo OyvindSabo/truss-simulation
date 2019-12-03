@@ -13,7 +13,12 @@ import {
 } from './services/services';
 import Experiments from './models/experiments/Experiments';
 import Monitors from './models/monitors/Monitors';
-import { StructureEditorContext, ExperimentEditorContext } from './types';
+import {
+  StructureEditorContext,
+  ExperimentEditorContext,
+  StructureEditorContextEnum,
+  ExperimentEditorContextEnum,
+} from './types';
 
 export class State {
   structures: Structures;
@@ -36,8 +41,14 @@ export class State {
       selectedExperimentId: null,
       selectedMonitoringId: null,
 
-      structureEditorContext: StructureEditorContext.StructureOverview,
-      experimentEditorContext: ExperimentEditorContext.ExperimentOverview,
+      structureEditorContext: {
+        context: StructureEditorContextEnum.StructureOverview,
+        selectedElementId: null,
+      },
+      experimentEditorContext: {
+        context: ExperimentEditorContextEnum.ExperimentOverview,
+        selectedElementId: null,
+      },
     };
   }
   load() {
@@ -91,7 +102,20 @@ export class State {
     return this._state.structureEditorContext;
   }
   setStructureEditorContext(structureEditorContext: StructureEditorContext) {
-    this._state.structureEditorContext = structureEditorContext;
+    if (
+      structureEditorContext.context === StructureEditorContextEnum.EditNode ||
+      structureEditorContext.context === StructureEditorContextEnum.EditStrut
+    ) {
+      this._state.structureEditorContext = {
+        context: structureEditorContext.context,
+        selectedElementId: structureEditorContext.selectedElementId,
+      };
+    } else {
+      this._state.structureEditorContext = {
+        context: structureEditorContext.context,
+        selectedElementId: null,
+      };
+    }
     window.dispatchEvent(UPDATE_STRUCTURE_EDITOR_CONTEXT);
   }
 

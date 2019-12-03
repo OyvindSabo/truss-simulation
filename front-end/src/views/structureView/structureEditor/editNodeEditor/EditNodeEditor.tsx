@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Structure from '../../../../models/structure/Structure';
 import Input from '../../../../components/input/Input';
 import Button from '../../../../components/button/Button';
 import { ButtonType } from '../../../../components/button/types';
 import { validateCoordinates } from './utils';
-import Node from '../../../../models/node/Node';
 import { StructureEditorContextEnum } from '../../../../types';
 import Switch from '../../../../components/switch/Switch';
 import { SwitchContainer } from './atoms';
@@ -12,6 +11,7 @@ import { state } from '../../../../state';
 
 interface CreateNodeEditorProps {
   structure: Structure;
+  selectedElementId: string;
 }
 
 const ixOptions = {
@@ -44,7 +44,10 @@ const irzOptions = {
   second: { label: 'yrz: Fixed', value: false },
 };
 
-const CreateNodeEditor = ({ structure }: CreateNodeEditorProps) => {
+const EditNodeEditor = ({
+  structure,
+  selectedElementId,
+}: CreateNodeEditorProps) => {
   const [x, setX] = useState<string>('');
   const [y, setY] = useState<string>('');
   const [z, setZ] = useState<string>('');
@@ -55,22 +58,33 @@ const CreateNodeEditor = ({ structure }: CreateNodeEditorProps) => {
   const [iry, setIRY] = useState<boolean>(false);
   const [irz, setIRZ] = useState<boolean>(false);
   const disabled = !validateCoordinates(x, y, z);
-  const onCreateNodeClick = disabled
+
+  useEffect(() => {
+    const node = structure.nodes
+      .get()
+      .find(node => node.id === selectedElementId);
+    if (!node) return;
+    setX(`${node.coordinates.get().x}`);
+    setY(`${node.coordinates.get().y}`);
+    setZ(`${node.coordinates.get().z}`);
+    setIX(node.translationalDegreesOfFreedom.get().ix);
+    setIY(node.translationalDegreesOfFreedom.get().iy);
+    setIZ(node.translationalDegreesOfFreedom.get().iz);
+    setIRX(node!.rotationalDegreesOfFreedom.get().irx);
+    setIRY(node!.rotationalDegreesOfFreedom.get().iry);
+    setIRZ(node!.rotationalDegreesOfFreedom.get().irz);
+  }, [selectedElementId, structure]);
+
+  const onUpdateNodeClick = disabled
     ? undefined
     : () => {
-        structure.nodes.add(
-          new Node({
-            x: Number(x),
-            y: Number(y),
-            z: Number(z),
-            ix,
-            iy,
-            iz,
-            irx,
-            iry,
-            irz,
-          })
-        );
+        const node = structure.nodes
+          .get()
+          .find(node => node.id === selectedElementId);
+        if (!node) return;
+        node.coordinates.set({ x: Number(x), y: Number(y), z: Number(z) });
+        node.translationalDegreesOfFreedom.set({ ix, iy, iz });
+        node.rotationalDegreesOfFreedom.set({ irx, iry, irz });
         // The following resetting is not really necessary since we navigate
         // away after creating a node, but I'm considering to make it optional
         // to navigate away, so I'll keep them for now.
@@ -167,13 +181,13 @@ const CreateNodeEditor = ({ structure }: CreateNodeEditorProps) => {
       <Button
         style={{ width: '100%' }}
         buttonType={ButtonType.Primary}
-        onClick={onCreateNodeClick}
+        onClick={onUpdateNodeClick}
         disabled={disabled}
       >
-        CREATE NODE
+        UPDATE NODE
       </Button>
     </div>
   );
 };
 
-export default CreateNodeEditor;
+export default EditNodeEditor;

@@ -6,6 +6,9 @@ class Nodes {
   _changeListeners: (() => void)[];
   constructor(nodes: NodeProps[] = []) {
     this._nodes = nodes.map(node => new Node(node)) || [];
+    this._nodes.forEach(node => {
+      node.addChangeListener(this._callChangeListeners);
+    });
     this._changeListeners = [];
   }
   add(node: Node) {
