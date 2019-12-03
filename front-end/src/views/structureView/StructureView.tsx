@@ -6,7 +6,7 @@ import RightPane from '../../components/rightPane/RightPane';
 import ErrorScreen from '../../components/errorScreen/ErrorScreen';
 import TopBar from '../../components/topBar/TopBar';
 import Switch from '../../components/switch/Switch';
-import { SwitchContainer } from './atoms';
+import { SwitchContainer, SpaceFrameVisualizationContainer } from './atoms';
 import StructureEditor from './structureEditor/StructureEditor';
 import Structure from '../../models/structure/Structure';
 import Icon from '../../components/icon/Icon';
@@ -113,12 +113,16 @@ class StructureView extends Component<
             onClick={(editMode: boolean) => this.setState({ editMode })}
           />
         </SwitchContainer>
-        <SpaceFrameVisualization
-          structure={this.selectedStructure}
-          editMode={this.state.editMode}
-          baseUnit={10}
-          onClick={this.onClick}
-        />
+        <SpaceFrameVisualizationContainer
+          rightPaneIsOpen={this.state.rightPaneIsOpen}
+        >
+          <SpaceFrameVisualization
+            structure={this.selectedStructure}
+            editMode={this.state.editMode}
+            baseUnit={10}
+            onClick={this.onClick}
+          />
+        </SpaceFrameVisualizationContainer>
         <RightPane
           isOpen={this.state.rightPaneIsOpen}
           onOpenClose={() =>

@@ -10,7 +10,7 @@ import downloadIcon from '../../assets/icons/download-icon.png';
 import { ICON_COLOR } from '../../constants/config/colors';
 import Switch from '../../components/switch/Switch';
 import RightPane from '../../components/rightPane/RightPane';
-import { SwitchContainer } from './atoms';
+import { SwitchContainer, SpaceFrameVisualizationContainer } from './atoms';
 import ExperimentEditor from './experimentEditor/ExperimentEditor';
 
 const options = {
@@ -85,13 +85,17 @@ class ExperimentView extends Component<
             onClick={(editMode: boolean) => this.setState({ editMode })}
           />
         </SwitchContainer>
-        <SpaceFrameVisualization
-          structure={this.selectedExperiment.structure}
-          loads={this.selectedExperiment.loads}
-          editMode={this.state.editMode}
-          deformedSpaceFrameData={this.selectedExperiment.deformedStructure}
-          baseUnit={10}
-        />
+        <SpaceFrameVisualizationContainer
+          rightPaneIsOpen={this.state.rightPaneIsOpen}
+        >
+          <SpaceFrameVisualization
+            structure={this.selectedExperiment.structure}
+            loads={this.selectedExperiment.loads}
+            editMode={this.state.editMode}
+            deformedSpaceFrameData={this.selectedExperiment.deformedStructure}
+            baseUnit={10}
+          />
+        </SpaceFrameVisualizationContainer>
         <RightPane
           isOpen={this.state.rightPaneIsOpen}
           onOpenClose={() =>
