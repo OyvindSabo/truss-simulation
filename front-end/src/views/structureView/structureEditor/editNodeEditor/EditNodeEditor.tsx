@@ -102,6 +102,15 @@ const EditNodeEditor = ({
           selectedElementId: null,
         });
       };
+  const onDeleteNodeClick = () => {
+    // These should rather be methods on the top level context
+    structure.nodes.removeById(selectedElementId);
+    structure.struts.removeByNodeId(selectedElementId);
+    state.setStructureEditorContext({
+      context: StructureEditorContextEnum.StructureOverview,
+      selectedElementId: null,
+    });
+  };
   return (
     <div>
       <table>
@@ -185,6 +194,14 @@ const EditNodeEditor = ({
         disabled={disabled}
       >
         UPDATE NODE
+      </Button>
+      <Button
+        style={{ width: '100%' }}
+        buttonType={ButtonType.Danger}
+        onClick={onDeleteNodeClick}
+        disabled={disabled}
+      >
+        DELETE NODE
       </Button>
     </div>
   );

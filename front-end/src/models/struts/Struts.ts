@@ -24,6 +24,13 @@ class Struts {
     this._callChangeListeners();
     window.dispatchEvent(UPDATE_NODES);
   }
+  removeByNodeId(id: string) {
+    this._struts = this._struts.filter(
+      strut => strut.source.id !== id && strut.target.id !== id
+    );
+    this._callChangeListeners();
+    window.dispatchEvent(UPDATE_NODES);
+  }
   set(struts: Strut[]) {
     this._struts = struts;
     this._callChangeListeners();
