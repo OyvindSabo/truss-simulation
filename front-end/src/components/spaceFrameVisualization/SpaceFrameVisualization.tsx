@@ -155,12 +155,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     const width = this.width || window.innerWidth;
     const height = this.height || window.innerHeight;
     this.camera = this.resourceTracker.track(
-      new THREE.PerspectiveCamera(
-        35,
-        width / height,
-        1, // near
-        1000 // far
-      )
+      new THREE.PerspectiveCamera(undefined, width / height)
     );
     this.camera!.position.set(65, 8, -10);
   };
