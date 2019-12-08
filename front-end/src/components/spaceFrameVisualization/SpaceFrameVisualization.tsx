@@ -164,7 +164,6 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.controls = this.resourceTracker.track(
       new OrbitControls(this.camera!, this.renderer!.domElement)
     );
-    this.controls!.addEventListener('change', this.render);
     this.controls!.minDistance = 1;
     this.controls!.maxDistance = 500;
     this.controls!.enablePan = false;
