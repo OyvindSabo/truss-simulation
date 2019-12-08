@@ -6,10 +6,10 @@ import {
   getAverageNodePosition,
   getAnimatedPosition,
   getRadiusOfThickestConnectedStrut,
-  getRadiusOfThickestStrut,
   getLoadArrowShaftDimensions,
   getLoadArrowHeadHeight,
   getLoadArrowHeadRadius,
+  getYCoordinateOfLowestPoint,
 } from './utils';
 import ResourceTracker from './ResourceTracker';
 import Structure from '../../models/structure/Structure';
@@ -196,10 +196,12 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     );
     this.planeMesh = planeMesh;
 
-    // Lower the floor plane enough to avoid the radius of the struts causing
-    // intersection with the ground.
-    const maxRadius = getRadiusOfThickestStrut(this.props.structure);
-    planeMesh.position.set(0, -maxRadius, 0);
+    // Lower the floor plane enough to avoid the radius of the struts or nodes
+    // causing intersection with the ground.
+    const yCoordinateOfLowestPoint = getYCoordinateOfLowestPoint(
+      this.props.structure
+    );
+    planeMesh.position.set(0, yCoordinateOfLowestPoint, 0);
     planeMesh.rotation.x = -Math.PI * 0.5;
     planeMesh.receiveShadow = true;
     this.scene!.add(planeMesh);
