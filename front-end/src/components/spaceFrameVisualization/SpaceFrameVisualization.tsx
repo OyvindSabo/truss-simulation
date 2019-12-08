@@ -84,7 +84,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.initializeAmbientLight();
     this.initializeSpotlight();
     this.initializeCamera();
-    this.initializeControls();
+    this.initializeOrbitControls();
     this.initializePlane();
     this.initializePicking();
     this.renderStructure();
@@ -160,7 +160,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     this.camera!.position.set(65, 8, -10);
   };
 
-  initializeControls = () => {
+  initializeOrbitControls = () => {
     this.controls = this.resourceTracker.track(
       new OrbitControls(this.camera!, this.renderer!.domElement)
     );
