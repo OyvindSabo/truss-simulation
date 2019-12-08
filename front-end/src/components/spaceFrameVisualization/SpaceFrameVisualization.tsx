@@ -139,7 +139,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     const spotLight = this.resourceTracker.track(
       new THREE.SpotLight(0xffffff, 1)
     );
-    spotLight.position.set(15, 40, 35);
+    spotLight.position.set(50, 50, 50);
     spotLight.angle = Math.PI / 4;
     spotLight.penumbra = 0.05;
     spotLight.decay = 2;
@@ -148,8 +148,6 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
     // The mapSize has to be this big for the shadows to not look pixelated
     spotLight.shadow.mapSize.width = 10000;
     spotLight.shadow.mapSize.height = 10000;
-    spotLight.shadow.camera.near = 1;
-    spotLight.shadow.camera.far = 1000;
     this.scene!.add(spotLight);
   };
 
