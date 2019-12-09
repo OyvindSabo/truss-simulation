@@ -468,6 +468,9 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
       const loadArrowHeadMesh = this.resourceTracker.track(
         new THREE.Mesh(loadArrowHeadGeometry, loadArrowHeadMaterial)
       );
+      this.loadArrowHeadMeshes[id] = loadArrowHeadMesh;
+      this.scene!.add(loadArrowHeadMesh);
+
       loadArrowHeadMesh.position.set(
         loadArrowHeadCoordinates.x,
         loadArrowHeadCoordinates.y,
@@ -486,9 +489,6 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         defaultDirectionVector,
         loadArrowDirectionVector.clone().normalize()
       );
-
-      this.loadArrowHeadMeshes[id] = loadArrowHeadMesh;
-      this.scene!.add(loadArrowHeadMesh);
     });
   };
 
