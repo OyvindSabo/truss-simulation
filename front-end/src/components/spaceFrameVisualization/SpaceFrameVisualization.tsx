@@ -368,20 +368,25 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
           32 // radiusSegments
         )
       );
-      const strutMaterial = this.resourceTracker.track(
-        new THREE.MeshStandardMaterial({
-          color: STRUCTURE_COLOR,
-        })
-      );
-      const strutMesh = this.resourceTracker.track(
-        new THREE.Mesh(strutGeometry, strutMaterial)
-      );
-      this.threeObjectIdToStrutureElement[strutMesh.id] = strut;
-      // Not sure why we don't do the following for nodes
-      strutMesh.castShadow = true; //default is false
-      strutMesh.receiveShadow = false; //default
-      this.strutMeshes[id] = strutMesh;
-      this.scene!.add(strutMesh);
+
+      if (this.strutMeshes[id]) {
+        this.strutMeshes[id].geometry = strutGeometry;
+      } else {
+        const strutMaterial = this.resourceTracker.track(
+          new THREE.MeshStandardMaterial({
+            color: STRUCTURE_COLOR,
+          })
+        );
+        const strutMesh = this.resourceTracker.track(
+          new THREE.Mesh(strutGeometry, strutMaterial)
+        );
+        this.threeObjectIdToStrutureElement[strutMesh.id] = strut;
+        // Not sure why we don't do the following for nodes
+        strutMesh.castShadow = true; //default is false
+        strutMesh.receiveShadow = false; //default
+        this.strutMeshes[id] = strutMesh;
+        this.scene!.add(strutMesh);
+      }
     });
 
     // Render load arrows
