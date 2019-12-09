@@ -326,19 +326,6 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         nodeMesh.position.set(x, y, z);
         this.nodeMeshes[id] = nodeMesh;
         this.scene!.add(nodeMesh);
-        console.log('Rerendered: About to delete node mesh');
-        Object.entries(this.nodeMeshes).forEach(([key, value]) => {
-          if (
-            !nodes
-              .get()
-              .map(({ id }) => id)
-              .includes(key)
-          ) {
-            console.log('Deleting node mesh: ', key);
-            this.scene!.remove(this.nodeMeshes[key]);
-            delete this.nodeMeshes[key];
-          }
-        });
       }
     });
 
