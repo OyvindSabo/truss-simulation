@@ -323,10 +323,10 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
           new THREE.Mesh(nodeGeometry, nodeMaterial)
         );
         this.threeObjectIdToStrutureElement[nodeMesh.id] = node;
-        nodeMesh.position.set(x, y, z);
         this.nodeMeshes[id] = nodeMesh;
         this.scene!.add(nodeMesh);
       }
+      this.nodeMeshes[id].position.set(x, y, z);
     });
 
     // Remove old strut meshes
