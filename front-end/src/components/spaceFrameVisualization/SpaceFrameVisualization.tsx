@@ -298,7 +298,6 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
           .map(({ id }) => id)
           .includes(key)
       ) {
-        console.log('Deleting node mesh: ', key);
         this.scene!.remove(value);
         delete this.nodeMeshes[key];
       }
