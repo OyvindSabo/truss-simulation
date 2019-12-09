@@ -461,7 +461,7 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
         )
       );
       const loadArrowHeadMaterial = this.resourceTracker.track(
-        new THREE.MeshBasicMaterial({
+        new THREE.MeshStandardMaterial({
           color: LOAD_COLOR,
         })
       );
