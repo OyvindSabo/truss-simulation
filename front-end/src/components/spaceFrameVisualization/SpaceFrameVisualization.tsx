@@ -338,7 +338,6 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
           .map(({ id }) => id)
           .includes(key)
       ) {
-        console.log('Remove old strut mesh');
         this.scene!.remove(value);
         delete this.strutMeshes[key];
       }
