@@ -286,7 +286,6 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
   };
 
   renderStructure = () => {
-    console.log('Inside renderStructure');
     const { nodes, struts } = this.props.structure;
     const baseUnit = this.props.baseUnit || 1;
 
