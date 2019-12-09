@@ -482,12 +482,12 @@ class SpaceFrameVisualization extends Component<SpaceFrameVisualizationProps> {
           loadArrowShaftDimensions.x,
           loadArrowShaftDimensions.y,
           loadArrowShaftDimensions.z
-        )
+        ).normalize()
       );
       const defaultDirectionVector = new THREE.Vector3(0, 1, 0);
       loadArrowHeadMesh.quaternion.setFromUnitVectors(
         defaultDirectionVector,
-        loadArrowDirectionVector.clone().normalize()
+        loadArrowDirectionVector
       );
     });
   };
